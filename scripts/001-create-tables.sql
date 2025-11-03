@@ -9,16 +9,36 @@ CREATE TABLE IF NOT EXISTS organizations (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Users with role-based access
+-- Users with role-based access and authentication
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
   avatar_url TEXT,
-  role TEXT NOT NULL CHECK (role IN ('admin', 'creator', 'viewer')),
+  role TEXT NOT NULL DEFAULT 'creator' CHECK (role IN ('admin', 'creator', 'viewer')),
   organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+  email_verified BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Email verification tokens
+CREATE TABLE IF NOT EXISTS email_verification_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token TEXT UNIQUE NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Session tokens for authentication
+CREATE TABLE IF NOT EXISTS sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token TEXT UNIQUE NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Podcasts
@@ -139,6 +159,10 @@ CREATE TABLE IF NOT EXISTS clips (
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_users_organization ON users(organization_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
+CREATE INDEX IF NOT EXISTS idx_verification_tokens_user ON email_verification_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_verification_tokens_token ON email_verification_tokens(token);
 CREATE INDEX IF NOT EXISTS idx_podcasts_organization ON podcasts(organization_id);
 CREATE INDEX IF NOT EXISTS idx_episodes_podcast ON episodes(podcast_id);
 CREATE INDEX IF NOT EXISTS idx_episodes_status ON episodes(processing_status);

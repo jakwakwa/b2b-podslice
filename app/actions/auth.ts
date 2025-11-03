@@ -1,10 +1,71 @@
 "use server"
 
 import { redirect } from "next/navigation"
-import { sql } from "@/lib/db"
+import { sql, initializeDatabase } from "@/lib/db"
 import { setCurrentUser, signOut as authSignOut } from "@/lib/auth"
-import { hashPassword, verifyPassword, generateToken } from "@/lib/crypto"
 import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/email"
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const passwordData = encoder.encode(password)
+
+  const keyMaterial = await crypto.subtle.importKey("raw", passwordData, "PBKDF2", false, ["deriveBits"])
+
+  const hash = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-512",
+    },
+    keyMaterial,
+    512,
+  )
+
+  const saltHex = Array.from(salt)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+  const hashHex = Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+
+  return `${saltHex}:${hashHex}`
+}
+
+async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  const [saltHex, originalHash] = hashedPassword.split(":")
+  const encoder = new TextEncoder()
+  const passwordData = encoder.encode(password)
+
+  const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16)))
+
+  const keyMaterial = await crypto.subtle.importKey("raw", passwordData, "PBKDF2", false, ["deriveBits"])
+
+  const hash = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-512",
+    },
+    keyMaterial,
+    512,
+  )
+
+  const hashHex = Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+
+  return hashHex === originalHash
+}
+
+async function generateToken(): Promise<string> {
+  const bytes = crypto.getRandomValues(new Uint8Array(32))
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
 
 export async function signIn(email: string, password: string) {
   const users = await sql`
@@ -40,6 +101,8 @@ export async function signUp(data: {
   fullName: string
   organizationName: string
 }) {
+  await initializeDatabase()
+
   // Check if user already exists
   const existingUsers = await sql`
     SELECT id FROM users WHERE email = ${data.email} LIMIT 1
