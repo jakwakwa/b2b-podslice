@@ -63,12 +63,12 @@ export async function sendPasswordResetEmail(email: string, token: string) {
       to: email,
       subject: "Reset your password",
       html: `
-        <div style=\"font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a\">
-          <h1 style=\"margin:0 0 16px;font-size:20px\">Reset Your Password</h1>
-          <p style=\"margin:0 0 16px\">Click the link below to reset your password:</p>
-          <p style=\"margin:0 0 16px\"><a href=\"${resetUrl}\" style=\"color:#2563eb;text-decoration:underline\">Reset Password</a></p>
-          <p style=\"margin:0 0 0;color:#475569;font-size:12px\">This link will expire in 1 hour.</p>
-          <p style=\"margin:8px 0 0;color:#475569;font-size:12px\">If you didn't request this, please ignore this email.</p>
+        <div style="font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a">
+          <h1 style="margin:0 0 16px;font-size:20px">Reset Your Password</h1>
+          <p style="margin:0 0 16px">Click the link below to reset your password:</p>
+          <p style="margin:0 0 16px"><a href="${resetUrl}" style="color:#2563eb;text-decoration:underline">Reset Password</a></p>
+          <p style="margin:0 0 0;color:#475569;font-size:12px">This link will expire in 1 hour.</p>
+          <p style="margin:8px 0 0;color:#475569;font-size:12px">If you didn't request this, please ignore this email.</p>
         </div>
       `,
     })
