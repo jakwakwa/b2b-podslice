@@ -1,4 +1,4 @@
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import { SummaryWithAttribution } from "@/components/summary-with-attribution"
 import { Badge } from "@/components/ui/badge"
@@ -12,37 +12,60 @@ export default async function PublicSummaryPage({
   const { id } = await params
 
   // Check if summary is from an organization with B2C license
-  const summaries = await sql`
-    SELECT s.*, e.title as episode_title, e.audio_url, 
-           p.title as podcast_title, p.website_url,
-           o.name as creator_name, o.website as creator_website,
-           l.license_type
-    FROM summaries s
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    INNER JOIN organizations o ON o.id = p.organization_id
-    INNER JOIN licenses l ON l.organization_id = o.id AND l.is_active = true
-    WHERE s.id = ${id} AND l.license_type = 'b2b_b2c'
-    LIMIT 1
-  `
+  const summary = await prisma.summaries.findFirst({
+    where: {
+      id,
+      episodes: {
+        podcasts: {
+          licenses: {
+            some: {
+              is_active: true,
+              license_type: "b2b_b2c",
+            },
+          },
+        },
+      },
+    },
+    include: {
+      episodes: {
+        select: {
+          title: true,
+          audio_url: true,
+          podcasts: {
+            select: {
+              title: true,
+              website_url: true,
+              organizations: {
+                select: {
+                  name: true,
+                  website: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
 
-  if (summaries.length === 0) {
+  if (!summary) {
     notFound()
   }
 
-  const summary = summaries[0]
+  // Track view - create analytics event
+  await prisma.analytics_events.create({
+    data: {
+      summary_id: id,
+      event_type: "view",
+      metadata: { source: "public" },
+    },
+  })
 
-  // Track view
-  await sql`
-    INSERT INTO analytics_events (summary_id, event_type, metadata)
-    VALUES (${id}, 'view', '{"source": "public"}')
-  `
-
-  await sql`
-    UPDATE summaries 
-    SET view_count = view_count + 1
-    WHERE id = ${id}
-  `
+  // Update view count
+  await prisma.summaries.update({
+    where: { id },
+    data: { view_count: (summary.view_count || 0) + 1 },
+  })
 
   const typeLabels: Record<string, string> = {
     full: "Full Summary",
@@ -72,18 +95,18 @@ export default async function PublicSummaryPage({
             <Badge variant="secondary" className="mb-4">
               {typeLabels[summary.summary_type] || summary.summary_type}
             </Badge>
-            <h1 className="text-4xl font-bold">{summary.episode_title}</h1>
-            <p className="mt-2 text-xl text-muted-foreground">{summary.podcast_title}</p>
+            <h1 className="text-4xl font-bold">{summary.episodes.title}</h1>
+            <p className="mt-2 text-xl text-muted-foreground">{summary.episodes.podcasts.title}</p>
           </div>
 
           <SummaryWithAttribution
             content={summary.content}
             attribution={{
-              podcastTitle: summary.podcast_title,
-              episodeTitle: summary.episode_title,
-              episodeUrl: summary.audio_url,
-              creatorName: summary.creator_name,
-              creatorWebsite: summary.creator_website,
+              podcastTitle: summary.episodes.podcasts.title,
+              episodeTitle: summary.episodes.title,
+              episodeUrl: summary.episodes.audio_url,
+              creatorName: summary.episodes.podcasts.organizations.name,
+              creatorWebsite: summary.episodes.podcasts.organizations.website,
               generatedAt: new Date(summary.created_at),
             }}
           />

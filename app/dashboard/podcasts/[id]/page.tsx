@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { EpisodeList } from "@/components/episode-list"
 import { Button } from "@/components/ui/button"
@@ -19,25 +19,34 @@ export default async function PodcastDetailPage({
     redirect("/sign-in")
   }
 
-  const podcasts = await sql`
-    SELECT * FROM podcasts 
-    WHERE id = ${id} AND organization_id = ${user.organization_id}
-    LIMIT 1
-  `
+  // Fetch podcast with episode count
+  const podcast = await prisma.podcasts.findFirst({
+    where: {
+      id,
+      organization_id: user.organization_id,
+    },
+  })
 
-  if (podcasts.length === 0) {
+  if (!podcast) {
     redirect("/dashboard/podcasts")
   }
 
-  const podcast = podcasts[0]
-
-  const episodes = await sql`
-    SELECT e.*,
-      (SELECT COUNT(*) FROM summaries WHERE episode_id = e.id) as summary_count
-    FROM episodes e
-    WHERE e.podcast_id = ${id}
-    ORDER BY e.created_at DESC
-  `
+  // Fetch episodes for this podcast
+  const episodes = await prisma.episodes.findMany({
+    where: {
+      podcast_id: id,
+    },
+    include: {
+      summaries: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  })
 
   return (
     <div className="min-h-screen bg-background">

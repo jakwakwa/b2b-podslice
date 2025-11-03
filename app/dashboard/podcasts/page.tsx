@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { PodcastGrid } from "@/components/podcast-grid"
 import { Button } from "@/components/ui/button"
@@ -13,13 +13,21 @@ export default async function PodcastsPage() {
     redirect("/sign-in")
   }
 
-  const podcasts = await sql`
-    SELECT p.*, 
-      (SELECT COUNT(*) FROM episodes WHERE podcast_id = p.id) as episode_count
-    FROM podcasts p
-    WHERE p.organization_id = ${user.organization_id}
-    ORDER BY p.created_at DESC
-  `
+  const podcasts = await prisma.podcasts.findMany({
+    where: { organization_id: user.organization_id },
+    include: {
+      episodes: {
+        select: { id: true },
+      },
+    },
+    orderBy: { created_at: "desc" },
+  })
+
+  // Map to include episode_count
+  const podcastsWithCounts = podcasts.map((p) => ({
+    ...p,
+    episode_count: p.episodes.length,
+  }))
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,7 +44,7 @@ export default async function PodcastsPage() {
           </Link>
         </div>
 
-        <PodcastGrid podcasts={podcasts} />
+        <PodcastGrid podcasts={podcastsWithCounts} />
       </main>
     </div>
   )

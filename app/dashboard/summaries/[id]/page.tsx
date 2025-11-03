@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,20 +19,31 @@ export default async function SummaryDetailPage({
     redirect("/sign-in")
   }
 
-  const summaries = await sql`
-    SELECT s.*, e.title as episode_title, e.id as episode_id, p.title as podcast_title
-    FROM summaries s
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE s.id = ${id} AND p.organization_id = ${user.organization_id}
-    LIMIT 1
-  `
+  const summary = await prisma.summaries.findFirst({
+    where: {
+      id,
+      episodes: {
+        podcasts: {
+          organization_id: user.organization_id,
+        },
+      },
+    },
+    include: {
+      episodes: {
+        select: {
+          title: true,
+          id: true,
+          podcasts: {
+            select: { title: true },
+          },
+        },
+      },
+    },
+  })
 
-  if (summaries.length === 0) {
+  if (!summary) {
     redirect("/dashboard")
   }
-
-  const summary = summaries[0]
 
   const typeLabels: Record<string, string> = {
     full: "Full Summary",
@@ -59,10 +70,10 @@ export default async function SummaryDetailPage({
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link
-            href={`/dashboard/episodes/${summary.episode_id}`}
+            href={`/dashboard/episodes/${summary.episodes.id}`}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            ← Back to Episode
+            ← Back to {summary.episodes.title}
           </Link>
         </div>
 
@@ -77,8 +88,8 @@ export default async function SummaryDetailPage({
                   {new Date(summary.created_at).toLocaleDateString()}
                 </span>
               </div>
-              <h1 className="mt-4 text-3xl font-bold">{summary.episode_title}</h1>
-              <p className="mt-2 text-muted-foreground">{summary.podcast_title}</p>
+              <h1 className="mt-4 text-3xl font-bold">{summary.episodes.title}</h1>
+              <p className="mt-2 text-muted-foreground">{summary.episodes.podcasts.title}</p>
             </div>
             <SummaryActions summaryId={id} content={summary.content} />
           </div>

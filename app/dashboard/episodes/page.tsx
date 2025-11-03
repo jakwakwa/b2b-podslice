@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -14,14 +14,33 @@ export default async function EpisodesPage() {
     redirect("/sign-in")
   }
 
-  const episodes = await sql`
-    SELECT e.*, p.title as podcast_title, p.cover_image_url as podcast_cover,
-      (SELECT COUNT(*) FROM summaries WHERE episode_id = e.id) as summary_count
-    FROM episodes e
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-    ORDER BY e.created_at DESC
-  `
+  const episodes = await prisma.episodes.findMany({
+    where: {
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+    include: {
+      podcasts: {
+        select: {
+          title: true,
+          cover_image_url: true,
+        },
+      },
+      summaries: {
+        select: { id: true },
+      },
+    },
+    orderBy: { created_at: "desc" },
+  })
+
+  // Map to add podcast_title, podcast_cover, and summary_count
+  const mappedEpisodes = episodes.map((ep) => ({
+    ...ep,
+    podcast_title: ep.podcasts.title,
+    podcast_cover: ep.podcasts.cover_image_url,
+    summary_count: ep.summaries.length,
+  }))
 
   const statusColors = {
     pending: "bg-yellow-500/10 text-yellow-500",
@@ -55,7 +74,7 @@ export default async function EpisodesPage() {
           </Link>
         </div>
 
-        {episodes.length === 0 ? (
+        {mappedEpisodes.length === 0 ? (
           <Card className="p-12 text-center">
             <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-muted">
               <svg className="h-12 w-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +94,7 @@ export default async function EpisodesPage() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {episodes.map((episode) => (
+            {mappedEpisodes.map((episode) => (
               <Link key={episode.id} href={`/dashboard/episodes/${episode.id}`}>
                 <Card className="p-4 transition-colors hover:bg-muted/50">
                   <div className="flex items-start gap-4">

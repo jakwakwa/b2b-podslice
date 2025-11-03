@@ -1,6 +1,6 @@
 "use server"
 
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth"
 
 export async function signLicense(data: {
@@ -23,31 +23,27 @@ export async function signLicense(data: {
 
   try {
     // Deactivate any existing active licenses
-    await sql`
-      UPDATE licenses 
-      SET is_active = false
-      WHERE organization_id = ${data.organizationId} AND is_active = true
-    `
+    await prisma.licenses.updateMany({
+      where: {
+        organization_id: data.organizationId,
+        is_active: true,
+      },
+      data: {
+        is_active: false,
+      },
+    })
 
     // Create new license
-    await sql`
-      INSERT INTO licenses (
-        organization_id,
-        license_type,
-        terms_version,
-        signed_by_user_id,
-        tdm_opt_out,
-        is_active
-      )
-      VALUES (
-        ${data.organizationId},
-        ${data.licenseType},
-        'v1.0',
-        ${data.userId},
-        ${data.tdmOptOut},
-        true
-      )
-    `
+    await prisma.licenses.create({
+      data: {
+        organization_id: data.organizationId,
+        license_type: data.licenseType,
+        terms_version: "v1.0",
+        signed_by_user_id: data.userId,
+        tdm_opt_out: data.tdmOptOut,
+        is_active: true,
+      },
+    })
 
     return { success: true }
   } catch (error) {

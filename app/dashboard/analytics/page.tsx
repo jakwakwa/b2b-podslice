@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { AnalyticsChart } from "@/components/analytics-chart"
@@ -26,91 +26,124 @@ export default async function AnalyticsPage({
   startDate.setDate(startDate.getDate() - daysAgo)
 
   // Overall stats
-  const stats = await sql`
-    SELECT 
-      COUNT(DISTINCT s.id) as total_summaries,
-      COALESCE(SUM(s.view_count), 0) as total_views,
-      COALESCE(SUM(s.share_count), 0) as total_shares,
-      COUNT(DISTINCT ae.id) as total_events
-    FROM summaries s
-    LEFT JOIN analytics_events ae ON ae.summary_id = s.id AND ae.created_at >= ${startDate.toISOString()}
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-      AND s.created_at >= ${startDate.toISOString()}
-  `
+  const summaries = await prisma.summaries.findMany({
+    where: {
+      episodes: {
+        podcasts: {
+          organization_id: user.organization_id,
+        },
+      },
+      created_at: {
+        gte: startDate,
+      },
+    },
+    include: {
+      analytics_events: {
+        where: {
+          created_at: {
+            gte: startDate,
+          },
+        },
+      },
+    },
+  })
+
+  const totalSummaries = summaries.length
+  const totalViews = summaries.reduce((sum, s) => sum + (s.view_count || 0), 0)
+  const totalShares = summaries.reduce((sum, s) => sum + (s.share_count || 0), 0)
+  const totalEvents = summaries.reduce((sum, s) => sum + s.analytics_events.length, 0)
+
+  const stats = {
+    total_summaries: totalSummaries,
+    total_views: totalViews,
+    total_shares: totalShares,
+    total_events: totalEvents,
+  }
 
   // Daily analytics for chart
-  const dailyAnalytics = await sql`
-    SELECT 
-      DATE(ae.created_at) as date,
-      COUNT(*) FILTER (WHERE ae.event_type = 'view') as views,
-      COUNT(*) FILTER (WHERE ae.event_type = 'share') as shares,
-      COUNT(*) FILTER (WHERE ae.event_type = 'click') as clicks
-    FROM analytics_events ae
-    INNER JOIN summaries s ON s.id = ae.summary_id
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-      AND ae.created_at >= ${startDate.toISOString()}
-    GROUP BY DATE(ae.created_at)
-    ORDER BY date ASC
-  `
+  const allAnalyticsEvents = await prisma.analytics_events.findMany({
+    where: {
+      summaries: {
+        episodes: {
+          podcasts: {
+            organization_id: user.organization_id,
+          },
+        },
+      },
+      created_at: {
+        gte: startDate,
+      },
+    },
+    include: {
+      summaries: true,
+    },
+  })
+
+  // Group by date and event type
+  const dailyMap = new Map<string, { views: number; shares: number; clicks: number }>()
+  for (const event of allAnalyticsEvents) {
+    const date = event.created_at.toISOString().split("T")[0]
+    if (!dailyMap.has(date)) {
+      dailyMap.set(date, { views: 0, shares: 0, clicks: 0 })
+    }
+    const day = dailyMap.get(date)!
+    if (event.event_type === "view") day.views++
+    else if (event.event_type === "share") day.shares++
+    else if (event.event_type === "click") day.clicks++
+  }
+
+  const dailyAnalytics = Array.from(dailyMap.entries()).map(([date, data]) => ({
+    date,
+    ...data,
+  }))
 
   // Top performing content
-  const topSummaries = await sql`
-    SELECT 
-      s.id,
-      s.summary_type,
-      s.content,
-      s.view_count,
-      s.share_count,
-      e.title as episode_title,
-      p.title as podcast_title
-    FROM summaries s
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-      AND s.created_at >= ${startDate.toISOString()}
-    ORDER BY (s.view_count + s.share_count * 10) DESC
-    LIMIT 10
-  `
+  const topSummaries = summaries
+    .map((s) => ({
+      id: s.id,
+      summary_type: s.summary_type,
+      content: s.content,
+      view_count: s.view_count || 0,
+      share_count: s.share_count || 0,
+      episode_title: s.episodes?.title || "",
+      podcast_title: s.episodes?.podcasts?.title || "",
+    }))
+    .sort((a, b) => (b.view_count + b.share_count * 10) - (a.view_count + a.share_count * 10))
+    .slice(0, 10)
 
   // Content type breakdown
-  const contentTypeStats = await sql`
-    SELECT 
-      s.summary_type,
-      COUNT(*) as count,
-      COALESCE(SUM(s.view_count), 0) as total_views,
-      COALESCE(SUM(s.share_count), 0) as total_shares
-    FROM summaries s
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-      AND s.created_at >= ${startDate.toISOString()}
-    GROUP BY s.summary_type
-    ORDER BY total_views DESC
-  `
+  const contentTypeMap = new Map<string, { count: number; total_views: number; total_shares: number }>()
+  for (const s of summaries) {
+    const type = s.summary_type
+    if (!contentTypeMap.has(type)) {
+      contentTypeMap.set(type, { count: 0, total_views: 0, total_shares: 0 })
+    }
+    const data = contentTypeMap.get(type)!
+    data.count++
+    data.total_views += s.view_count || 0
+    data.total_shares += s.share_count || 0
+  }
+
+  const contentTypeStats = Array.from(contentTypeMap.entries())
+    .map(([type, data]) => ({ summary_type: type, ...data }))
+    .sort((a, b) => b.total_views - a.total_views)
 
   // Traffic sources
-  const trafficSources = await sql`
-    SELECT 
-      COALESCE(ae.metadata->>'source', 'direct') as source,
-      COUNT(*) as count
-    FROM analytics_events ae
-    INNER JOIN summaries s ON s.id = ae.summary_id
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-      AND ae.created_at >= ${startDate.toISOString()}
-      AND ae.event_type = 'view'
-    GROUP BY source
-    ORDER BY count DESC
-    LIMIT 5
-  `
+  const trafficSourceMap = new Map<string, number>()
+  for (const event of allAnalyticsEvents) {
+    if (event.event_type === "view") {
+      const source = (event.metadata as any)?.source || "direct"
+      trafficSourceMap.set(source, (trafficSourceMap.get(source) || 0) + 1)
+    }
+  }
+
+  const trafficSources = Array.from(trafficSourceMap.entries())
+    .map(([source, count]) => ({ source, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
 
   const engagementRate =
-    stats[0].total_views > 0 ? ((stats[0].total_shares / stats[0].total_views) * 100).toFixed(2) : "0.00"
+    stats.total_views > 0 ? ((stats.total_shares / stats.total_views) * 100).toFixed(2) : "0.00"
 
   return (
     <div className="min-h-screen bg-background">
@@ -138,25 +171,25 @@ export default async function AnalyticsPage({
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card className="p-6">
             <p className="text-sm font-medium text-muted-foreground">Total Views</p>
-            <p className="mt-2 text-3xl font-bold">{stats[0].total_views.toLocaleString()}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Across {stats[0].total_summaries} pieces</p>
+            <p className="mt-2 text-3xl font-bold">{stats.total_views.toLocaleString()}</p>
+            <p className="mt-1 text-sm text-muted-foreground">Across {stats.total_summaries} pieces</p>
           </Card>
 
           <Card className="p-6">
             <p className="text-sm font-medium text-muted-foreground">Total Shares</p>
-            <p className="mt-2 text-3xl font-bold">{stats[0].total_shares.toLocaleString()}</p>
+            <p className="mt-2 text-3xl font-bold">{stats.total_shares.toLocaleString()}</p>
             <p className="mt-1 text-sm text-muted-foreground">{engagementRate}% engagement rate</p>
           </Card>
 
           <Card className="p-6">
             <p className="text-sm font-medium text-muted-foreground">Total Events</p>
-            <p className="mt-2 text-3xl font-bold">{stats[0].total_events.toLocaleString()}</p>
+            <p className="mt-2 text-3xl font-bold">{stats.total_events.toLocaleString()}</p>
             <p className="mt-1 text-sm text-muted-foreground">All interactions</p>
           </Card>
 
           <Card className="p-6">
             <p className="text-sm font-medium text-muted-foreground">Avg. per Day</p>
-            <p className="mt-2 text-3xl font-bold">{Math.round(stats[0].total_views / daysAgo).toLocaleString()}</p>
+            <p className="mt-2 text-3xl font-bold">{Math.round(stats.total_views / daysAgo).toLocaleString()}</p>
             <p className="mt-1 text-sm text-muted-foreground">Views per day</p>
           </Card>
         </div>

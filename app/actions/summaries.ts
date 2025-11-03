@@ -1,6 +1,6 @@
 "use server"
 
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth"
 import {
   generateEpisodeSummary,
@@ -14,98 +14,116 @@ export async function generateAllSummaries(episodeId: string) {
   const user = await requireAuth()
 
   // Verify episode belongs to user's organization
-  const episodes = await sql`
-    SELECT e.*, p.organization_id 
-    FROM episodes e
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE e.id = ${episodeId} AND p.organization_id = ${user.organization_id}
-    LIMIT 1
-  `
+  const episode = await prisma.episodes.findFirst({
+    where: {
+      id: episodeId,
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+    include: {
+      podcasts: {
+        select: { organization_id: true },
+      },
+    },
+  })
 
-  if (episodes.length === 0) {
+  if (!episode) {
     return { error: "Episode not found" }
   }
 
-  const episode = episodes[0]
-
   try {
     // Update status to processing
-    await sql`
-      UPDATE episodes 
-      SET processing_status = 'processing'
-      WHERE id = ${episodeId}
-    `
+    await prisma.episodes.update({
+      where: { id: episodeId },
+      data: { processing_status: "processing" },
+    })
 
     // Generate or get transcript
     let transcript = episode.transcript
     if (!transcript) {
       transcript = await generateTranscript(episode.audio_url)
-      await sql`
-        UPDATE episodes 
-        SET transcript = ${transcript}
-        WHERE id = ${episodeId}
-      `
+      await prisma.episodes.update({
+        where: { id: episodeId },
+        data: { transcript },
+      })
     }
 
     // Generate full summary
     const fullSummary = await generateEpisodeSummary(episode.title, episode.description || "", transcript)
 
-    await sql`
-      INSERT INTO summaries (episode_id, summary_type, content)
-      VALUES (${episodeId}, 'full', ${fullSummary})
-    `
+    await prisma.summaries.create({
+      data: {
+        episode_id: episodeId,
+        summary_type: "full",
+        content: fullSummary,
+      },
+    })
 
     // Generate highlights
     const highlights = await generateHighlights(episode.title, transcript)
 
-    await sql`
-      INSERT INTO summaries (episode_id, summary_type, content)
-      VALUES (${episodeId}, 'highlight', ${highlights})
-    `
+    await prisma.summaries.create({
+      data: {
+        episode_id: episodeId,
+        summary_type: "highlight",
+        content: highlights,
+      },
+    })
 
     // Generate social media posts
     const twitterPost = await generateSocialPost("twitter", episode.title, episode.description || "", fullSummary)
-    await sql`
-      INSERT INTO summaries (episode_id, summary_type, content)
-      VALUES (${episodeId}, 'social_twitter', ${twitterPost})
-    `
+    await prisma.summaries.create({
+      data: {
+        episode_id: episodeId,
+        summary_type: "social_twitter",
+        content: twitterPost,
+      },
+    })
 
     const linkedinPost = await generateSocialPost("linkedin", episode.title, episode.description || "", fullSummary)
-    await sql`
-      INSERT INTO summaries (episode_id, summary_type, content)
-      VALUES (${episodeId}, 'social_linkedin', ${linkedinPost})
-    `
+    await prisma.summaries.create({
+      data: {
+        episode_id: episodeId,
+        summary_type: "social_linkedin",
+        content: linkedinPost,
+      },
+    })
 
     const instagramPost = await generateSocialPost("instagram", episode.title, episode.description || "", fullSummary)
-    await sql`
-      INSERT INTO summaries (episode_id, summary_type, content)
-      VALUES (${episodeId}, 'social_instagram', ${instagramPost})
-    `
+    await prisma.summaries.create({
+      data: {
+        episode_id: episodeId,
+        summary_type: "social_instagram",
+        content: instagramPost,
+      },
+    })
 
     // Generate show notes
     const showNotes = await generateShowNotes(episode.title, episode.description || "", transcript)
-    await sql`
-      INSERT INTO summaries (episode_id, summary_type, content)
-      VALUES (${episodeId}, 'show_notes', ${showNotes})
-    `
+    await prisma.summaries.create({
+      data: {
+        episode_id: episodeId,
+        summary_type: "show_notes",
+        content: showNotes,
+      },
+    })
 
     // Update status to completed
-    await sql`
-      UPDATE episodes 
-      SET processing_status = 'completed'
-      WHERE id = ${episodeId}
-    `
+    await prisma.episodes.update({
+      where: { id: episodeId },
+      data: { processing_status: "completed" },
+    })
 
     return { success: true }
   } catch (error) {
     console.error("[v0] Summary generation error:", error)
 
     // Update status to failed
-    await sql`
-      UPDATE episodes 
-      SET processing_status = 'failed'
-      WHERE id = ${episodeId}
-    `
+    await prisma.episodes.update({
+      where: { id: episodeId },
+      data: { processing_status: "failed" },
+    })
 
     return { error: "Failed to generate summaries" }
   }
@@ -115,20 +133,29 @@ export async function regenerateSummary(summaryId: string) {
   const user = await requireAuth()
 
   // Verify summary belongs to user's organization
-  const summaries = await sql`
-    SELECT s.*, e.title as episode_title, e.description as episode_description, e.transcript
-    FROM summaries s
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE s.id = ${summaryId} AND p.organization_id = ${user.organization_id}
-    LIMIT 1
-  `
+  const summary = await prisma.summaries.findFirst({
+    where: {
+      id: summaryId,
+      episodes: {
+        podcasts: {
+          organization_id: user.organization_id,
+        },
+      },
+    },
+    include: {
+      episodes: {
+        select: {
+          title: true,
+          description: true,
+          transcript: true,
+        },
+      },
+    },
+  })
 
-  if (summaries.length === 0) {
+  if (!summary) {
     return { error: "Summary not found" }
   }
-
-  const summary = summaries[0]
 
   try {
     let newContent = ""
@@ -136,52 +163,54 @@ export async function regenerateSummary(summaryId: string) {
     switch (summary.summary_type) {
       case "full":
         newContent = await generateEpisodeSummary(
-          summary.episode_title,
-          summary.episode_description || "",
-          summary.transcript,
+          summary.episodes.title,
+          summary.episodes.description || "",
+          summary.episodes.transcript || "",
         )
         break
       case "highlight":
-        newContent = await generateHighlights(summary.episode_title, summary.transcript)
+        newContent = await generateHighlights(summary.episodes.title, summary.episodes.transcript || "")
         break
       case "social_twitter":
         newContent = await generateSocialPost(
           "twitter",
-          summary.episode_title,
-          summary.episode_description || "",
+          summary.episodes.title,
+          summary.episodes.description || "",
           summary.content,
         )
         break
       case "social_linkedin":
         newContent = await generateSocialPost(
           "linkedin",
-          summary.episode_title,
-          summary.episode_description || "",
+          summary.episodes.title,
+          summary.episodes.description || "",
           summary.content,
         )
         break
       case "social_instagram":
         newContent = await generateSocialPost(
           "instagram",
-          summary.episode_title,
-          summary.episode_description || "",
+          summary.episodes.title,
+          summary.episodes.description || "",
           summary.content,
         )
         break
       case "show_notes":
         newContent = await generateShowNotes(
-          summary.episode_title,
-          summary.episode_description || "",
-          summary.transcript,
+          summary.episodes.title,
+          summary.episodes.description || "",
+          summary.episodes.transcript || "",
         )
         break
     }
 
-    await sql`
-      UPDATE summaries 
-      SET content = ${newContent}, updated_at = NOW()
-      WHERE id = ${summaryId}
-    `
+    await prisma.summaries.update({
+      where: { id: summaryId },
+      data: {
+        content: newContent,
+        updated_at: new Date(),
+      },
+    })
 
     return { success: true, content: newContent }
   } catch (error) {

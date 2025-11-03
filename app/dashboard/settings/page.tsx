@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -14,13 +14,13 @@ export default async function SettingsPage() {
     redirect("/sign-in")
   }
 
-  const organizations = await sql`
-    SELECT * FROM organizations 
-    WHERE id = ${user.organization_id}
-    LIMIT 1
-  `
+  const organization = await prisma.organizations.findUnique({
+    where: { id: user.organization_id || "" },
+  })
 
-  const organization = organizations[0]
+  if (!organization) {
+    redirect("/sign-in")
+  }
 
   return (
     <div className="min-h-screen bg-background">

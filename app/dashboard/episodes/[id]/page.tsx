@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,25 +21,31 @@ export default async function EpisodeDetailPage({
     redirect("/sign-in")
   }
 
-  const episodes = await sql`
-    SELECT e.*, p.title as podcast_title, p.id as podcast_id
-    FROM episodes e
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE e.id = ${id} AND p.organization_id = ${user.organization_id}
-    LIMIT 1
-  `
+  const episode = await prisma.episodes.findFirst({
+    where: {
+      id,
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+    include: {
+      podcasts: {
+        select: {
+          title: true,
+          id: true,
+        },
+      },
+    },
+  })
 
-  if (episodes.length === 0) {
+  if (!episode) {
     redirect("/dashboard/episodes")
   }
 
-  const episode = episodes[0]
-
-  const summaries = await sql`
-    SELECT * FROM summaries 
-    WHERE episode_id = ${id}
-    ORDER BY created_at DESC
-  `
+  const summaries = await prisma.summaries.findMany({
+    where: { episode_id: id },
+    orderBy: { created_at: "desc" },
+  })
 
   const statusColors = {
     pending: "bg-yellow-500/10 text-yellow-500",
@@ -66,10 +72,10 @@ export default async function EpisodeDetailPage({
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link
-            href={`/dashboard/podcasts/${episode.podcast_id}`}
+            href={`/dashboard/podcasts/${episode.podcasts.id}`}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            ← Back to {episode.podcast_title}
+            ← Back to {episode.podcasts.title}
           </Link>
         </div>
 

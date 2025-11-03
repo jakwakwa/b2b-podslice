@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { EpisodeUploadForm } from "@/components/episode-upload-form"
 import { Card } from "@/components/ui/card"
@@ -17,11 +17,11 @@ export default async function NewEpisodePage({
     redirect("/sign-in")
   }
 
-  const podcasts = await sql`
-    SELECT id, title FROM podcasts 
-    WHERE organization_id = ${user.organization_id}
-    ORDER BY title ASC
-  `
+  const podcasts = await prisma.podcasts.findMany({
+    where: { organization_id: user.organization_id },
+    select: { id: true, title: true },
+    orderBy: { title: "asc" },
+  })
 
   if (podcasts.length === 0) {
     redirect("/dashboard/podcasts/new")

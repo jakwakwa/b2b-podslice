@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardStats } from "@/components/dashboard-stats"
 import { RecentEpisodes } from "@/components/recent-episodes"
@@ -13,35 +13,83 @@ export default async function DashboardPage() {
     redirect("/sign-in")
   }
 
-  // Fetch dashboard statistics
-  const stats = await sql`
-    SELECT 
-      (SELECT COUNT(*) FROM podcasts WHERE organization_id = ${user.organization_id}) as podcast_count,
-      (SELECT COUNT(*) FROM episodes e 
-       INNER JOIN podcasts p ON p.id = e.podcast_id 
-       WHERE p.organization_id = ${user.organization_id}) as episode_count,
-      (SELECT COALESCE(SUM(view_count), 0) FROM summaries s
-       INNER JOIN episodes e ON e.id = s.episode_id
-       INNER JOIN podcasts p ON p.id = e.podcast_id
-       WHERE p.organization_id = ${user.organization_id}) as total_views,
-      (SELECT COALESCE(SUM(calculated_amount), 0) FROM royalties 
-       WHERE organization_id = ${user.organization_id} AND payment_status = 'paid') as total_earnings
-  `
+  // Fetch podcast count
+  const podcastCount = await prisma.podcasts.count({
+    where: { organization_id: user.organization_id },
+  })
 
-  const podcasts = await sql`
-    SELECT * FROM podcasts 
-    WHERE organization_id = ${user.organization_id}
-    ORDER BY created_at DESC
-  `
+  // Fetch episode count
+  const episodeCount = await prisma.episodes.count({
+    where: {
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+  })
 
-  const recentEpisodes = await sql`
-    SELECT e.*, p.title as podcast_title, p.cover_image_url as podcast_cover
-    FROM episodes e
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-    ORDER BY e.created_at DESC
-    LIMIT 5
-  `
+  // Fetch total views from summaries
+  const summaryData = await prisma.summaries.aggregate({
+    where: {
+      episodes: {
+        podcasts: {
+          organization_id: user.organization_id,
+        },
+      },
+    },
+    _sum: {
+      view_count: true,
+    },
+  })
+
+  // Fetch total earnings from paid royalties
+  const royaltyData = await prisma.royalties.aggregate({
+    where: {
+      organization_id: user.organization_id,
+      payment_status: "paid",
+    },
+    _sum: {
+      calculated_amount: true,
+    },
+  })
+
+  const stats = {
+    podcast_count: podcastCount,
+    episode_count: episodeCount,
+    total_views: summaryData._sum.view_count || 0,
+    total_earnings: royaltyData._sum.calculated_amount || 0,
+  }
+
+  // Fetch podcasts
+  const podcasts = await prisma.podcasts.findMany({
+    where: { organization_id: user.organization_id },
+    orderBy: { created_at: "desc" },
+  })
+
+  // Fetch recent episodes with podcast info
+  const recentEpisodes = await prisma.episodes.findMany({
+    where: {
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+    include: {
+      podcasts: {
+        select: {
+          title: true,
+          cover_image_url: true,
+        },
+      },
+    },
+    orderBy: { created_at: "desc" },
+    take: 5,
+  })
+
+  // Map episodes to include podcast_title and podcast_cover
+  const mappedEpisodes = recentEpisodes.map((ep) => ({
+    ...ep,
+    podcast_title: ep.podcasts.title,
+    podcast_cover: ep.podcasts.cover_image_url,
+  }))
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,7 +101,7 @@ export default async function DashboardPage() {
           <p className="mt-2 text-muted-foreground">Welcome back, {user.full_name}</p>
         </div>
 
-        <DashboardStats stats={stats[0]} />
+        <DashboardStats stats={stats} />
 
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <div>
@@ -63,7 +111,7 @@ export default async function DashboardPage() {
 
           <div>
             <h2 className="mb-4 text-2xl font-semibold">Recent Episodes</h2>
-            <RecentEpisodes episodes={recentEpisodes} />
+            <RecentEpisodes episodes={mappedEpisodes} />
           </div>
         </div>
       </main>

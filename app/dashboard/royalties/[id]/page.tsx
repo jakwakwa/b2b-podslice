@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,26 +19,40 @@ export default async function RoyaltyDetailPage({
     redirect("/sign-in")
   }
 
-  const royalties = await sql`
-    SELECT * FROM royalties
-    WHERE id = ${id} AND organization_id = ${user.organization_id}
-    LIMIT 1
-  `
+  const royalty = await prisma.royalties.findFirst({
+    where: {
+      id,
+      organization_id: user.organization_id,
+    },
+  })
 
-  if (royalties.length === 0) {
+  if (!royalty) {
     redirect("/dashboard/royalties")
   }
 
-  const royalty = royalties[0]
+  const lineItems = await prisma.royalty_line_items.findMany({
+    where: { royalty_id: id },
+    include: {
+      summaries: {
+        select: {
+          summary_type: true,
+          content: true,
+          episodes: {
+            select: { title: true },
+          },
+        },
+      },
+    },
+    orderBy: { amount: "desc" },
+  })
 
-  const lineItems = await sql`
-    SELECT rli.*, s.summary_type, s.content, e.title as episode_title
-    FROM royalty_line_items rli
-    INNER JOIN summaries s ON s.id = rli.summary_id
-    INNER JOIN episodes e ON e.id = s.episode_id
-    WHERE rli.royalty_id = ${id}
-    ORDER BY rli.amount DESC
-  `
+  // Map to flatten the structure
+  const mappedLineItems = lineItems.map((item) => ({
+    ...item,
+    summary_type: item.summaries.summary_type,
+    content: item.summaries.content,
+    episode_title: item.summaries.episodes.title,
+  }))
 
   const statusColors = {
     pending: "bg-yellow-500/10 text-yellow-500",
@@ -120,7 +134,7 @@ export default async function RoyaltyDetailPage({
         <div>
           <h2 className="mb-4 text-2xl font-semibold">Breakdown by Content</h2>
           <div className="space-y-4">
-            {lineItems.map((item) => (
+            {mappedLineItems.map((item) => (
               <Card key={item.id} className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

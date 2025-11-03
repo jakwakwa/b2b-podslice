@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -13,15 +13,23 @@ export default async function LicensingPage() {
     redirect("/sign-in")
   }
 
-  const licenses = await sql`
-    SELECT l.*, u.full_name as signed_by_name
-    FROM licenses l
-    LEFT JOIN users u ON u.id = l.signed_by_user_id
-    WHERE l.organization_id = ${user.organization_id}
-    ORDER BY l.created_at DESC
-  `
+  const licenses = await prisma.licenses.findMany({
+    where: { organization_id: user.organization_id },
+    include: {
+      users: {
+        select: { full_name: true },
+      },
+    },
+    orderBy: { created_at: "desc" },
+  })
 
-  const activeLicense = licenses.find((l) => l.is_active)
+  // Map to add signed_by_name
+  const mappedLicenses = licenses.map((l) => ({
+    ...l,
+    signed_by_name: l.users?.full_name,
+  }))
+
+  const activeLicense = mappedLicenses.find((l) => l.is_active)
 
   return (
     <div className="min-h-screen bg-background">

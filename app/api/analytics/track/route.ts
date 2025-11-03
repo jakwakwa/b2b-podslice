@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,38 +16,28 @@ export async function POST(request: NextRequest) {
     const referrer = request.headers.get("referer")
 
     // Insert analytics event
-    await sql`
-      INSERT INTO analytics_events (
-        summary_id,
-        event_type,
-        metadata,
-        ip_address,
-        user_agent,
-        referrer
-      )
-      VALUES (
-        ${summaryId},
-        ${eventType},
-        ${JSON.stringify(metadata || {})},
-        ${ip},
-        ${userAgent},
-        ${referrer}
-      )
-    `
+    await prisma.analytics_events.create({
+      data: {
+        summary_id: summaryId,
+        event_type: eventType,
+        metadata: metadata || {},
+        ip_address: ip,
+        user_agent: userAgent,
+        referrer: referrer,
+      },
+    })
 
     // Update summary counters
     if (eventType === "view") {
-      await sql`
-        UPDATE summaries 
-        SET view_count = view_count + 1
-        WHERE id = ${summaryId}
-      `
+      await prisma.summaries.update({
+        where: { id: summaryId },
+        data: { view_count: { increment: 1 } },
+      })
     } else if (eventType === "share") {
-      await sql`
-        UPDATE summaries 
-        SET share_count = share_count + 1
-        WHERE id = ${summaryId}
-      `
+      await prisma.summaries.update({
+        where: { id: summaryId },
+        data: { share_count: { increment: 1 } },
+      })
     }
 
     return Response.json({ success: true })

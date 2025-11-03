@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { sql } from "@/lib/db"
+import prisma from "@/lib/prisma"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,30 +15,45 @@ export default async function RoyaltiesPage() {
     redirect("/sign-in")
   }
 
-  const royalties = await sql`
-    SELECT * FROM royalties 
-    WHERE organization_id = ${user.organization_id}
-    ORDER BY period_start DESC
-  `
+  const royalties = await prisma.royalties.findMany({
+    where: { organization_id: user.organization_id },
+    orderBy: { period_start: "desc" },
+  })
 
-  const currentPeriod = await sql`
-    SELECT 
-      COALESCE(SUM(view_count), 0) as total_views,
-      COALESCE(SUM(share_count), 0) as total_shares
-    FROM summaries s
-    INNER JOIN episodes e ON e.id = s.episode_id
-    INNER JOIN podcasts p ON p.id = e.podcast_id
-    WHERE p.organization_id = ${user.organization_id}
-      AND s.created_at >= DATE_TRUNC('month', CURRENT_DATE)
-  `
+  // Get current month start date
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  // Fetch current period stats
+  const summaryData = await prisma.summaries.aggregate({
+    where: {
+      episodes: {
+        podcasts: {
+          organization_id: user.organization_id,
+        },
+      },
+      created_at: {
+        gte: monthStart,
+      },
+    },
+    _sum: {
+      view_count: true,
+      share_count: true,
+    },
+  })
+
+  const currentPeriod = {
+    total_views: summaryData._sum.view_count || 0,
+    total_shares: summaryData._sum.share_count || 0,
+  }
 
   const totalEarnings = royalties
     .filter((r) => r.payment_status === "paid")
-    .reduce((sum, r) => sum + Number(r.calculated_amount), 0)
+    .reduce((sum, r) => sum + Number(r.calculated_amount || 0), 0)
 
   const pendingEarnings = royalties
     .filter((r) => r.payment_status === "pending")
-    .reduce((sum, r) => sum + Number(r.calculated_amount), 0)
+    .reduce((sum, r) => sum + Number(r.calculated_amount || 0), 0)
 
   const statusColors = {
     pending: "bg-yellow-500/10 text-yellow-500",
@@ -72,8 +87,8 @@ export default async function RoyaltiesPage() {
 
           <Card className="p-6">
             <p className="text-sm font-medium text-muted-foreground">Current Period</p>
-            <p className="mt-2 text-lg font-semibold">{currentPeriod[0].total_views} views</p>
-            <p className="mt-1 text-lg font-semibold">{currentPeriod[0].total_shares} shares</p>
+            <p className="mt-2 text-lg font-semibold">{currentPeriod.total_views} views</p>
+            <p className="mt-1 text-lg font-semibold">{currentPeriod.total_shares} shares</p>
           </Card>
         </div>
 
