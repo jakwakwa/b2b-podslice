@@ -25,29 +25,15 @@ export async function GET(_: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const user = await prisma.users.create({
-      data: {
-        email: body.email,
-        full_name: body.name || body.full_name,
-        password_hash: body.password_hash || "temp_hash", // This should be properly hashed in production
-      },
-      select: {
-        id: true,
-        email: true,
-        full_name: true,
-        created_at: true,
-        updated_at: true,
-      },
-    })
-    return NextResponse.json(user, { status: 201 })
-  } catch (error) {
-    console.error("Error creating user:", error)
-    return NextResponse.json(
-      { error: "Failed to create user" },
-      { status: 500 }
-    )
-  }
-}
+// ⚠️  SECURITY: POST endpoint removed
+// User creation must use the secure signUp() server action in app/actions/auth.ts
+// which properly:
+// - Hashes passwords with PBKDF2-SHA512
+// - Sends email verification tokens
+// - Creates organizations and sets roles
+// - Prevents unauthenticated account creation
+//
+// This endpoint was creating users with unhashed passwords ("temp_hash" fallback)
+// and bypassing all security controls. Client code should use:
+// import { signUp } from "@/app/actions/auth"
+// const result = await signUp({ email, password, fullName, organizationName })
