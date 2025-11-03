@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless"
 
 if (!process.env.NEON_NEON_DATABASE_URL) {
-  throw new Error("NEON_DATABASE_URL environment variable is not set")
+  throw new Error("NEON_DATABASE_URL environment variable is not set. Please add it to your environment variables.")
 }
 
 export const sql = neon(process.env.NEON_DATABASE_URL)
@@ -12,6 +12,8 @@ export async function initializeDatabase() {
   if (isInitialized) return
 
   try {
+    console.log("[v0] Initializing database tables...")
+
     // Create all tables with IF NOT EXISTS
     await sql`
       -- Organizations (Podcast Networks/Creators)
@@ -23,8 +25,10 @@ export async function initializeDatabase() {
         website TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Users with role-based access and authentication
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -37,8 +41,10 @@ export async function initializeDatabase() {
         email_verified BOOLEAN DEFAULT false,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Email verification tokens
       CREATE TABLE IF NOT EXISTS email_verification_tokens (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -46,8 +52,10 @@ export async function initializeDatabase() {
         token TEXT UNIQUE NOT NULL,
         expires_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Session tokens for authentication
       CREATE TABLE IF NOT EXISTS sessions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -55,8 +63,10 @@ export async function initializeDatabase() {
         token TEXT UNIQUE NOT NULL,
         expires_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Password reset tokens
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -65,8 +75,10 @@ export async function initializeDatabase() {
         expires_at TIMESTAMPTZ NOT NULL,
         used_at TIMESTAMPTZ,
         created_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Podcasts
       CREATE TABLE IF NOT EXISTS podcasts (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -82,8 +94,10 @@ export async function initializeDatabase() {
         is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Episodes
       CREATE TABLE IF NOT EXISTS episodes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -100,8 +114,10 @@ export async function initializeDatabase() {
         processing_status TEXT DEFAULT 'pending' CHECK (processing_status IN ('pending', 'processing', 'completed', 'failed')),
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- AI-generated summaries
       CREATE TABLE IF NOT EXISTS summaries (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -113,8 +129,10 @@ export async function initializeDatabase() {
         share_count INTEGER DEFAULT 0,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Licensing agreements
       CREATE TABLE IF NOT EXISTS licenses (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -128,8 +146,10 @@ export async function initializeDatabase() {
         custom_terms JSONB DEFAULT '{}',
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Royalty tracking
       CREATE TABLE IF NOT EXISTS royalties (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -144,8 +164,10 @@ export async function initializeDatabase() {
         stripe_payout_id TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Royalty line items (detailed breakdown)
       CREATE TABLE IF NOT EXISTS royalty_line_items (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -155,8 +177,10 @@ export async function initializeDatabase() {
         shares INTEGER DEFAULT 0,
         amount DECIMAL(10, 2) DEFAULT 0.00,
         created_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Analytics events
       CREATE TABLE IF NOT EXISTS analytics_events (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -167,8 +191,10 @@ export async function initializeDatabase() {
         user_agent TEXT,
         referrer TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
+    `
 
+    await sql`
       -- Audio clips
       CREATE TABLE IF NOT EXISTS clips (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -180,29 +206,27 @@ export async function initializeDatabase() {
         processing_status TEXT DEFAULT 'pending' CHECK (processing_status IN ('pending', 'processing', 'completed', 'failed')),
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
-      );
+      )
     `
 
     // Create indexes
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_users_organization ON users(organization_id);
-      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-      CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
-      CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
-      CREATE INDEX IF NOT EXISTS idx_verification_tokens_user ON email_verification_tokens(user_id);
-      CREATE INDEX IF NOT EXISTS idx_verification_tokens_token ON email_verification_tokens(token);
-      CREATE INDEX IF NOT EXISTS idx_podcasts_organization ON podcasts(organization_id);
-      CREATE INDEX IF NOT EXISTS idx_episodes_podcast ON episodes(podcast_id);
-      CREATE INDEX IF NOT EXISTS idx_episodes_status ON episodes(processing_status);
-      CREATE INDEX IF NOT EXISTS idx_summaries_episode ON summaries(episode_id);
-      CREATE INDEX IF NOT EXISTS idx_summaries_type ON summaries(summary_type);
-      CREATE INDEX IF NOT EXISTS idx_licenses_organization ON licenses(organization_id);
-      CREATE INDEX IF NOT EXISTS idx_royalties_organization ON royalties(organization_id);
-      CREATE INDEX IF NOT EXISTS idx_royalties_status ON royalties(payment_status);
-      CREATE INDEX IF NOT EXISTS idx_analytics_summary ON analytics_events(summary_id);
-      CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at);
-      CREATE INDEX IF NOT EXISTS idx_clips_episode ON clips(episode_id);
-    `
+    await sql`CREATE INDEX IF NOT EXISTS idx_users_organization ON users(organization_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_verification_tokens_user ON email_verification_tokens(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_verification_tokens_token ON email_verification_tokens(token)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_podcasts_organization ON podcasts(organization_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_episodes_podcast ON episodes(podcast_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_episodes_status ON episodes(processing_status)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_summaries_episode ON summaries(episode_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_summaries_type ON summaries(summary_type)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_licenses_organization ON licenses(organization_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_royalties_organization ON royalties(organization_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_royalties_status ON royalties(payment_status)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_analytics_summary ON analytics_events(summary_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_clips_episode ON clips(episode_id)`
 
     isInitialized = true
     console.log("[v0] Database initialized successfully")
