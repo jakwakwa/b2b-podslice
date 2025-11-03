@@ -17,6 +17,6 @@ export async function verifyPassword(password: string, hashedPassword: string): 
   return hash.toString("hex") === originalHash
 }
 
-export function generateToken(): string {
+export async function generateToken(): Promise<string> {
   return randomBytes(32).toString("hex")
 }

@@ -74,7 +74,7 @@ export async function signUp(data: {
   const userId = users[0].id
 
   // Generate verification token
-  const token = generateToken()
+  const token = await generateToken()
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
   await sql`
@@ -132,7 +132,7 @@ export async function requestPasswordReset(email: string) {
   const userId = users[0].id
 
   // Generate reset token
-  const token = generateToken()
+  const token = await generateToken()
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
   await sql`
@@ -203,7 +203,7 @@ export async function resendVerificationEmail(email: string) {
   `
 
   // Generate new token
-  const token = generateToken()
+  const token = await generateToken()
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
   await sql`
