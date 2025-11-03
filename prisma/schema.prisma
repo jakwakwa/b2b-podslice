@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model analytics_events {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  summary_id String    @db.Uuid
+  event_type String
+  metadata   Json?     @default("{}")
+  ip_address String?
+  user_agent String?
+  referrer   String?
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  summaries  summaries @relation(fields: [summary_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([created_at], map: "idx_analytics_created")
+  @@index([summary_id], map: "idx_analytics_summary")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model clips {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  episode_id         String    @db.Uuid
+  title              String
+  start_time_seconds Int
+  end_time_seconds   Int
+  audio_url          String?
+  processing_status  String?   @default("pending")
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
+  episodes           episodes  @relation(fields: [episode_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([episode_id], map: "idx_clips_episode")
+}
+
+model email_verification_tokens {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token      String    @unique
+  expires_at DateTime  @db.Timestamptz(6)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([token], map: "idx_verification_tokens_token")
+  @@index([user_id], map: "idx_verification_tokens_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model episodes {
+  id                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  podcast_id        String      @db.Uuid
+  title             String
+  description       String?
+  audio_url         String
+  duration_seconds  Int?
+  file_size_bytes   BigInt?
+  episode_number    Int?
+  season_number     Int?
+  published_at      DateTime?   @db.Timestamptz(6)
+  transcript        String?
+  processing_status String?     @default("pending")
+  created_at        DateTime?   @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime?   @default(now()) @db.Timestamptz(6)
+  clips             clips[]
+  podcasts          podcasts    @relation(fields: [podcast_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  summaries         summaries[]
+
+  @@index([podcast_id], map: "idx_episodes_podcast")
+  @@index([processing_status], map: "idx_episodes_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model licenses {
+  id                String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id   String        @db.Uuid
+  license_type      String
+  terms_version     String
+  signed_at         DateTime?     @default(now()) @db.Timestamptz(6)
+  signed_by_user_id String?       @db.Uuid
+  is_active         Boolean?      @default(true)
+  tdm_opt_out       Boolean?      @default(false)
+  custom_terms      Json?         @default("{}")
+  created_at        DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime?     @default(now()) @db.Timestamptz(6)
+  organizations     organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users             users?        @relation(fields: [signed_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([organization_id], map: "idx_licenses_organization")
+}
+
+model organizations {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  slug       String      @unique
+  logo_url   String?
+  website    String?
+  created_at DateTime?   @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?   @default(now()) @db.Timestamptz(6)
+  licenses   licenses[]
+  podcasts   podcasts[]
+  royalties  royalties[]
+  users      users[]
+}
+
+model password_reset_tokens {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token      String    @unique
+  expires_at DateTime  @db.Timestamptz(6)
+  used_at    DateTime? @db.Timestamptz(6)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model podcasts {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String        @db.Uuid
+  title           String
+  description     String?
+  cover_image_url String?
+  rss_feed_url    String?
+  website_url     String?
+  author          String?
+  category        String?
+  language        String?       @default("en")
+  is_active       Boolean?      @default(true)
+  created_at      DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?     @default(now()) @db.Timestamptz(6)
+  episodes        episodes[]
+  organizations   organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([organization_id], map: "idx_podcasts_organization")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model royalties {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id    String               @db.Uuid
+  period_start       DateTime             @db.Date
+  period_end         DateTime             @db.Date
+  total_views        Int?                 @default(0)
+  total_shares       Int?                 @default(0)
+  calculated_amount  Decimal?             @default(0.00) @db.Decimal(10, 2)
+  payment_status     String?              @default("pending")
+  paid_at            DateTime?            @db.Timestamptz(6)
+  stripe_payout_id   String?
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  organizations      organizations        @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  royalty_line_items royalty_line_items[]
+
+  @@index([organization_id], map: "idx_royalties_organization")
+  @@index([payment_status], map: "idx_royalties_status")
+}
+
+model royalty_line_items {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  royalty_id String    @db.Uuid
+  summary_id String    @db.Uuid
+  views      Int?      @default(0)
+  shares     Int?      @default(0)
+  amount     Decimal?  @default(0.00) @db.Decimal(10, 2)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  royalties  royalties @relation(fields: [royalty_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  summaries  summaries @relation(fields: [summary_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model sessions {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String    @db.Uuid
+  token      String    @unique
+  expires_at DateTime  @db.Timestamptz(6)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([token], map: "idx_sessions_token")
+  @@index([user_id], map: "idx_sessions_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model summaries {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  episode_id         String               @db.Uuid
+  summary_type       String
+  content            String
+  metadata           Json?                @default("{}")
+  view_count         Int?                 @default(0)
+  share_count        Int?                 @default(0)
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  analytics_events   analytics_events[]
+  royalty_line_items royalty_line_items[]
+  episodes           episodes             @relation(fields: [episode_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([episode_id], map: "idx_summaries_episode")
+  @@index([summary_type], map: "idx_summaries_type")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id                        String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                     String                      @unique
+  full_name                 String
+  password_hash             String
+  avatar_url                String?
+  role                      String                      @default("creator")
+  organization_id           String?                     @db.Uuid
+  email_verified            Boolean?                    @default(false)
+  created_at                DateTime?                   @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime?                   @default(now()) @db.Timestamptz(6)
+  email_verified_at         DateTime?                   @db.Timestamptz(6)
+  email_verification_tokens email_verification_tokens[]
+  licenses                  licenses[]
+  password_reset_tokens     password_reset_tokens[]
+  sessions                  sessions[]
+  organizations             organizations?              @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([email], map: "idx_users_email")
+  @@index([organization_id], map: "idx_users_organization")
+}
