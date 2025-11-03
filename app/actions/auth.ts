@@ -255,19 +255,31 @@ export async function resetPassword(token: string, newPassword: string) {
 }
 
 export async function resendVerificationEmail(email: string) {
+  // Always return a generic success to avoid email enumeration
   const users = await sql`
     SELECT id, email_verified FROM users WHERE email = ${email} LIMIT 1
   `
 
   if (users.length === 0) {
-    return { error: "User not found" }
+    return { success: true, message: "If an account exists, a verification email has been sent." }
   }
 
-  if (users[0].email_verified) {
-    return { error: "Email already verified" }
+  const { id: userId, email_verified: isVerified } = users[0]
+
+  if (isVerified) {
+    return { success: true, message: "If an account exists, a verification email has been sent." }
   }
 
-  const userId = users[0].id
+  // Simple rate limit: avoid resending if a token was created within last 5 minutes
+  const recent = await sql`
+    SELECT id FROM email_verification_tokens 
+    WHERE user_id = ${userId} AND created_at > NOW() - INTERVAL '5 minutes'
+    LIMIT 1
+  `
+
+  if (recent.length > 0) {
+    return { success: true, message: "If an account exists, a verification email has been sent." }
+  }
 
   // Delete old tokens
   await sql`
@@ -286,7 +298,7 @@ export async function resendVerificationEmail(email: string) {
   // Send verification email
   await sendVerificationEmail(email, token)
 
-  return { success: true, message: "Verification email sent!" }
+  return { success: true, message: "If an account exists, a verification email has been sent." }
 }
 
 export async function signOut() {

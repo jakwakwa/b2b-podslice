@@ -49,6 +49,9 @@ export async function initializeDatabase() {
       )
     `
 
+    // Ensure optional columns exist (for idempotency / local dev)
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ`
+
     await sql`
       -- Email verification tokens
       CREATE TABLE IF NOT EXISTS email_verification_tokens (

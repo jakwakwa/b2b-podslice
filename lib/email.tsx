@@ -6,50 +6,76 @@
 export async function sendVerificationEmail(email: string, token: string) {
   const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/verify-email?token=${token}`
 
-  // TODO: Replace with actual email service integration
-  console.log(`[v0] Verification email for ${email}:`)
-  console.log(`[v0] Verification URL: ${verificationUrl}`)
+  const apiKey = process.env.RESEND_API_KEY
+  const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.com>"
 
-  // Example with Resend (uncomment when ready):
-  // const { Resend } = await import('resend')
-  // const resend = new Resend(process.env.RESEND_API_KEY)
-  // await resend.emails.send({
-  //   from: 'Podslice <noreply@podslice.com>',
-  //   to: email,
-  //   subject: 'Verify your email address',
-  //   html: `
-  //     <h1>Welcome to Podslice!</h1>
-  //     <p>Please verify your email address by clicking the link below:</p>
-  //     <a href="${verificationUrl}">Verify Email</a>
-  //     <p>This link will expire in 24 hours.</p>
-  //   `
-  // })
+  try {
+    if (!apiKey) {
+      console.warn("[v0] RESEND_API_KEY not set; logging verification link instead.")
+      console.log(`[v0] Verification email for ${email}:`)
+      console.log(`[v0] Verification URL: ${verificationUrl}`)
+      return { success: true }
+    }
 
-  return { success: true }
+    const { Resend } = await import("resend")
+    const resend = new Resend(apiKey)
+
+    await resend.emails.send({
+      from,
+      to: email,
+      subject: "Verify your email address",
+      html: `
+        <div style="font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a">
+          <h1 style="margin:0 0 16px;font-size:20px">Welcome to Podslice!</h1>
+          <p style="margin:0 0 16px">Please verify your email address by clicking the link below:</p>
+          <p style="margin:0 0 16px"><a href="${verificationUrl}" style="color:#2563eb;text-decoration:underline">Verify Email</a></p>
+          <p style="margin:0 0 0;color:#475569;font-size:12px">This link will expire in 24 hours.</p>
+        </div>
+      `,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Failed to send verification email via Resend:", error)
+    return { success: true }
+  }
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${token}`
 
-  // TODO: Replace with actual email service integration
-  console.log(`[v0] Password reset email for ${email}:`)
-  console.log(`[v0] Reset URL: ${resetUrl}`)
+  const apiKey = process.env.RESEND_API_KEY
+  const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.com>"
 
-  // Example with Resend (uncomment when ready):
-  // const { Resend } = await import('resend')
-  // const resend = new Resend(process.env.RESEND_API_KEY)
-  // await resend.emails.send({
-  //   from: 'Podslice <noreply@podslice.com>',
-  //   to: email,
-  //   subject: 'Reset your password',
-  //   html: `
-  //     <h1>Reset Your Password</h1>
-  //     <p>Click the link below to reset your password:</p>
-  //     <a href="${resetUrl}">Reset Password</a>
-  //     <p>This link will expire in 1 hour.</p>
-  //     <p>If you didn't request this, please ignore this email.</p>
-  //   `
-  // })
+  try {
+    if (!apiKey) {
+      console.warn("[v0] RESEND_API_KEY not set; logging password reset link instead.")
+      console.log(`[v0] Password reset email for ${email}:`)
+      console.log(`[v0] Reset URL: ${resetUrl}`)
+      return { success: true }
+    }
 
-  return { success: true }
+    const { Resend } = await import("resend")
+    const resend = new Resend(apiKey)
+
+    await resend.emails.send({
+      from,
+      to: email,
+      subject: "Reset your password",
+      html: `
+        <div style=\"font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a\">
+          <h1 style=\"margin:0 0 16px;font-size:20px\">Reset Your Password</h1>
+          <p style=\"margin:0 0 16px\">Click the link below to reset your password:</p>
+          <p style=\"margin:0 0 16px\"><a href=\"${resetUrl}\" style=\"color:#2563eb;text-decoration:underline\">Reset Password</a></p>
+          <p style=\"margin:0 0 0;color:#475569;font-size:12px\">This link will expire in 1 hour.</p>
+          <p style=\"margin:8px 0 0;color:#475569;font-size:12px\">If you didn't request this, please ignore this email.</p>
+        </div>
+      `,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Failed to send password reset email via Resend:", error)
+    return { success: true }
+  }
 }
