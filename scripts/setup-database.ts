@@ -2,7 +2,7 @@ import { neon } from "@neondatabase/serverless"
 import { readFileSync } from "fs"
 import { join } from "path"
 
-const sql = neon(process.env.NEON_NEON_DATABASE_URL!)
+const sql = neon(process.env.NEON_DATABASE_URL!)
 
 async function setupDatabase() {
   console.log("[v0] Starting database setup...")

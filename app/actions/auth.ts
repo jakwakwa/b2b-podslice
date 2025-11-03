@@ -68,30 +68,39 @@ async function generateToken(): Promise<string> {
 }
 
 export async function signIn(email: string, password: string) {
-  const users = await sql`
-    SELECT * FROM users WHERE email = ${email} LIMIT 1
-  `
+  try {
+    const users = await sql`
+      SELECT * FROM users WHERE email = ${email} LIMIT 1
+    `
 
-  if (users.length === 0) {
-    return { error: "Invalid credentials" }
-  }
-
-  const user = users[0]
-
-  // Check if user has a password hash (for backward compatibility)
-  if (user.password_hash) {
-    const isValid = await verifyPassword(password, user.password_hash)
-    if (!isValid) {
+    if (users.length === 0) {
       return { error: "Invalid credentials" }
     }
-  }
 
-  // Check if email is verified
-  if (!user.email_verified) {
-    return { error: "Please verify your email address before signing in" }
-  }
+    const user = users[0]
 
-  await setCurrentUser(user.id)
+    // Check if user has a password hash (for backward compatibility)
+    if (user.password_hash) {
+      const isValid = await verifyPassword(password, user.password_hash)
+      if (!isValid) {
+        return { error: "Invalid credentials" }
+      }
+    }
+
+    // Check if email is verified
+    if (!user.email_verified) {
+      return { error: "Please verify your email address before signing in" }
+    }
+
+    await setCurrentUser(user.id)
+  } catch (error) {
+    console.error("[v0] Sign in error:", error)
+    if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+      throw error // Re-throw redirect errors
+    }
+    return { error: "An error occurred during sign in. Please try again." }
+  }
+  
   redirect("/dashboard")
 }
 
