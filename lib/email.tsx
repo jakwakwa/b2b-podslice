@@ -7,7 +7,7 @@ export async function sendVerificationEmail(email: string, token: string) {
   const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/verify-email?token=${token}`
 
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.com>"
+  const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.ai>"
 
   try {
     if (!apiKey) {
@@ -45,7 +45,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${token}`
 
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.com>"
+  const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.ai>"
 
   try {
     if (!apiKey) {
