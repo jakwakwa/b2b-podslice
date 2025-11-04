@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
-import type { Organization, Royalty } from "@/lib/db.types";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/royalties";
 
@@ -76,7 +75,7 @@ export default async function RoyaltiesPage() {
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        paid: "bg-green-500/10 text-green-500",
+        paid: "bg-green-500/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 

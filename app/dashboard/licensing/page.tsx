@@ -74,7 +74,7 @@ export default async function LicensingPage() {
                                             </h3>
                                             <Badge
                                                 variant="secondary"
-                                                className="bg-green-500/10 text-green-500">
+                                                className="bg-green-500/10 text-teal-500">
                                                 Active
                                             </Badge>
                                         </div>
