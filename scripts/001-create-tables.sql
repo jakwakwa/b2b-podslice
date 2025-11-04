@@ -5,6 +5,10 @@ CREATE TABLE IF NOT EXISTS organizations (
   slug TEXT UNIQUE NOT NULL,
   logo_url TEXT,
   website TEXT,
+  payoneer_payee_id TEXT UNIQUE,
+  payout_status TEXT DEFAULT 'PENDING',
+  tax_form_status TEXT DEFAULT 'NONE',
+  content_source_id TEXT UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -115,7 +119,7 @@ CREATE TABLE IF NOT EXISTS royalties (
   calculated_amount DECIMAL(10, 2) DEFAULT 0.00,
   payment_status TEXT DEFAULT 'pending' CHECK (payment_status IN ('pending', 'processing', 'paid', 'failed')),
   paid_at TIMESTAMPTZ,
-  stripe_payout_id TEXT,
+  payoneer_transaction_id TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );

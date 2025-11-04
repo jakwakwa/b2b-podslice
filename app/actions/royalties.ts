@@ -132,19 +132,20 @@ export async function processPayment(royaltyId: string) {
 			data: { payment_status: "processing" },
 		});
 
-		// Simulate Paddle payout
-		const stripePayoutId = `po_${Date.now()}`;
+		// In production, this will integrate with Payoneer API.
+		// For now, we generate a transaction reference.
+		const payoneerTransactionId = `txn_${Date.now()}`;
 
 		await prisma.royalties.update({
 			where: { id: royaltyId },
 			data: {
 				payment_status: "paid",
 				paid_at: new Date(),
-				stripe_payout_id: stripePayoutId,
+				payoneer_transaction_id: payoneerTransactionId,
 			},
 		});
 
-		return { success: true, payoutId: stripePayoutId };
+		return { success: true, payoutId: payoneerTransactionId };
 	} catch (error) {
 		console.error("[v0] Process payment error:", error);
 

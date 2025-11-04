@@ -76,7 +76,7 @@ export default async function RoyaltyDetailPage({
             <DashboardHeader
                 user={{
                     ...user,
-                    organization_name: (user as Organization).name,
+                    organization_name: user.organization_name ?? "",
                     id: user.id,
                     email: user.email,
                     full_name: user.full_name,
@@ -148,9 +148,9 @@ export default async function RoyaltyDetailPage({
                             <p className="text-sm text-muted-foreground">
                                 Paid on {new Date(royalty.paid_at).toLocaleDateString()}
                             </p>
-                            {royalty.stripe_payout_id && (
+                            {royalty.payoneer_transaction_id && (
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    Payout ID: {royalty.stripe_payout_id}
+                                    Transaction ID: {royalty.payoneer_transaction_id}
                                 </p>
                             )}
                         </div>

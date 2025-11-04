@@ -4,7 +4,6 @@ import { LicenseForm } from "@/components/license-form";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
-import type { Organization } from "@/lib/db";
 import prisma from "@/lib/prisma";
 
 export default async function LicensingPage() {
@@ -37,7 +36,7 @@ export default async function LicensingPage() {
             <DashboardHeader
                 user={{
                     ...user,
-                    organization_name: (user as Organization).name,
+                    organization_name: user.organization_name ?? "",
                     id: user.id,
                     email: user.email,
                     full_name: user.full_name,

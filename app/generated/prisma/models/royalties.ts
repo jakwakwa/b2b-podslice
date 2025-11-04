@@ -47,7 +47,7 @@ export type RoyaltiesMinAggregateOutputType = {
   calculated_amount: runtime.Decimal | null
   payment_status: string | null
   paid_at: Date | null
-  stripe_payout_id: string | null
+  payoneer_transaction_id: string | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -62,7 +62,7 @@ export type RoyaltiesMaxAggregateOutputType = {
   calculated_amount: runtime.Decimal | null
   payment_status: string | null
   paid_at: Date | null
-  stripe_payout_id: string | null
+  payoneer_transaction_id: string | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -77,7 +77,7 @@ export type RoyaltiesCountAggregateOutputType = {
   calculated_amount: number
   payment_status: number
   paid_at: number
-  stripe_payout_id: number
+  payoneer_transaction_id: number
   created_at: number
   updated_at: number
   _all: number
@@ -106,7 +106,7 @@ export type RoyaltiesMinAggregateInputType = {
   calculated_amount?: true
   payment_status?: true
   paid_at?: true
-  stripe_payout_id?: true
+  payoneer_transaction_id?: true
   created_at?: true
   updated_at?: true
 }
@@ -121,7 +121,7 @@ export type RoyaltiesMaxAggregateInputType = {
   calculated_amount?: true
   payment_status?: true
   paid_at?: true
-  stripe_payout_id?: true
+  payoneer_transaction_id?: true
   created_at?: true
   updated_at?: true
 }
@@ -136,7 +136,7 @@ export type RoyaltiesCountAggregateInputType = {
   calculated_amount?: true
   payment_status?: true
   paid_at?: true
-  stripe_payout_id?: true
+  payoneer_transaction_id?: true
   created_at?: true
   updated_at?: true
   _all?: true
@@ -238,7 +238,7 @@ export type RoyaltiesGroupByOutputType = {
   calculated_amount: runtime.Decimal | null
   payment_status: string | null
   paid_at: Date | null
-  stripe_payout_id: string | null
+  payoneer_transaction_id: string | null
   created_at: Date | null
   updated_at: Date | null
   _count: RoyaltiesCountAggregateOutputType | null
@@ -276,7 +276,7 @@ export type royaltiesWhereInput = {
   calculated_amount?: Prisma.DecimalNullableFilter<"royalties"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.StringNullableFilter<"royalties"> | string | null
   paid_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
-  stripe_payout_id?: Prisma.StringNullableFilter<"royalties"> | string | null
+  payoneer_transaction_id?: Prisma.StringNullableFilter<"royalties"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
   organizations?: Prisma.XOR<Prisma.OrganizationsScalarRelationFilter, Prisma.organizationsWhereInput>
@@ -293,7 +293,7 @@ export type royaltiesOrderByWithRelationInput = {
   calculated_amount?: Prisma.SortOrderInput | Prisma.SortOrder
   payment_status?: Prisma.SortOrderInput | Prisma.SortOrder
   paid_at?: Prisma.SortOrderInput | Prisma.SortOrder
-  stripe_payout_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  payoneer_transaction_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   organizations?: Prisma.organizationsOrderByWithRelationInput
@@ -313,7 +313,7 @@ export type royaltiesWhereUniqueInput = Prisma.AtLeast<{
   calculated_amount?: Prisma.DecimalNullableFilter<"royalties"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.StringNullableFilter<"royalties"> | string | null
   paid_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
-  stripe_payout_id?: Prisma.StringNullableFilter<"royalties"> | string | null
+  payoneer_transaction_id?: Prisma.StringNullableFilter<"royalties"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
   organizations?: Prisma.XOR<Prisma.OrganizationsScalarRelationFilter, Prisma.organizationsWhereInput>
@@ -330,7 +330,7 @@ export type royaltiesOrderByWithAggregationInput = {
   calculated_amount?: Prisma.SortOrderInput | Prisma.SortOrder
   payment_status?: Prisma.SortOrderInput | Prisma.SortOrder
   paid_at?: Prisma.SortOrderInput | Prisma.SortOrder
-  stripe_payout_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  payoneer_transaction_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.royaltiesCountOrderByAggregateInput
@@ -353,7 +353,7 @@ export type royaltiesScalarWhereWithAggregatesInput = {
   calculated_amount?: Prisma.DecimalNullableWithAggregatesFilter<"royalties"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.StringNullableWithAggregatesFilter<"royalties"> | string | null
   paid_at?: Prisma.DateTimeNullableWithAggregatesFilter<"royalties"> | Date | string | null
-  stripe_payout_id?: Prisma.StringNullableWithAggregatesFilter<"royalties"> | string | null
+  payoneer_transaction_id?: Prisma.StringNullableWithAggregatesFilter<"royalties"> | string | null
   created_at?: Prisma.DateTimeNullableWithAggregatesFilter<"royalties"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"royalties"> | Date | string | null
 }
@@ -367,7 +367,7 @@ export type royaltiesCreateInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
   organizations: Prisma.organizationsCreateNestedOneWithoutRoyaltiesInput
@@ -384,7 +384,7 @@ export type royaltiesUncheckedCreateInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedCreateNestedManyWithoutRoyaltiesInput
@@ -399,7 +399,7 @@ export type royaltiesUpdateInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   organizations?: Prisma.organizationsUpdateOneRequiredWithoutRoyaltiesNestedInput
@@ -416,7 +416,7 @@ export type royaltiesUncheckedUpdateInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedUpdateManyWithoutRoyaltiesNestedInput
@@ -432,7 +432,7 @@ export type royaltiesCreateManyInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
 }
@@ -446,7 +446,7 @@ export type royaltiesUpdateManyMutationInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -461,7 +461,7 @@ export type royaltiesUncheckedUpdateManyInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -486,7 +486,7 @@ export type royaltiesCountOrderByAggregateInput = {
   calculated_amount?: Prisma.SortOrder
   payment_status?: Prisma.SortOrder
   paid_at?: Prisma.SortOrder
-  stripe_payout_id?: Prisma.SortOrder
+  payoneer_transaction_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -507,7 +507,7 @@ export type royaltiesMaxOrderByAggregateInput = {
   calculated_amount?: Prisma.SortOrder
   payment_status?: Prisma.SortOrder
   paid_at?: Prisma.SortOrder
-  stripe_payout_id?: Prisma.SortOrder
+  payoneer_transaction_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -522,7 +522,7 @@ export type royaltiesMinOrderByAggregateInput = {
   calculated_amount?: Prisma.SortOrder
   payment_status?: Prisma.SortOrder
   paid_at?: Prisma.SortOrder
-  stripe_payout_id?: Prisma.SortOrder
+  payoneer_transaction_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -611,7 +611,7 @@ export type royaltiesCreateWithoutOrganizationsInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
   royalty_line_items?: Prisma.royalty_line_itemsCreateNestedManyWithoutRoyaltiesInput
@@ -626,7 +626,7 @@ export type royaltiesUncheckedCreateWithoutOrganizationsInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedCreateNestedManyWithoutRoyaltiesInput
@@ -671,7 +671,7 @@ export type royaltiesScalarWhereInput = {
   calculated_amount?: Prisma.DecimalNullableFilter<"royalties"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.StringNullableFilter<"royalties"> | string | null
   paid_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
-  stripe_payout_id?: Prisma.StringNullableFilter<"royalties"> | string | null
+  payoneer_transaction_id?: Prisma.StringNullableFilter<"royalties"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"royalties"> | Date | string | null
 }
@@ -685,7 +685,7 @@ export type royaltiesCreateWithoutRoyalty_line_itemsInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
   organizations: Prisma.organizationsCreateNestedOneWithoutRoyaltiesInput
@@ -701,7 +701,7 @@ export type royaltiesUncheckedCreateWithoutRoyalty_line_itemsInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
 }
@@ -731,7 +731,7 @@ export type royaltiesUpdateWithoutRoyalty_line_itemsInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   organizations?: Prisma.organizationsUpdateOneRequiredWithoutRoyaltiesNestedInput
@@ -747,7 +747,7 @@ export type royaltiesUncheckedUpdateWithoutRoyalty_line_itemsInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -761,7 +761,7 @@ export type royaltiesCreateManyOrganizationsInput = {
   calculated_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: string | null
   paid_at?: Date | string | null
-  stripe_payout_id?: string | null
+  payoneer_transaction_id?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
 }
@@ -775,7 +775,7 @@ export type royaltiesUpdateWithoutOrganizationsInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   royalty_line_items?: Prisma.royalty_line_itemsUpdateManyWithoutRoyaltiesNestedInput
@@ -790,7 +790,7 @@ export type royaltiesUncheckedUpdateWithoutOrganizationsInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedUpdateManyWithoutRoyaltiesNestedInput
@@ -805,7 +805,7 @@ export type royaltiesUncheckedUpdateManyWithoutOrganizationsInput = {
   calculated_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paid_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  stripe_payout_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payoneer_transaction_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -851,7 +851,7 @@ export type royaltiesSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   calculated_amount?: boolean
   payment_status?: boolean
   paid_at?: boolean
-  stripe_payout_id?: boolean
+  payoneer_transaction_id?: boolean
   created_at?: boolean
   updated_at?: boolean
   organizations?: boolean | Prisma.organizationsDefaultArgs<ExtArgs>
@@ -869,7 +869,7 @@ export type royaltiesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   calculated_amount?: boolean
   payment_status?: boolean
   paid_at?: boolean
-  stripe_payout_id?: boolean
+  payoneer_transaction_id?: boolean
   created_at?: boolean
   updated_at?: boolean
   organizations?: boolean | Prisma.organizationsDefaultArgs<ExtArgs>
@@ -885,7 +885,7 @@ export type royaltiesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   calculated_amount?: boolean
   payment_status?: boolean
   paid_at?: boolean
-  stripe_payout_id?: boolean
+  payoneer_transaction_id?: boolean
   created_at?: boolean
   updated_at?: boolean
   organizations?: boolean | Prisma.organizationsDefaultArgs<ExtArgs>
@@ -901,12 +901,12 @@ export type royaltiesSelectScalar = {
   calculated_amount?: boolean
   payment_status?: boolean
   paid_at?: boolean
-  stripe_payout_id?: boolean
+  payoneer_transaction_id?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type royaltiesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organization_id" | "period_start" | "period_end" | "total_views" | "total_shares" | "calculated_amount" | "payment_status" | "paid_at" | "stripe_payout_id" | "created_at" | "updated_at", ExtArgs["result"]["royalties"]>
+export type royaltiesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organization_id" | "period_start" | "period_end" | "total_views" | "total_shares" | "calculated_amount" | "payment_status" | "paid_at" | "payoneer_transaction_id" | "created_at" | "updated_at", ExtArgs["result"]["royalties"]>
 export type royaltiesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizations?: boolean | Prisma.organizationsDefaultArgs<ExtArgs>
   royalty_line_items?: boolean | Prisma.royalties$royalty_line_itemsArgs<ExtArgs>
@@ -935,7 +935,7 @@ export type $royaltiesPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     calculated_amount: runtime.Decimal | null
     payment_status: string | null
     paid_at: Date | null
-    stripe_payout_id: string | null
+    payoneer_transaction_id: string | null
     created_at: Date | null
     updated_at: Date | null
   }, ExtArgs["result"]["royalties"]>
@@ -1372,7 +1372,7 @@ export interface royaltiesFieldRefs {
   readonly calculated_amount: Prisma.FieldRef<"royalties", 'Decimal'>
   readonly payment_status: Prisma.FieldRef<"royalties", 'String'>
   readonly paid_at: Prisma.FieldRef<"royalties", 'DateTime'>
-  readonly stripe_payout_id: Prisma.FieldRef<"royalties", 'String'>
+  readonly payoneer_transaction_id: Prisma.FieldRef<"royalties", 'String'>
   readonly created_at: Prisma.FieldRef<"royalties", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"royalties", 'DateTime'>
 }

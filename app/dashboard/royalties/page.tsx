@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { RoyaltyChart } from "@/components/royalty-chart";
+import { RoyaltyPayoutButton } from "@/components/royalty-payout-button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,6 +17,15 @@ export default async function RoyaltiesPage() {
     if (!user) {
         redirect("/sign-in");
     }
+
+    const org = await prisma.organizations.findUnique({
+        where: { id: user.organization_id! },
+        select: {
+            payoneer_payee_id: true,
+            tax_form_status: true,
+            payout_status: true,
+        },
+    });
 
     const royalties = await prisma.royalties.findMany({
         where: { organization_id: user.organization_id },
@@ -63,16 +74,23 @@ export default async function RoyaltiesPage() {
         failed: "bg-red-500/10 text-red-500",
     };
 
+    const canProcessPayouts =
+        org?.payoneer_payee_id &&
+        org?.tax_form_status === "SUBMITTED" &&
+        org?.payout_status === "ACTIVE";
+
     return (
         <div className="min-h-screen bg-background">
-            <DashboardHeader user={{
-                ...user,
-                organization_name: (user as Organization).name,
-                id: user.id,
-                email: user.email,
-                full_name: user.full_name,
-                role: user.role,
-            }} />
+            <DashboardHeader
+                user={{
+                    ...user,
+                    organization_name: user.organization_name ?? "",
+                    id: user.id,
+                    email: user.email,
+                    full_name: user.full_name,
+                    role: user.role,
+                }}
+            />
 
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-8">
@@ -81,6 +99,21 @@ export default async function RoyaltiesPage() {
                         Track your earnings and payment history
                     </p>
                 </div>
+
+                {/* Setup reminder */}
+                {!canProcessPayouts && (
+                    <Alert className="mb-6 border-amber-200 bg-amber-50">
+                        <AlertDescription className="text-amber-900">
+                            To process payouts, please{" "}
+                            <a
+                                href="/dashboard/settings/payouts"
+                                className="font-semibold underline hover:text-amber-950">
+                                complete your payout setup
+                            </a>{" "}
+                            (Payoneer onboarding + tax profile).
+                        </AlertDescription>
+                    </Alert>
+                )}
 
                 <div className="grid gap-6 md:grid-cols-3">
                     <Card className="p-6">
@@ -174,15 +207,25 @@ export default async function RoyaltiesPage() {
                                                 </div>
                                             </div>
                                             {royalty.paid_at && (
-                                                <p className="mt-4 text-sm text-muted-foreground">
-                                                    Paid on {new Date(royalty.paid_at).toLocaleDateString()}
-                                                </p>
+                                                <div className="mt-4 space-y-1">
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Paid on {new Date(royalty.paid_at).toLocaleDateString()}
+                                                    </p>
+                                                    {royalty.payoneer_transaction_id && (
+                                                        <p className="text-xs font-mono text-muted-foreground">
+                                                            TXN: {royalty.payoneer_transaction_id}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
-                                        <div>
-                                            <Button variant="outline" size="sm">
-                                                View Details
+                                        <div className="flex flex-col gap-2">
+                                            <Button variant="outline" size="sm" asChild>
+                                                <a href={`/dashboard/royalties/${royalty.id}`}>View Details</a>
                                             </Button>
+                                            {royalty.payment_status === "pending" && canProcessPayouts && (
+                                                <RoyaltyPayoutButton royaltyId={royalty.id} />
+                                            )}
                                         </div>
                                     </div>
                                 </Card>
@@ -213,9 +256,9 @@ export default async function RoyaltiesPage() {
 
                             <h3 className="mt-6 text-lg font-semibold">Payment Schedule</h3>
                             <p className="mt-3 leading-relaxed">
-                                Royalties are calculated at the end of each month and paid out within 7
-                                business days. Payments are processed through Paddle and sent directly to
-                                your connected account.
+                                Royalties are calculated at the end of each month. Payments are processed
+                                through Payoneer and sent directly to your connected account within 7
+                                business days.
                             </p>
 
                             <h3 className="mt-6 text-lg font-semibold">Minimum Payout</h3>

@@ -36,6 +36,10 @@ export async function initializeDatabase() {
         slug TEXT UNIQUE NOT NULL,
         logo_url TEXT,
         website TEXT,
+        payoneer_payee_id TEXT UNIQUE,
+        payout_status TEXT DEFAULT 'PENDING',
+        tax_form_status TEXT DEFAULT 'NONE',
+        content_source_id TEXT UNIQUE,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
@@ -177,7 +181,7 @@ export async function initializeDatabase() {
         calculated_amount DECIMAL(10, 2) DEFAULT 0.00,
         payment_status TEXT DEFAULT 'pending' CHECK (payment_status IN ('pending', 'processing', 'paid', 'failed')),
         paid_at TIMESTAMPTZ,
-        stripe_payout_id TEXT,
+        payoneer_transaction_id TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
@@ -259,6 +263,10 @@ export type Organization = {
 	slug: string;
 	logo_url: string | null;
 	website: string | null;
+	payoneer_payee_id: string | null;
+	payout_status: string;
+	tax_form_status: string;
+	content_source_id: string | null;
 	created_at: Date;
 	updated_at: Date;
 };
@@ -351,7 +359,7 @@ export type Royalty = {
 	calculated_amount: number;
 	payment_status: "pending" | "processing" | "paid" | "failed";
 	paid_at: Date | null;
-	stripe_payout_id: string | null;
+	payoneer_transaction_id: string | null;
 	created_at: Date;
 	updated_at: Date;
 };

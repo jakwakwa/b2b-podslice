@@ -31,6 +31,10 @@ export type OrganizationsMinAggregateOutputType = {
   website: string | null
   created_at: Date | null
   updated_at: Date | null
+  payoneer_payee_id: string | null
+  payout_status: string | null
+  tax_form_status: string | null
+  content_source_id: string | null
 }
 
 export type OrganizationsMaxAggregateOutputType = {
@@ -41,6 +45,10 @@ export type OrganizationsMaxAggregateOutputType = {
   website: string | null
   created_at: Date | null
   updated_at: Date | null
+  payoneer_payee_id: string | null
+  payout_status: string | null
+  tax_form_status: string | null
+  content_source_id: string | null
 }
 
 export type OrganizationsCountAggregateOutputType = {
@@ -51,6 +59,10 @@ export type OrganizationsCountAggregateOutputType = {
   website: number
   created_at: number
   updated_at: number
+  payoneer_payee_id: number
+  payout_status: number
+  tax_form_status: number
+  content_source_id: number
   _all: number
 }
 
@@ -63,6 +75,10 @@ export type OrganizationsMinAggregateInputType = {
   website?: true
   created_at?: true
   updated_at?: true
+  payoneer_payee_id?: true
+  payout_status?: true
+  tax_form_status?: true
+  content_source_id?: true
 }
 
 export type OrganizationsMaxAggregateInputType = {
@@ -73,6 +89,10 @@ export type OrganizationsMaxAggregateInputType = {
   website?: true
   created_at?: true
   updated_at?: true
+  payoneer_payee_id?: true
+  payout_status?: true
+  tax_form_status?: true
+  content_source_id?: true
 }
 
 export type OrganizationsCountAggregateInputType = {
@@ -83,6 +103,10 @@ export type OrganizationsCountAggregateInputType = {
   website?: true
   created_at?: true
   updated_at?: true
+  payoneer_payee_id?: true
+  payout_status?: true
+  tax_form_status?: true
+  content_source_id?: true
   _all?: true
 }
 
@@ -166,6 +190,10 @@ export type OrganizationsGroupByOutputType = {
   website: string | null
   created_at: Date | null
   updated_at: Date | null
+  payoneer_payee_id: string | null
+  payout_status: string
+  tax_form_status: string
+  content_source_id: string | null
   _count: OrganizationsCountAggregateOutputType | null
   _min: OrganizationsMinAggregateOutputType | null
   _max: OrganizationsMaxAggregateOutputType | null
@@ -197,6 +225,10 @@ export type organizationsWhereInput = {
   website?: Prisma.StringNullableFilter<"organizations"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"organizations"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"organizations"> | Date | string | null
+  payoneer_payee_id?: Prisma.StringNullableFilter<"organizations"> | string | null
+  payout_status?: Prisma.StringFilter<"organizations"> | string
+  tax_form_status?: Prisma.StringFilter<"organizations"> | string
+  content_source_id?: Prisma.StringNullableFilter<"organizations"> | string | null
   licenses?: Prisma.LicensesListRelationFilter
   podcasts?: Prisma.PodcastsListRelationFilter
   royalties?: Prisma.RoyaltiesListRelationFilter
@@ -211,6 +243,10 @@ export type organizationsOrderByWithRelationInput = {
   website?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  payoneer_payee_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  payout_status?: Prisma.SortOrder
+  tax_form_status?: Prisma.SortOrder
+  content_source_id?: Prisma.SortOrderInput | Prisma.SortOrder
   licenses?: Prisma.licensesOrderByRelationAggregateInput
   podcasts?: Prisma.podcastsOrderByRelationAggregateInput
   royalties?: Prisma.royaltiesOrderByRelationAggregateInput
@@ -220,6 +256,8 @@ export type organizationsOrderByWithRelationInput = {
 export type organizationsWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  payoneer_payee_id?: string
+  content_source_id?: string
   AND?: Prisma.organizationsWhereInput | Prisma.organizationsWhereInput[]
   OR?: Prisma.organizationsWhereInput[]
   NOT?: Prisma.organizationsWhereInput | Prisma.organizationsWhereInput[]
@@ -228,11 +266,13 @@ export type organizationsWhereUniqueInput = Prisma.AtLeast<{
   website?: Prisma.StringNullableFilter<"organizations"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"organizations"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"organizations"> | Date | string | null
+  payout_status?: Prisma.StringFilter<"organizations"> | string
+  tax_form_status?: Prisma.StringFilter<"organizations"> | string
   licenses?: Prisma.LicensesListRelationFilter
   podcasts?: Prisma.PodcastsListRelationFilter
   royalties?: Prisma.RoyaltiesListRelationFilter
   users?: Prisma.UsersListRelationFilter
-}, "id" | "slug">
+}, "id" | "slug" | "payoneer_payee_id" | "content_source_id">
 
 export type organizationsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -242,6 +282,10 @@ export type organizationsOrderByWithAggregationInput = {
   website?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  payoneer_payee_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  payout_status?: Prisma.SortOrder
+  tax_form_status?: Prisma.SortOrder
+  content_source_id?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.organizationsCountOrderByAggregateInput
   _max?: Prisma.organizationsMaxOrderByAggregateInput
   _min?: Prisma.organizationsMinOrderByAggregateInput
@@ -258,6 +302,10 @@ export type organizationsScalarWhereWithAggregatesInput = {
   website?: Prisma.StringNullableWithAggregatesFilter<"organizations"> | string | null
   created_at?: Prisma.DateTimeNullableWithAggregatesFilter<"organizations"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"organizations"> | Date | string | null
+  payoneer_payee_id?: Prisma.StringNullableWithAggregatesFilter<"organizations"> | string | null
+  payout_status?: Prisma.StringWithAggregatesFilter<"organizations"> | string
+  tax_form_status?: Prisma.StringWithAggregatesFilter<"organizations"> | string
+  content_source_id?: Prisma.StringNullableWithAggregatesFilter<"organizations"> | string | null
 }
 
 export type organizationsCreateInput = {
@@ -268,6 +316,10 @@ export type organizationsCreateInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesCreateNestedManyWithoutOrganizationsInput
   podcasts?: Prisma.podcastsCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesCreateNestedManyWithoutOrganizationsInput
@@ -282,6 +334,10 @@ export type organizationsUncheckedCreateInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesUncheckedCreateNestedManyWithoutOrganizationsInput
   podcasts?: Prisma.podcastsUncheckedCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesUncheckedCreateNestedManyWithoutOrganizationsInput
@@ -296,6 +352,10 @@ export type organizationsUpdateInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUpdateManyWithoutOrganizationsNestedInput
   podcasts?: Prisma.podcastsUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUpdateManyWithoutOrganizationsNestedInput
@@ -310,6 +370,10 @@ export type organizationsUncheckedUpdateInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUncheckedUpdateManyWithoutOrganizationsNestedInput
   podcasts?: Prisma.podcastsUncheckedUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUncheckedUpdateManyWithoutOrganizationsNestedInput
@@ -324,6 +388,10 @@ export type organizationsCreateManyInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
 }
 
 export type organizationsUpdateManyMutationInput = {
@@ -334,6 +402,10 @@ export type organizationsUpdateManyMutationInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type organizationsUncheckedUpdateManyInput = {
@@ -344,6 +416,10 @@ export type organizationsUncheckedUpdateManyInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrganizationsScalarRelationFilter = {
@@ -359,6 +435,10 @@ export type organizationsCountOrderByAggregateInput = {
   website?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  payoneer_payee_id?: Prisma.SortOrder
+  payout_status?: Prisma.SortOrder
+  tax_form_status?: Prisma.SortOrder
+  content_source_id?: Prisma.SortOrder
 }
 
 export type organizationsMaxOrderByAggregateInput = {
@@ -369,6 +449,10 @@ export type organizationsMaxOrderByAggregateInput = {
   website?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  payoneer_payee_id?: Prisma.SortOrder
+  payout_status?: Prisma.SortOrder
+  tax_form_status?: Prisma.SortOrder
+  content_source_id?: Prisma.SortOrder
 }
 
 export type organizationsMinOrderByAggregateInput = {
@@ -379,6 +463,10 @@ export type organizationsMinOrderByAggregateInput = {
   website?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  payoneer_payee_id?: Prisma.SortOrder
+  payout_status?: Prisma.SortOrder
+  tax_form_status?: Prisma.SortOrder
+  content_source_id?: Prisma.SortOrder
 }
 
 export type OrganizationsNullableScalarRelationFilter = {
@@ -452,6 +540,10 @@ export type organizationsCreateWithoutLicensesInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   podcasts?: Prisma.podcastsCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesCreateNestedManyWithoutOrganizationsInput
   users?: Prisma.usersCreateNestedManyWithoutOrganizationsInput
@@ -465,6 +557,10 @@ export type organizationsUncheckedCreateWithoutLicensesInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   podcasts?: Prisma.podcastsUncheckedCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesUncheckedCreateNestedManyWithoutOrganizationsInput
   users?: Prisma.usersUncheckedCreateNestedManyWithoutOrganizationsInput
@@ -494,6 +590,10 @@ export type organizationsUpdateWithoutLicensesInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   podcasts?: Prisma.podcastsUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUpdateManyWithoutOrganizationsNestedInput
   users?: Prisma.usersUpdateManyWithoutOrganizationsNestedInput
@@ -507,6 +607,10 @@ export type organizationsUncheckedUpdateWithoutLicensesInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   podcasts?: Prisma.podcastsUncheckedUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUncheckedUpdateManyWithoutOrganizationsNestedInput
   users?: Prisma.usersUncheckedUpdateManyWithoutOrganizationsNestedInput
@@ -520,6 +624,10 @@ export type organizationsCreateWithoutPodcastsInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesCreateNestedManyWithoutOrganizationsInput
   users?: Prisma.usersCreateNestedManyWithoutOrganizationsInput
@@ -533,6 +641,10 @@ export type organizationsUncheckedCreateWithoutPodcastsInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesUncheckedCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesUncheckedCreateNestedManyWithoutOrganizationsInput
   users?: Prisma.usersUncheckedCreateNestedManyWithoutOrganizationsInput
@@ -562,6 +674,10 @@ export type organizationsUpdateWithoutPodcastsInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUpdateManyWithoutOrganizationsNestedInput
   users?: Prisma.usersUpdateManyWithoutOrganizationsNestedInput
@@ -575,6 +691,10 @@ export type organizationsUncheckedUpdateWithoutPodcastsInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUncheckedUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUncheckedUpdateManyWithoutOrganizationsNestedInput
   users?: Prisma.usersUncheckedUpdateManyWithoutOrganizationsNestedInput
@@ -588,6 +708,10 @@ export type organizationsCreateWithoutRoyaltiesInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesCreateNestedManyWithoutOrganizationsInput
   podcasts?: Prisma.podcastsCreateNestedManyWithoutOrganizationsInput
   users?: Prisma.usersCreateNestedManyWithoutOrganizationsInput
@@ -601,6 +725,10 @@ export type organizationsUncheckedCreateWithoutRoyaltiesInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesUncheckedCreateNestedManyWithoutOrganizationsInput
   podcasts?: Prisma.podcastsUncheckedCreateNestedManyWithoutOrganizationsInput
   users?: Prisma.usersUncheckedCreateNestedManyWithoutOrganizationsInput
@@ -630,6 +758,10 @@ export type organizationsUpdateWithoutRoyaltiesInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUpdateManyWithoutOrganizationsNestedInput
   podcasts?: Prisma.podcastsUpdateManyWithoutOrganizationsNestedInput
   users?: Prisma.usersUpdateManyWithoutOrganizationsNestedInput
@@ -643,6 +775,10 @@ export type organizationsUncheckedUpdateWithoutRoyaltiesInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUncheckedUpdateManyWithoutOrganizationsNestedInput
   podcasts?: Prisma.podcastsUncheckedUpdateManyWithoutOrganizationsNestedInput
   users?: Prisma.usersUncheckedUpdateManyWithoutOrganizationsNestedInput
@@ -656,6 +792,10 @@ export type organizationsCreateWithoutUsersInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesCreateNestedManyWithoutOrganizationsInput
   podcasts?: Prisma.podcastsCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesCreateNestedManyWithoutOrganizationsInput
@@ -669,6 +809,10 @@ export type organizationsUncheckedCreateWithoutUsersInput = {
   website?: string | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  payoneer_payee_id?: string | null
+  payout_status?: string
+  tax_form_status?: string
+  content_source_id?: string | null
   licenses?: Prisma.licensesUncheckedCreateNestedManyWithoutOrganizationsInput
   podcasts?: Prisma.podcastsUncheckedCreateNestedManyWithoutOrganizationsInput
   royalties?: Prisma.royaltiesUncheckedCreateNestedManyWithoutOrganizationsInput
@@ -698,6 +842,10 @@ export type organizationsUpdateWithoutUsersInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUpdateManyWithoutOrganizationsNestedInput
   podcasts?: Prisma.podcastsUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUpdateManyWithoutOrganizationsNestedInput
@@ -711,6 +859,10 @@ export type organizationsUncheckedUpdateWithoutUsersInput = {
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  payoneer_payee_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payout_status?: Prisma.StringFieldUpdateOperationsInput | string
+  tax_form_status?: Prisma.StringFieldUpdateOperationsInput | string
+  content_source_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   licenses?: Prisma.licensesUncheckedUpdateManyWithoutOrganizationsNestedInput
   podcasts?: Prisma.podcastsUncheckedUpdateManyWithoutOrganizationsNestedInput
   royalties?: Prisma.royaltiesUncheckedUpdateManyWithoutOrganizationsNestedInput
@@ -782,6 +934,10 @@ export type organizationsSelect<ExtArgs extends runtime.Types.Extensions.Interna
   website?: boolean
   created_at?: boolean
   updated_at?: boolean
+  payoneer_payee_id?: boolean
+  payout_status?: boolean
+  tax_form_status?: boolean
+  content_source_id?: boolean
   licenses?: boolean | Prisma.organizations$licensesArgs<ExtArgs>
   podcasts?: boolean | Prisma.organizations$podcastsArgs<ExtArgs>
   royalties?: boolean | Prisma.organizations$royaltiesArgs<ExtArgs>
@@ -797,6 +953,10 @@ export type organizationsSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   website?: boolean
   created_at?: boolean
   updated_at?: boolean
+  payoneer_payee_id?: boolean
+  payout_status?: boolean
+  tax_form_status?: boolean
+  content_source_id?: boolean
 }, ExtArgs["result"]["organizations"]>
 
 export type organizationsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -807,6 +967,10 @@ export type organizationsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   website?: boolean
   created_at?: boolean
   updated_at?: boolean
+  payoneer_payee_id?: boolean
+  payout_status?: boolean
+  tax_form_status?: boolean
+  content_source_id?: boolean
 }, ExtArgs["result"]["organizations"]>
 
 export type organizationsSelectScalar = {
@@ -817,9 +981,13 @@ export type organizationsSelectScalar = {
   website?: boolean
   created_at?: boolean
   updated_at?: boolean
+  payoneer_payee_id?: boolean
+  payout_status?: boolean
+  tax_form_status?: boolean
+  content_source_id?: boolean
 }
 
-export type organizationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo_url" | "website" | "created_at" | "updated_at", ExtArgs["result"]["organizations"]>
+export type organizationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo_url" | "website" | "created_at" | "updated_at" | "payoneer_payee_id" | "payout_status" | "tax_form_status" | "content_source_id", ExtArgs["result"]["organizations"]>
 export type organizationsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   licenses?: boolean | Prisma.organizations$licensesArgs<ExtArgs>
   podcasts?: boolean | Prisma.organizations$podcastsArgs<ExtArgs>
@@ -846,6 +1014,10 @@ export type $organizationsPayload<ExtArgs extends runtime.Types.Extensions.Inter
     website: string | null
     created_at: Date | null
     updated_at: Date | null
+    payoneer_payee_id: string | null
+    payout_status: string
+    tax_form_status: string
+    content_source_id: string | null
   }, ExtArgs["result"]["organizations"]>
   composites: {}
 }
@@ -1280,6 +1452,10 @@ export interface organizationsFieldRefs {
   readonly website: Prisma.FieldRef<"organizations", 'String'>
   readonly created_at: Prisma.FieldRef<"organizations", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"organizations", 'DateTime'>
+  readonly payoneer_payee_id: Prisma.FieldRef<"organizations", 'String'>
+  readonly payout_status: Prisma.FieldRef<"organizations", 'String'>
+  readonly tax_form_status: Prisma.FieldRef<"organizations", 'String'>
+  readonly content_source_id: Prisma.FieldRef<"organizations", 'String'>
 }
     
 

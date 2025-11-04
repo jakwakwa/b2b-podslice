@@ -1506,7 +1506,11 @@ export const OrganizationsScalarFieldEnum = {
   logo_url: 'logo_url',
   website: 'website',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  payoneer_payee_id: 'payoneer_payee_id',
+  payout_status: 'payout_status',
+  tax_form_status: 'tax_form_status',
+  content_source_id: 'content_source_id'
 } as const
 
 export type OrganizationsScalarFieldEnum = (typeof OrganizationsScalarFieldEnum)[keyof typeof OrganizationsScalarFieldEnum]
@@ -1553,7 +1557,7 @@ export const RoyaltiesScalarFieldEnum = {
   calculated_amount: 'calculated_amount',
   payment_status: 'payment_status',
   paid_at: 'paid_at',
-  stripe_payout_id: 'stripe_payout_id',
+  payoneer_transaction_id: 'payoneer_transaction_id',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const

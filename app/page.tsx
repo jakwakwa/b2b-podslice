@@ -4,12 +4,12 @@ import { Card } from "@/components/ui/card"
 
 export default function HomePage() {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-background to-background">
+        <div className="min-h-screen bg-linear-to-b from-background to-background">
             {/* Header */}
-            <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-foreground -foreground font-bold">
                             P
                         </div>
                         <span className="text-xl font-bold">Podslice</span>
@@ -30,7 +30,7 @@ export default function HomePage() {
                 <h1 className="text-balance text-5xl font-bold tracking-tight lg:text-6xl">
                     AI-Powered Content for
                     <br />
-                    <span className="bg-gradient-to-r from-primary-foreground-muted to-sidebar-primary-foreground bg-clip-text text-transparent">Podcast Creators</span>
+                    <span className="bg-linear-to-r from-primary-foreground-muted to-sidebar-primary-foreground bg-clip-text text-transparent">Podcast Creators</span>
                 </h1>
                 <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground leading-relaxed">
                     Transform your podcast episodes into summaries, clips, and social content. Built on ethical AI with
@@ -55,7 +55,7 @@ export default function HomePage() {
                 <h2 className="text-center text-3xl font-bold tracking-tight">Everything You Need to Amplify Your Podcast</h2>
                 <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <Card className="p-6">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
@@ -72,7 +72,7 @@ export default function HomePage() {
                     </Card>
 
                     <Card className="p-6">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
@@ -89,7 +89,7 @@ export default function HomePage() {
                     </Card>
 
                     <Card className="p-6">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
@@ -106,7 +106,7 @@ export default function HomePage() {
                     </Card>
 
                     <Card className="p-6">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
@@ -123,7 +123,7 @@ export default function HomePage() {
                     </Card>
 
                     <Card className="p-6">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
@@ -140,7 +140,7 @@ export default function HomePage() {
                     </Card>
 
                     <Card className="p-6">
-                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
                             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
@@ -160,7 +160,7 @@ export default function HomePage() {
 
             {/* CTA Section */}
             <section className="container mx-auto px-4 py-24">
-                <Card className="bg-primary text-primary-foreground p-12 text-center">
+                <Card className="bg-primary text-foreground -foreground p-12 text-center">
                     <h2 className="text-3xl font-bold tracking-tight">Ready to Transform Your Podcast Content?</h2>
                     <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg leading-relaxed opacity-90">
                         Join podcast creators who trust Podslice for ethical, AI-powered content generation.
