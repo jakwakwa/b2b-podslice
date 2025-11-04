@@ -8,11 +8,17 @@ export async function sendVerificationEmail(email: string, token: string) {
 
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.ai>"
+  
+  // Redirect test emails to a real address to prevent bounces
+  const testEmailRedirect = process.env.TEST_EMAIL
+  const actualRecipient = testEmailRedirect && email.endsWith("@demo.com") 
+    ? testEmailRedirect 
+    : email
 
   try {
     if (!apiKey) {
       console.warn("[v0] RESEND_API_KEY not set; logging verification link instead.")
-      console.log(`[v0] Verification email for ${email}:`)
+      console.log(`[v0] Verification email for ${email} (would send to: ${actualRecipient}):`)
       console.log(`[v0] Verification URL: ${verificationUrl}`)
       return { success: true }
     }
@@ -22,7 +28,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 
     await resend.emails.send({
       from,
-      to: email,
+      to: actualRecipient,
       subject: "Verify your email address",
       html: `
         <div style="font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a">
@@ -46,11 +52,17 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.ai>"
+  
+  // Redirect test emails to a real address to prevent bounces
+  const testEmailRedirect = process.env.TEST_EMAIL
+  const actualRecipient = testEmailRedirect && email.endsWith("@demo.com") 
+    ? testEmailRedirect 
+    : email
 
   try {
     if (!apiKey) {
       console.warn("[v0] RESEND_API_KEY not set; logging password reset link instead.")
-      console.log(`[v0] Password reset email for ${email}:`)
+      console.log(`[v0] Password reset email for ${email} (would send to: ${actualRecipient}):`)
       console.log(`[v0] Reset URL: ${resetUrl}`)
       return { success: true }
     }
@@ -60,7 +72,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
     await resend.emails.send({
       from,
-      to: email,
+      to: actualRecipient,
       subject: "Reset your password",
       html: `
         <div style="font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5;color:#0f172a">

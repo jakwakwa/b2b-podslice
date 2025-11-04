@@ -248,6 +248,7 @@ export type summariesWhereInput = {
   created_at?: Prisma.DateTimeNullableFilter<"summaries"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"summaries"> | Date | string | null
   analytics_events?: Prisma.Analytics_eventsListRelationFilter
+  daily_analytics?: Prisma.Daily_analyticsListRelationFilter
   royalty_line_items?: Prisma.Royalty_line_itemsListRelationFilter
   episodes?: Prisma.XOR<Prisma.EpisodesScalarRelationFilter, Prisma.episodesWhereInput>
 }
@@ -263,6 +264,7 @@ export type summariesOrderByWithRelationInput = {
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   analytics_events?: Prisma.analytics_eventsOrderByRelationAggregateInput
+  daily_analytics?: Prisma.daily_analyticsOrderByRelationAggregateInput
   royalty_line_items?: Prisma.royalty_line_itemsOrderByRelationAggregateInput
   episodes?: Prisma.episodesOrderByWithRelationInput
 }
@@ -281,6 +283,7 @@ export type summariesWhereUniqueInput = Prisma.AtLeast<{
   created_at?: Prisma.DateTimeNullableFilter<"summaries"> | Date | string | null
   updated_at?: Prisma.DateTimeNullableFilter<"summaries"> | Date | string | null
   analytics_events?: Prisma.Analytics_eventsListRelationFilter
+  daily_analytics?: Prisma.Daily_analyticsListRelationFilter
   royalty_line_items?: Prisma.Royalty_line_itemsListRelationFilter
   episodes?: Prisma.XOR<Prisma.EpisodesScalarRelationFilter, Prisma.episodesWhereInput>
 }, "id">
@@ -327,6 +330,7 @@ export type summariesCreateInput = {
   created_at?: Date | string | null
   updated_at?: Date | string | null
   analytics_events?: Prisma.analytics_eventsCreateNestedManyWithoutSummariesInput
+  daily_analytics?: Prisma.daily_analyticsCreateNestedManyWithoutSummariesInput
   royalty_line_items?: Prisma.royalty_line_itemsCreateNestedManyWithoutSummariesInput
   episodes: Prisma.episodesCreateNestedOneWithoutSummariesInput
 }
@@ -342,6 +346,7 @@ export type summariesUncheckedCreateInput = {
   created_at?: Date | string | null
   updated_at?: Date | string | null
   analytics_events?: Prisma.analytics_eventsUncheckedCreateNestedManyWithoutSummariesInput
+  daily_analytics?: Prisma.daily_analyticsUncheckedCreateNestedManyWithoutSummariesInput
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedCreateNestedManyWithoutSummariesInput
 }
 
@@ -355,6 +360,7 @@ export type summariesUpdateInput = {
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   analytics_events?: Prisma.analytics_eventsUpdateManyWithoutSummariesNestedInput
+  daily_analytics?: Prisma.daily_analyticsUpdateManyWithoutSummariesNestedInput
   royalty_line_items?: Prisma.royalty_line_itemsUpdateManyWithoutSummariesNestedInput
   episodes?: Prisma.episodesUpdateOneRequiredWithoutSummariesNestedInput
 }
@@ -370,6 +376,7 @@ export type summariesUncheckedUpdateInput = {
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   analytics_events?: Prisma.analytics_eventsUncheckedUpdateManyWithoutSummariesNestedInput
+  daily_analytics?: Prisma.daily_analyticsUncheckedUpdateManyWithoutSummariesNestedInput
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedUpdateManyWithoutSummariesNestedInput
 }
 
@@ -481,6 +488,20 @@ export type summariesUpdateOneRequiredWithoutAnalytics_eventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.summariesUpdateToOneWithWhereWithoutAnalytics_eventsInput, Prisma.summariesUpdateWithoutAnalytics_eventsInput>, Prisma.summariesUncheckedUpdateWithoutAnalytics_eventsInput>
 }
 
+export type summariesCreateNestedOneWithoutDaily_analyticsInput = {
+  create?: Prisma.XOR<Prisma.summariesCreateWithoutDaily_analyticsInput, Prisma.summariesUncheckedCreateWithoutDaily_analyticsInput>
+  connectOrCreate?: Prisma.summariesCreateOrConnectWithoutDaily_analyticsInput
+  connect?: Prisma.summariesWhereUniqueInput
+}
+
+export type summariesUpdateOneRequiredWithoutDaily_analyticsNestedInput = {
+  create?: Prisma.XOR<Prisma.summariesCreateWithoutDaily_analyticsInput, Prisma.summariesUncheckedCreateWithoutDaily_analyticsInput>
+  connectOrCreate?: Prisma.summariesCreateOrConnectWithoutDaily_analyticsInput
+  upsert?: Prisma.summariesUpsertWithoutDaily_analyticsInput
+  connect?: Prisma.summariesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.summariesUpdateToOneWithWhereWithoutDaily_analyticsInput, Prisma.summariesUpdateWithoutDaily_analyticsInput>, Prisma.summariesUncheckedUpdateWithoutDaily_analyticsInput>
+}
+
 export type summariesCreateNestedManyWithoutEpisodesInput = {
   create?: Prisma.XOR<Prisma.summariesCreateWithoutEpisodesInput, Prisma.summariesUncheckedCreateWithoutEpisodesInput> | Prisma.summariesCreateWithoutEpisodesInput[] | Prisma.summariesUncheckedCreateWithoutEpisodesInput[]
   connectOrCreate?: Prisma.summariesCreateOrConnectWithoutEpisodesInput | Prisma.summariesCreateOrConnectWithoutEpisodesInput[]
@@ -546,6 +567,7 @@ export type summariesCreateWithoutAnalytics_eventsInput = {
   share_count?: number | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  daily_analytics?: Prisma.daily_analyticsCreateNestedManyWithoutSummariesInput
   royalty_line_items?: Prisma.royalty_line_itemsCreateNestedManyWithoutSummariesInput
   episodes: Prisma.episodesCreateNestedOneWithoutSummariesInput
 }
@@ -560,6 +582,7 @@ export type summariesUncheckedCreateWithoutAnalytics_eventsInput = {
   share_count?: number | null
   created_at?: Date | string | null
   updated_at?: Date | string | null
+  daily_analytics?: Prisma.daily_analyticsUncheckedCreateNestedManyWithoutSummariesInput
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedCreateNestedManyWithoutSummariesInput
 }
 
@@ -588,6 +611,7 @@ export type summariesUpdateWithoutAnalytics_eventsInput = {
   share_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  daily_analytics?: Prisma.daily_analyticsUpdateManyWithoutSummariesNestedInput
   royalty_line_items?: Prisma.royalty_line_itemsUpdateManyWithoutSummariesNestedInput
   episodes?: Prisma.episodesUpdateOneRequiredWithoutSummariesNestedInput
 }
@@ -602,6 +626,79 @@ export type summariesUncheckedUpdateWithoutAnalytics_eventsInput = {
   share_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  daily_analytics?: Prisma.daily_analyticsUncheckedUpdateManyWithoutSummariesNestedInput
+  royalty_line_items?: Prisma.royalty_line_itemsUncheckedUpdateManyWithoutSummariesNestedInput
+}
+
+export type summariesCreateWithoutDaily_analyticsInput = {
+  id?: string
+  summary_type: string
+  content: string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  view_count?: number | null
+  share_count?: number | null
+  created_at?: Date | string | null
+  updated_at?: Date | string | null
+  analytics_events?: Prisma.analytics_eventsCreateNestedManyWithoutSummariesInput
+  royalty_line_items?: Prisma.royalty_line_itemsCreateNestedManyWithoutSummariesInput
+  episodes: Prisma.episodesCreateNestedOneWithoutSummariesInput
+}
+
+export type summariesUncheckedCreateWithoutDaily_analyticsInput = {
+  id?: string
+  episode_id: string
+  summary_type: string
+  content: string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  view_count?: number | null
+  share_count?: number | null
+  created_at?: Date | string | null
+  updated_at?: Date | string | null
+  analytics_events?: Prisma.analytics_eventsUncheckedCreateNestedManyWithoutSummariesInput
+  royalty_line_items?: Prisma.royalty_line_itemsUncheckedCreateNestedManyWithoutSummariesInput
+}
+
+export type summariesCreateOrConnectWithoutDaily_analyticsInput = {
+  where: Prisma.summariesWhereUniqueInput
+  create: Prisma.XOR<Prisma.summariesCreateWithoutDaily_analyticsInput, Prisma.summariesUncheckedCreateWithoutDaily_analyticsInput>
+}
+
+export type summariesUpsertWithoutDaily_analyticsInput = {
+  update: Prisma.XOR<Prisma.summariesUpdateWithoutDaily_analyticsInput, Prisma.summariesUncheckedUpdateWithoutDaily_analyticsInput>
+  create: Prisma.XOR<Prisma.summariesCreateWithoutDaily_analyticsInput, Prisma.summariesUncheckedCreateWithoutDaily_analyticsInput>
+  where?: Prisma.summariesWhereInput
+}
+
+export type summariesUpdateToOneWithWhereWithoutDaily_analyticsInput = {
+  where?: Prisma.summariesWhereInput
+  data: Prisma.XOR<Prisma.summariesUpdateWithoutDaily_analyticsInput, Prisma.summariesUncheckedUpdateWithoutDaily_analyticsInput>
+}
+
+export type summariesUpdateWithoutDaily_analyticsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  summary_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  view_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  share_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  analytics_events?: Prisma.analytics_eventsUpdateManyWithoutSummariesNestedInput
+  royalty_line_items?: Prisma.royalty_line_itemsUpdateManyWithoutSummariesNestedInput
+  episodes?: Prisma.episodesUpdateOneRequiredWithoutSummariesNestedInput
+}
+
+export type summariesUncheckedUpdateWithoutDaily_analyticsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  episode_id?: Prisma.StringFieldUpdateOperationsInput | string
+  summary_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  view_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  share_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  analytics_events?: Prisma.analytics_eventsUncheckedUpdateManyWithoutSummariesNestedInput
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedUpdateManyWithoutSummariesNestedInput
 }
 
@@ -615,6 +712,7 @@ export type summariesCreateWithoutEpisodesInput = {
   created_at?: Date | string | null
   updated_at?: Date | string | null
   analytics_events?: Prisma.analytics_eventsCreateNestedManyWithoutSummariesInput
+  daily_analytics?: Prisma.daily_analyticsCreateNestedManyWithoutSummariesInput
   royalty_line_items?: Prisma.royalty_line_itemsCreateNestedManyWithoutSummariesInput
 }
 
@@ -628,6 +726,7 @@ export type summariesUncheckedCreateWithoutEpisodesInput = {
   created_at?: Date | string | null
   updated_at?: Date | string | null
   analytics_events?: Prisma.analytics_eventsUncheckedCreateNestedManyWithoutSummariesInput
+  daily_analytics?: Prisma.daily_analyticsUncheckedCreateNestedManyWithoutSummariesInput
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedCreateNestedManyWithoutSummariesInput
 }
 
@@ -682,6 +781,7 @@ export type summariesCreateWithoutRoyalty_line_itemsInput = {
   created_at?: Date | string | null
   updated_at?: Date | string | null
   analytics_events?: Prisma.analytics_eventsCreateNestedManyWithoutSummariesInput
+  daily_analytics?: Prisma.daily_analyticsCreateNestedManyWithoutSummariesInput
   episodes: Prisma.episodesCreateNestedOneWithoutSummariesInput
 }
 
@@ -696,6 +796,7 @@ export type summariesUncheckedCreateWithoutRoyalty_line_itemsInput = {
   created_at?: Date | string | null
   updated_at?: Date | string | null
   analytics_events?: Prisma.analytics_eventsUncheckedCreateNestedManyWithoutSummariesInput
+  daily_analytics?: Prisma.daily_analyticsUncheckedCreateNestedManyWithoutSummariesInput
 }
 
 export type summariesCreateOrConnectWithoutRoyalty_line_itemsInput = {
@@ -724,6 +825,7 @@ export type summariesUpdateWithoutRoyalty_line_itemsInput = {
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   analytics_events?: Prisma.analytics_eventsUpdateManyWithoutSummariesNestedInput
+  daily_analytics?: Prisma.daily_analyticsUpdateManyWithoutSummariesNestedInput
   episodes?: Prisma.episodesUpdateOneRequiredWithoutSummariesNestedInput
 }
 
@@ -738,6 +840,7 @@ export type summariesUncheckedUpdateWithoutRoyalty_line_itemsInput = {
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   analytics_events?: Prisma.analytics_eventsUncheckedUpdateManyWithoutSummariesNestedInput
+  daily_analytics?: Prisma.daily_analyticsUncheckedUpdateManyWithoutSummariesNestedInput
 }
 
 export type summariesCreateManyEpisodesInput = {
@@ -761,6 +864,7 @@ export type summariesUpdateWithoutEpisodesInput = {
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   analytics_events?: Prisma.analytics_eventsUpdateManyWithoutSummariesNestedInput
+  daily_analytics?: Prisma.daily_analyticsUpdateManyWithoutSummariesNestedInput
   royalty_line_items?: Prisma.royalty_line_itemsUpdateManyWithoutSummariesNestedInput
 }
 
@@ -774,6 +878,7 @@ export type summariesUncheckedUpdateWithoutEpisodesInput = {
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   analytics_events?: Prisma.analytics_eventsUncheckedUpdateManyWithoutSummariesNestedInput
+  daily_analytics?: Prisma.daily_analyticsUncheckedUpdateManyWithoutSummariesNestedInput
   royalty_line_items?: Prisma.royalty_line_itemsUncheckedUpdateManyWithoutSummariesNestedInput
 }
 
@@ -795,11 +900,13 @@ export type summariesUncheckedUpdateManyWithoutEpisodesInput = {
 
 export type SummariesCountOutputType = {
   analytics_events: number
+  daily_analytics: number
   royalty_line_items: number
 }
 
 export type SummariesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   analytics_events?: boolean | SummariesCountOutputTypeCountAnalytics_eventsArgs
+  daily_analytics?: boolean | SummariesCountOutputTypeCountDaily_analyticsArgs
   royalty_line_items?: boolean | SummariesCountOutputTypeCountRoyalty_line_itemsArgs
 }
 
@@ -823,6 +930,13 @@ export type SummariesCountOutputTypeCountAnalytics_eventsArgs<ExtArgs extends ru
 /**
  * SummariesCountOutputType without action
  */
+export type SummariesCountOutputTypeCountDaily_analyticsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.daily_analyticsWhereInput
+}
+
+/**
+ * SummariesCountOutputType without action
+ */
 export type SummariesCountOutputTypeCountRoyalty_line_itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.royalty_line_itemsWhereInput
 }
@@ -839,6 +953,7 @@ export type summariesSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   created_at?: boolean
   updated_at?: boolean
   analytics_events?: boolean | Prisma.summaries$analytics_eventsArgs<ExtArgs>
+  daily_analytics?: boolean | Prisma.summaries$daily_analyticsArgs<ExtArgs>
   royalty_line_items?: boolean | Prisma.summaries$royalty_line_itemsArgs<ExtArgs>
   episodes?: boolean | Prisma.episodesDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SummariesCountOutputTypeDefaultArgs<ExtArgs>
@@ -885,6 +1000,7 @@ export type summariesSelectScalar = {
 export type summariesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "episode_id" | "summary_type" | "content" | "metadata" | "view_count" | "share_count" | "created_at" | "updated_at", ExtArgs["result"]["summaries"]>
 export type summariesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   analytics_events?: boolean | Prisma.summaries$analytics_eventsArgs<ExtArgs>
+  daily_analytics?: boolean | Prisma.summaries$daily_analyticsArgs<ExtArgs>
   royalty_line_items?: boolean | Prisma.summaries$royalty_line_itemsArgs<ExtArgs>
   episodes?: boolean | Prisma.episodesDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SummariesCountOutputTypeDefaultArgs<ExtArgs>
@@ -900,6 +1016,7 @@ export type $summariesPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "summaries"
   objects: {
     analytics_events: Prisma.$analytics_eventsPayload<ExtArgs>[]
+    daily_analytics: Prisma.$daily_analyticsPayload<ExtArgs>[]
     royalty_line_items: Prisma.$royalty_line_itemsPayload<ExtArgs>[]
     episodes: Prisma.$episodesPayload<ExtArgs>
   }
@@ -1308,6 +1425,7 @@ readonly fields: summariesFieldRefs;
 export interface Prisma__summariesClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   analytics_events<T extends Prisma.summaries$analytics_eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.summaries$analytics_eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$analytics_eventsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  daily_analytics<T extends Prisma.summaries$daily_analyticsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.summaries$daily_analyticsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$daily_analyticsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   royalty_line_items<T extends Prisma.summaries$royalty_line_itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.summaries$royalty_line_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$royalty_line_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   episodes<T extends Prisma.episodesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.episodesDefaultArgs<ExtArgs>>): Prisma.Prisma__episodesClient<runtime.Types.Result.GetResult<Prisma.$episodesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1765,6 +1883,30 @@ export type summaries$analytics_eventsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.Analytics_eventsScalarFieldEnum | Prisma.Analytics_eventsScalarFieldEnum[]
+}
+
+/**
+ * summaries.daily_analytics
+ */
+export type summaries$daily_analyticsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the daily_analytics
+   */
+  select?: Prisma.daily_analyticsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the daily_analytics
+   */
+  omit?: Prisma.daily_analyticsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.daily_analyticsInclude<ExtArgs> | null
+  where?: Prisma.daily_analyticsWhereInput
+  orderBy?: Prisma.daily_analyticsOrderByWithRelationInput | Prisma.daily_analyticsOrderByWithRelationInput[]
+  cursor?: Prisma.daily_analyticsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Daily_analyticsScalarFieldEnum | Prisma.Daily_analyticsScalarFieldEnum[]
 }
 
 /**

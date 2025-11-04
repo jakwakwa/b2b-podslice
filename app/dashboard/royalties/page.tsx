@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
-import type { Organization, Royalty } from "@/lib/db";
+import type { Organization, Royalty } from "@/lib/db.types";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/royalties";
 
@@ -27,10 +27,16 @@ export default async function RoyaltiesPage() {
         },
     });
 
-    const royalties = await prisma.royalties.findMany({
+    const royaltiesRaw = await prisma.royalties.findMany({
         where: { organization_id: user.organization_id },
         orderBy: { period_start: "desc" },
     });
+
+    // Serialize Decimal fields to numbers for client components
+    const royalties = royaltiesRaw.map(r => ({
+        ...r,
+        calculated_amount: Number(r.calculated_amount || 0),
+    }));
 
     // Get current month start date
     const now = new Date();
@@ -61,11 +67,11 @@ export default async function RoyaltiesPage() {
 
     const totalEarnings = royalties
         .filter(r => r.payment_status === "paid")
-        .reduce((sum, r) => sum + Number(r.calculated_amount || 0), 0);
+        .reduce((sum, r) => sum + r.calculated_amount, 0);
 
     const pendingEarnings = royalties
         .filter(r => r.payment_status === "pending")
-        .reduce((sum, r) => sum + Number(r.calculated_amount || 0), 0);
+        .reduce((sum, r) => sum + r.calculated_amount, 0);
 
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
@@ -142,7 +148,7 @@ export default async function RoyaltiesPage() {
                 <div className="mt-8">
                     <Card className="p-6">
                         <h2 className="mb-6 text-xl font-semibold">Earnings Over Time</h2>
-                        <RoyaltyChart royalties={royalties as unknown as Royalty[]} />
+                        <RoyaltyChart royalties={royalties} />
                     </Card>
                 </div>
 
@@ -202,7 +208,7 @@ export default async function RoyaltiesPage() {
                                                 <div>
                                                     <p className="text-sm text-muted-foreground">Amount</p>
                                                     <p className="mt-1 font-medium">
-                                                        {formatCurrency(Number(royalty.calculated_amount))}
+                                                        {formatCurrency(royalty.calculated_amount)}
                                                     </p>
                                                 </div>
                                             </div>

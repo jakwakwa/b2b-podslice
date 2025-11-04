@@ -1,5 +1,7 @@
 "use client"
 import { formatCurrency } from "@/lib/royalties"
+import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar } from "recharts"
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 
 type Royalty = {
   id: string
@@ -13,42 +15,41 @@ export function RoyaltyChart({ royalties }: { royalties: Royalty[] }) {
     return <div className="flex h-64 items-center justify-center text-muted-foreground">No data available</div>
   }
 
-  const maxAmount = Math.max(...royalties.map((r) => Number(r.calculated_amount)))
-  const chartData = royalties.slice(0, 12).reverse()
+  const chartData = royalties
+    .slice(0, 12)
+    .reverse()
+    .map((r) => ({
+      id: r.id,
+      month: new Date(r.period_start).toLocaleDateString("en-US", { month: "short" }),
+      amount: Number(r.calculated_amount),
+      paid: r.payment_status === "paid",
+    }))
 
   return (
-    <div className="space-y-4">
-      <div className="flex h-64 items-end gap-2">
-        {chartData.map((royalty, index) => {
-          const height = maxAmount > 0 ? (Number(royalty.calculated_amount) / maxAmount) * 100 : 0
-          const isPaid = royalty.payment_status === "paid"
-
-          return (
-            <div key={royalty.id} className="flex flex-1 flex-col items-center gap-2">
-              <div className="relative w-full">
-                <div
-                  className={`w-full rounded-t transition-all ${isPaid ? "bg-primary" : "bg-muted"}`}
-                  style={{ height: `${Math.max(height, 5)}%` }}
-                  title={formatCurrency(Number(royalty.calculated_amount))}
+    <ChartContainer className="h-64 w-full">
+      <ResponsiveContainer>
+        <BarChart data={chartData} margin={{ left: 12, right: 12, top: 8 }}>
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))" }} />
+          <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => formatCurrency(v)} />
+          <Tooltip
+            content={({ active, payload, label }) => {
+              if (!active || !payload || payload.length === 0) return null
+              const p = payload[0].payload as any
+              return (
+                <ChartTooltipContent
+                  active
+                  payload={[
+                    { name: p.paid ? "Paid" : "Pending", value: formatCurrency(p.amount), color: p.paid ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" },
+                  ]}
+                  label={label}
                 />
-              </div>
-              <span className="text-xs text-muted-foreground">
-                {new Date(royalty.period_start).toLocaleDateString("en-US", { month: "short" })}
-              </span>
-            </div>
-          )
-        })}
-      </div>
-      <div className="flex items-center justify-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded bg-primary" />
-          <span className="text-muted-foreground">Paid</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="h-3 w-3 rounded bg-muted" />
-          <span className="text-muted-foreground">Pending</span>
-        </div>
-      </div>
-    </div>
+              )
+            }}
+          />
+          <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartContainer>
   )
 }

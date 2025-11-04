@@ -316,10 +316,6 @@ export type email_verification_tokensOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type email_verification_tokensCreateNestedManyWithoutUsersInput = {
   create?: Prisma.XOR<Prisma.email_verification_tokensCreateWithoutUsersInput, Prisma.email_verification_tokensUncheckedCreateWithoutUsersInput> | Prisma.email_verification_tokensCreateWithoutUsersInput[] | Prisma.email_verification_tokensUncheckedCreateWithoutUsersInput[]
   connectOrCreate?: Prisma.email_verification_tokensCreateOrConnectWithoutUsersInput | Prisma.email_verification_tokensCreateOrConnectWithoutUsersInput[]

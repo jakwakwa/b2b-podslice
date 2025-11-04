@@ -8,6 +8,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/analytics_events'
+export type * from './models/daily_analytics'
 export type * from './models/clips'
 export type * from './models/email_verification_tokens'
 export type * from './models/episodes'

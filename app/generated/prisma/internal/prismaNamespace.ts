@@ -390,6 +390,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   analytics_events: 'analytics_events',
+  daily_analytics: 'daily_analytics',
   clips: 'clips',
   email_verification_tokens: 'email_verification_tokens',
   episodes: 'episodes',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "analytics_events" | "clips" | "email_verification_tokens" | "episodes" | "licenses" | "organizations" | "password_reset_tokens" | "podcasts" | "royalties" | "royalty_line_items" | "sessions" | "summaries" | "users"
+    modelProps: "analytics_events" | "daily_analytics" | "clips" | "email_verification_tokens" | "episodes" | "licenses" | "organizations" | "password_reset_tokens" | "podcasts" | "royalties" | "royalty_line_items" | "sessions" | "summaries" | "users"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -492,6 +493,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.analytics_eventsCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.Analytics_eventsCountAggregateOutputType> | number
+        }
+      }
+    }
+    daily_analytics: {
+      payload: Prisma.$daily_analyticsPayload<ExtArgs>
+      fields: Prisma.daily_analyticsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.daily_analyticsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.daily_analyticsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>
+        }
+        findFirst: {
+          args: Prisma.daily_analyticsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.daily_analyticsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>
+        }
+        findMany: {
+          args: Prisma.daily_analyticsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>[]
+        }
+        create: {
+          args: Prisma.daily_analyticsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>
+        }
+        createMany: {
+          args: Prisma.daily_analyticsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.daily_analyticsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>[]
+        }
+        delete: {
+          args: Prisma.daily_analyticsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>
+        }
+        update: {
+          args: Prisma.daily_analyticsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>
+        }
+        deleteMany: {
+          args: Prisma.daily_analyticsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.daily_analyticsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.daily_analyticsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>[]
+        }
+        upsert: {
+          args: Prisma.daily_analyticsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$daily_analyticsPayload>
+        }
+        aggregate: {
+          args: Prisma.Daily_analyticsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDaily_analytics>
+        }
+        groupBy: {
+          args: Prisma.daily_analyticsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Daily_analyticsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.daily_analyticsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Daily_analyticsCountAggregateOutputType> | number
         }
       }
     }
@@ -1430,10 +1505,36 @@ export const Analytics_eventsScalarFieldEnum = {
   ip_address: 'ip_address',
   user_agent: 'user_agent',
   referrer: 'referrer',
+  device_type: 'device_type',
+  browser_name: 'browser_name',
+  os_name: 'os_name',
+  country: 'country',
+  region: 'region',
+  city: 'city',
+  duration_ms: 'duration_ms',
+  progress_pct: 'progress_pct',
   created_at: 'created_at'
 } as const
 
 export type Analytics_eventsScalarFieldEnum = (typeof Analytics_eventsScalarFieldEnum)[keyof typeof Analytics_eventsScalarFieldEnum]
+
+
+export const Daily_analyticsScalarFieldEnum = {
+  id: 'id',
+  day: 'day',
+  summary_id: 'summary_id',
+  views: 'views',
+  shares: 'shares',
+  clicks: 'clicks',
+  plays: 'plays',
+  completes: 'completes',
+  listen_ms_total: 'listen_ms_total',
+  completion_rate: 'completion_rate',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Daily_analyticsScalarFieldEnum = (typeof Daily_analyticsScalarFieldEnum)[keyof typeof Daily_analyticsScalarFieldEnum]
 
 
 export const ClipsScalarFieldEnum = {
@@ -1697,20 +1798,6 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
- * Reference to a field of type 'DateTime'
- */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime[]'
- */
-export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1721,6 +1808,34 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -1756,20 +1871,6 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1860,6 +1961,7 @@ export interface PrismaClientOptions {
 }
 export type GlobalOmitConfig = {
   analytics_events?: Prisma.analytics_eventsOmit
+  daily_analytics?: Prisma.daily_analyticsOmit
   clips?: Prisma.clipsOmit
   email_verification_tokens?: Prisma.email_verification_tokensOmit
   episodes?: Prisma.episodesOmit

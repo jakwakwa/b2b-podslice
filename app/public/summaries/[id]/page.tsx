@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { SummaryWithAttribution } from "@/components/summary-with-attribution"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { PublicEpisodeAudio } from "@/components/public-episode-audio"
 
 export default async function PublicSummaryPage({
   params,
@@ -116,6 +117,10 @@ export default async function PublicSummaryPage({
               Enjoying this content? Support the creator by listening to the full episode.
             </p>
           </div>
+
+          {summary.episodes.audio_url && (
+            <PublicEpisodeAudio summaryId={summary.id} audioUrl={summary.episodes.audio_url} />
+          )}
         </div>
       </main>
     </div>

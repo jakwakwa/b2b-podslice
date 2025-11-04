@@ -127,12 +127,7 @@ export default async function PayoutSettingsPage() {
 							Complete your Payoneer account setup. You'll need to provide your
 							business details and bank account information.
 						</p>
-						<PayoneerOnboardingForm
-							onSuccess={() => {
-								// Page will refresh after successful submission
-								// User can then fill out tax form
-							}}
-						/>
+					<PayoneerOnboardingForm />
 					</div>
 				)}
 
@@ -146,11 +141,7 @@ export default async function PayoutSettingsPage() {
 							Provide your tax identification information. This is required to
 							process royalty payouts in compliance with local regulations.
 						</p>
-						<TaxProfileForm
-							onSuccess={() => {
-								// Page will refresh after successful submission
-							}}
-						/>
+					<TaxProfileForm />
 					</div>
 				)}
 

@@ -10,10 +10,21 @@ const isAccelerateUrl = Boolean(
 )
 
 const baseClient =
-  globalForPrisma.prisma || new PrismaClient({ datasourceUrl: databaseUrl })
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    datasourceUrl: databaseUrl,
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+  })
 
 const prisma = isAccelerateUrl ? baseClient.$extends(withAccelerate()) : baseClient
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = baseClient
+
+// Graceful shutdown
+if (process.env.NODE_ENV === "production") {
+  process.on("beforeExit", async () => {
+    await prisma.$disconnect()
+  })
+}
 
 export default prisma

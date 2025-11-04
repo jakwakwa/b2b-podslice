@@ -49,6 +49,11 @@ path.join(process.cwd(), "app/generated/prisma/libquery_engine-darwin-arm64.dyli
  */
 export type analytics_events = Prisma.analytics_eventsModel
 /**
+ * Model daily_analytics
+ * Daily pre-aggregated analytics for fast queries
+ */
+export type daily_analytics = Prisma.daily_analyticsModel
+/**
  * Model clips
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  */

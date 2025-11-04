@@ -49,6 +49,7 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 
 export const ModelName = {
   analytics_events: 'analytics_events',
+  daily_analytics: 'daily_analytics',
   clips: 'clips',
   email_verification_tokens: 'email_verification_tokens',
   episodes: 'episodes',
@@ -87,10 +88,36 @@ export const Analytics_eventsScalarFieldEnum = {
   ip_address: 'ip_address',
   user_agent: 'user_agent',
   referrer: 'referrer',
+  device_type: 'device_type',
+  browser_name: 'browser_name',
+  os_name: 'os_name',
+  country: 'country',
+  region: 'region',
+  city: 'city',
+  duration_ms: 'duration_ms',
+  progress_pct: 'progress_pct',
   created_at: 'created_at'
 } as const
 
 export type Analytics_eventsScalarFieldEnum = (typeof Analytics_eventsScalarFieldEnum)[keyof typeof Analytics_eventsScalarFieldEnum]
+
+
+export const Daily_analyticsScalarFieldEnum = {
+  id: 'id',
+  day: 'day',
+  summary_id: 'summary_id',
+  views: 'views',
+  shares: 'shares',
+  clicks: 'clicks',
+  plays: 'plays',
+  completes: 'completes',
+  listen_ms_total: 'listen_ms_total',
+  completion_rate: 'completion_rate',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Daily_analyticsScalarFieldEnum = (typeof Daily_analyticsScalarFieldEnum)[keyof typeof Daily_analyticsScalarFieldEnum]
 
 
 export const ClipsScalarFieldEnum = {

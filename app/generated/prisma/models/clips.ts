@@ -454,14 +454,6 @@ export type clipsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type clipsCreateNestedManyWithoutEpisodesInput = {
   create?: Prisma.XOR<Prisma.clipsCreateWithoutEpisodesInput, Prisma.clipsUncheckedCreateWithoutEpisodesInput> | Prisma.clipsCreateWithoutEpisodesInput[] | Prisma.clipsUncheckedCreateWithoutEpisodesInput[]
   connectOrCreate?: Prisma.clipsCreateOrConnectWithoutEpisodesInput | Prisma.clipsCreateOrConnectWithoutEpisodesInput[]

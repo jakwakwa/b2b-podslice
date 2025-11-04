@@ -609,14 +609,6 @@ export type episodesUpdateOneRequiredWithoutClipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.episodesUpdateToOneWithWhereWithoutClipsInput, Prisma.episodesUpdateWithoutClipsInput>, Prisma.episodesUncheckedUpdateWithoutClipsInput>
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableBigIntFieldUpdateOperationsInput = {
   set?: bigint | number | null
   increment?: bigint | number

@@ -4,7 +4,7 @@ import { DashboardHeader } from "@/components/dashboard-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
-import type { Organization } from "@/lib/db";
+import type { Organization } from "@/lib/db.types";
 import prisma from "@/lib/prisma";
 import { formatCurrency } from "@/lib/royalties";
 

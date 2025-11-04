@@ -1,7 +1,7 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { sql } from "./db"
+import prisma from "@/lib/prisma"
 
 export async function getCurrentUser() {
   const cookieStore = await cookies()
@@ -11,15 +11,28 @@ export async function getCurrentUser() {
     return null
   }
 
-  const users = await sql`
-    SELECT u.*, o.name as organization_name, o.slug as organization_slug
-    FROM users u
-    LEFT JOIN organizations o ON o.id = u.organization_id
-    WHERE u.id = ${userId}
-    LIMIT 1
-  `
+  const user = await prisma.users.findUnique({
+    where: { id: userId },
+    include: {
+      organizations: {
+        select: {
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  })
 
-  return users[0] || null
+  if (!user) {
+    return null
+  }
+
+  // Flatten organization data to match expected format
+  return {
+    ...user,
+    organization_name: user.organizations?.name || null,
+    organization_slug: user.organizations?.slug || null,
+  }
 }
 
 export async function setCurrentUser(userId: string) {

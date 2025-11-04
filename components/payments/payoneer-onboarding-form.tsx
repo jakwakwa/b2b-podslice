@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,7 +51,8 @@ interface PayoneerOnboardingFormProps {
 export function PayoneerOnboardingForm({
 	onSuccess,
 	onError,
-}: PayoneerOnboardingFormProps) {
+}: PayoneerOnboardingFormProps = {}) {
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -92,6 +94,10 @@ export function PayoneerOnboardingForm({
 
 			setSubmitSuccess(true);
 			onSuccess?.(result.payeeId);
+			// Refresh the page to show updated status
+			if (!onSuccess) {
+				router.refresh();
+			}
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "Unknown error";

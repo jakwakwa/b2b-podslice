@@ -17,11 +17,42 @@ model analytics_events {
   ip_address String?
   user_agent String?
   referrer   String?
+  // Standard enrichment fields
+  device_type String?
+  browser_name String?
+  os_name     String?
+  country     String?
+  region      String?
+  city        String?
+  // Playback metrics (per event)
+  duration_ms  Int?
+  progress_pct Float?
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   summaries  summaries @relation(fields: [summary_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([created_at], map: "idx_analytics_created")
   @@index([summary_id], map: "idx_analytics_summary")
+}
+
+/// Daily pre-aggregated analytics for fast queries
+model daily_analytics {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  day              DateTime  @db.Date
+  summary_id       String    @db.Uuid
+  views            Int       @default(0)
+  shares           Int       @default(0)
+  clicks           Int       @default(0)
+  plays            Int       @default(0)
+  completes        Int       @default(0)
+  listen_ms_total  Int       @default(0)
+  completion_rate  Float     @default(0)
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime? @default(now()) @db.Timestamptz(6)
+
+  summaries  summaries @relation(fields: [summary_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([summary_id, day], map: "uniq_daily_summary_day")
+  @@index([day], map: "idx_daily_analytics_day")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -146,20 +177,20 @@ model podcasts {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model royalties {
-  id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organization_id         String               @db.Uuid
-  period_start            DateTime             @db.Date
-  period_end              DateTime             @db.Date
-  total_views             Int?                 @default(0)
-  total_shares            Int?                 @default(0)
-  calculated_amount       Decimal?             @default(0.00) @db.Decimal(10, 2)
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id    String               @db.Uuid
+  period_start       DateTime             @db.Date
+  period_end         DateTime             @db.Date
+  total_views        Int?                 @default(0)
+  total_shares       Int?                 @default(0)
+  calculated_amount  Decimal?             @default(0.00) @db.Decimal(10, 2)
   payment_status          String?              @default("pending")
   paid_at                 DateTime?            @db.Timestamptz(6)
   payoneer_transaction_id String?
   created_at              DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at              DateTime?            @default(now()) @db.Timestamptz(6)
   organizations           organizations        @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  royalty_line_items      royalty_line_items[]
+  royalty_line_items royalty_line_items[]
 
   @@index([organization_id], map: "idx_royalties_organization")
   @@index([payment_status], map: "idx_royalties_status")
@@ -201,6 +232,7 @@ model summaries {
   created_at         DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
   analytics_events   analytics_events[]
+  daily_analytics    daily_analytics[]
   royalty_line_items royalty_line_items[]
   episodes           episodes             @relation(fields: [episode_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 

@@ -19,8 +19,20 @@ export type analytics_eventsModel = runtime.Types.Result.DefaultSelection<Prisma
 
 export type AggregateAnalytics_events = {
   _count: Analytics_eventsCountAggregateOutputType | null
+  _avg: Analytics_eventsAvgAggregateOutputType | null
+  _sum: Analytics_eventsSumAggregateOutputType | null
   _min: Analytics_eventsMinAggregateOutputType | null
   _max: Analytics_eventsMaxAggregateOutputType | null
+}
+
+export type Analytics_eventsAvgAggregateOutputType = {
+  duration_ms: number | null
+  progress_pct: number | null
+}
+
+export type Analytics_eventsSumAggregateOutputType = {
+  duration_ms: number | null
+  progress_pct: number | null
 }
 
 export type Analytics_eventsMinAggregateOutputType = {
@@ -30,6 +42,14 @@ export type Analytics_eventsMinAggregateOutputType = {
   ip_address: string | null
   user_agent: string | null
   referrer: string | null
+  device_type: string | null
+  browser_name: string | null
+  os_name: string | null
+  country: string | null
+  region: string | null
+  city: string | null
+  duration_ms: number | null
+  progress_pct: number | null
   created_at: Date | null
 }
 
@@ -40,6 +60,14 @@ export type Analytics_eventsMaxAggregateOutputType = {
   ip_address: string | null
   user_agent: string | null
   referrer: string | null
+  device_type: string | null
+  browser_name: string | null
+  os_name: string | null
+  country: string | null
+  region: string | null
+  city: string | null
+  duration_ms: number | null
+  progress_pct: number | null
   created_at: Date | null
 }
 
@@ -51,10 +79,28 @@ export type Analytics_eventsCountAggregateOutputType = {
   ip_address: number
   user_agent: number
   referrer: number
+  device_type: number
+  browser_name: number
+  os_name: number
+  country: number
+  region: number
+  city: number
+  duration_ms: number
+  progress_pct: number
   created_at: number
   _all: number
 }
 
+
+export type Analytics_eventsAvgAggregateInputType = {
+  duration_ms?: true
+  progress_pct?: true
+}
+
+export type Analytics_eventsSumAggregateInputType = {
+  duration_ms?: true
+  progress_pct?: true
+}
 
 export type Analytics_eventsMinAggregateInputType = {
   id?: true
@@ -63,6 +109,14 @@ export type Analytics_eventsMinAggregateInputType = {
   ip_address?: true
   user_agent?: true
   referrer?: true
+  device_type?: true
+  browser_name?: true
+  os_name?: true
+  country?: true
+  region?: true
+  city?: true
+  duration_ms?: true
+  progress_pct?: true
   created_at?: true
 }
 
@@ -73,6 +127,14 @@ export type Analytics_eventsMaxAggregateInputType = {
   ip_address?: true
   user_agent?: true
   referrer?: true
+  device_type?: true
+  browser_name?: true
+  os_name?: true
+  country?: true
+  region?: true
+  city?: true
+  duration_ms?: true
+  progress_pct?: true
   created_at?: true
 }
 
@@ -84,6 +146,14 @@ export type Analytics_eventsCountAggregateInputType = {
   ip_address?: true
   user_agent?: true
   referrer?: true
+  device_type?: true
+  browser_name?: true
+  os_name?: true
+  country?: true
+  region?: true
+  city?: true
+  duration_ms?: true
+  progress_pct?: true
   created_at?: true
   _all?: true
 }
@@ -126,6 +196,18 @@ export type Analytics_eventsAggregateArgs<ExtArgs extends runtime.Types.Extensio
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: Analytics_eventsAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: Analytics_eventsSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: Analytics_eventsMinAggregateInputType
@@ -156,6 +238,8 @@ export type analytics_eventsGroupByArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   _count?: Analytics_eventsCountAggregateInputType | true
+  _avg?: Analytics_eventsAvgAggregateInputType
+  _sum?: Analytics_eventsSumAggregateInputType
   _min?: Analytics_eventsMinAggregateInputType
   _max?: Analytics_eventsMaxAggregateInputType
 }
@@ -168,8 +252,18 @@ export type Analytics_eventsGroupByOutputType = {
   ip_address: string | null
   user_agent: string | null
   referrer: string | null
+  device_type: string | null
+  browser_name: string | null
+  os_name: string | null
+  country: string | null
+  region: string | null
+  city: string | null
+  duration_ms: number | null
+  progress_pct: number | null
   created_at: Date | null
   _count: Analytics_eventsCountAggregateOutputType | null
+  _avg: Analytics_eventsAvgAggregateOutputType | null
+  _sum: Analytics_eventsSumAggregateOutputType | null
   _min: Analytics_eventsMinAggregateOutputType | null
   _max: Analytics_eventsMaxAggregateOutputType | null
 }
@@ -200,6 +294,14 @@ export type analytics_eventsWhereInput = {
   ip_address?: Prisma.StringNullableFilter<"analytics_events"> | string | null
   user_agent?: Prisma.StringNullableFilter<"analytics_events"> | string | null
   referrer?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  device_type?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  browser_name?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  os_name?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  country?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  region?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  city?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  duration_ms?: Prisma.IntNullableFilter<"analytics_events"> | number | null
+  progress_pct?: Prisma.FloatNullableFilter<"analytics_events"> | number | null
   created_at?: Prisma.DateTimeNullableFilter<"analytics_events"> | Date | string | null
   summaries?: Prisma.XOR<Prisma.SummariesScalarRelationFilter, Prisma.summariesWhereInput>
 }
@@ -212,6 +314,14 @@ export type analytics_eventsOrderByWithRelationInput = {
   ip_address?: Prisma.SortOrderInput | Prisma.SortOrder
   user_agent?: Prisma.SortOrderInput | Prisma.SortOrder
   referrer?: Prisma.SortOrderInput | Prisma.SortOrder
+  device_type?: Prisma.SortOrderInput | Prisma.SortOrder
+  browser_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  os_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  duration_ms?: Prisma.SortOrderInput | Prisma.SortOrder
+  progress_pct?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   summaries?: Prisma.summariesOrderByWithRelationInput
 }
@@ -227,6 +337,14 @@ export type analytics_eventsWhereUniqueInput = Prisma.AtLeast<{
   ip_address?: Prisma.StringNullableFilter<"analytics_events"> | string | null
   user_agent?: Prisma.StringNullableFilter<"analytics_events"> | string | null
   referrer?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  device_type?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  browser_name?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  os_name?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  country?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  region?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  city?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  duration_ms?: Prisma.IntNullableFilter<"analytics_events"> | number | null
+  progress_pct?: Prisma.FloatNullableFilter<"analytics_events"> | number | null
   created_at?: Prisma.DateTimeNullableFilter<"analytics_events"> | Date | string | null
   summaries?: Prisma.XOR<Prisma.SummariesScalarRelationFilter, Prisma.summariesWhereInput>
 }, "id">
@@ -239,10 +357,20 @@ export type analytics_eventsOrderByWithAggregationInput = {
   ip_address?: Prisma.SortOrderInput | Prisma.SortOrder
   user_agent?: Prisma.SortOrderInput | Prisma.SortOrder
   referrer?: Prisma.SortOrderInput | Prisma.SortOrder
+  device_type?: Prisma.SortOrderInput | Prisma.SortOrder
+  browser_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  os_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  duration_ms?: Prisma.SortOrderInput | Prisma.SortOrder
+  progress_pct?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.analytics_eventsCountOrderByAggregateInput
+  _avg?: Prisma.analytics_eventsAvgOrderByAggregateInput
   _max?: Prisma.analytics_eventsMaxOrderByAggregateInput
   _min?: Prisma.analytics_eventsMinOrderByAggregateInput
+  _sum?: Prisma.analytics_eventsSumOrderByAggregateInput
 }
 
 export type analytics_eventsScalarWhereWithAggregatesInput = {
@@ -256,6 +384,14 @@ export type analytics_eventsScalarWhereWithAggregatesInput = {
   ip_address?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
   user_agent?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
   referrer?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  device_type?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  browser_name?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  os_name?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  region?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"analytics_events"> | string | null
+  duration_ms?: Prisma.IntNullableWithAggregatesFilter<"analytics_events"> | number | null
+  progress_pct?: Prisma.FloatNullableWithAggregatesFilter<"analytics_events"> | number | null
   created_at?: Prisma.DateTimeNullableWithAggregatesFilter<"analytics_events"> | Date | string | null
 }
 
@@ -266,6 +402,14 @@ export type analytics_eventsCreateInput = {
   ip_address?: string | null
   user_agent?: string | null
   referrer?: string | null
+  device_type?: string | null
+  browser_name?: string | null
+  os_name?: string | null
+  country?: string | null
+  region?: string | null
+  city?: string | null
+  duration_ms?: number | null
+  progress_pct?: number | null
   created_at?: Date | string | null
   summaries: Prisma.summariesCreateNestedOneWithoutAnalytics_eventsInput
 }
@@ -278,6 +422,14 @@ export type analytics_eventsUncheckedCreateInput = {
   ip_address?: string | null
   user_agent?: string | null
   referrer?: string | null
+  device_type?: string | null
+  browser_name?: string | null
+  os_name?: string | null
+  country?: string | null
+  region?: string | null
+  city?: string | null
+  duration_ms?: number | null
+  progress_pct?: number | null
   created_at?: Date | string | null
 }
 
@@ -288,6 +440,14 @@ export type analytics_eventsUpdateInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   summaries?: Prisma.summariesUpdateOneRequiredWithoutAnalytics_eventsNestedInput
 }
@@ -300,6 +460,14 @@ export type analytics_eventsUncheckedUpdateInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -311,6 +479,14 @@ export type analytics_eventsCreateManyInput = {
   ip_address?: string | null
   user_agent?: string | null
   referrer?: string | null
+  device_type?: string | null
+  browser_name?: string | null
+  os_name?: string | null
+  country?: string | null
+  region?: string | null
+  city?: string | null
+  duration_ms?: number | null
+  progress_pct?: number | null
   created_at?: Date | string | null
 }
 
@@ -321,6 +497,14 @@ export type analytics_eventsUpdateManyMutationInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -332,6 +516,14 @@ export type analytics_eventsUncheckedUpdateManyInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -343,7 +535,20 @@ export type analytics_eventsCountOrderByAggregateInput = {
   ip_address?: Prisma.SortOrder
   user_agent?: Prisma.SortOrder
   referrer?: Prisma.SortOrder
+  device_type?: Prisma.SortOrder
+  browser_name?: Prisma.SortOrder
+  os_name?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  duration_ms?: Prisma.SortOrder
+  progress_pct?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+}
+
+export type analytics_eventsAvgOrderByAggregateInput = {
+  duration_ms?: Prisma.SortOrder
+  progress_pct?: Prisma.SortOrder
 }
 
 export type analytics_eventsMaxOrderByAggregateInput = {
@@ -353,6 +558,14 @@ export type analytics_eventsMaxOrderByAggregateInput = {
   ip_address?: Prisma.SortOrder
   user_agent?: Prisma.SortOrder
   referrer?: Prisma.SortOrder
+  device_type?: Prisma.SortOrder
+  browser_name?: Prisma.SortOrder
+  os_name?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  duration_ms?: Prisma.SortOrder
+  progress_pct?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
 
@@ -363,7 +576,20 @@ export type analytics_eventsMinOrderByAggregateInput = {
   ip_address?: Prisma.SortOrder
   user_agent?: Prisma.SortOrder
   referrer?: Prisma.SortOrder
+  device_type?: Prisma.SortOrder
+  browser_name?: Prisma.SortOrder
+  os_name?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  duration_ms?: Prisma.SortOrder
+  progress_pct?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+}
+
+export type analytics_eventsSumOrderByAggregateInput = {
+  duration_ms?: Prisma.SortOrder
+  progress_pct?: Prisma.SortOrder
 }
 
 export type Analytics_eventsListRelationFilter = {
@@ -382,6 +608,22 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -437,6 +679,14 @@ export type analytics_eventsCreateWithoutSummariesInput = {
   ip_address?: string | null
   user_agent?: string | null
   referrer?: string | null
+  device_type?: string | null
+  browser_name?: string | null
+  os_name?: string | null
+  country?: string | null
+  region?: string | null
+  city?: string | null
+  duration_ms?: number | null
+  progress_pct?: number | null
   created_at?: Date | string | null
 }
 
@@ -447,6 +697,14 @@ export type analytics_eventsUncheckedCreateWithoutSummariesInput = {
   ip_address?: string | null
   user_agent?: string | null
   referrer?: string | null
+  device_type?: string | null
+  browser_name?: string | null
+  os_name?: string | null
+  country?: string | null
+  region?: string | null
+  city?: string | null
+  duration_ms?: number | null
+  progress_pct?: number | null
   created_at?: Date | string | null
 }
 
@@ -487,6 +745,14 @@ export type analytics_eventsScalarWhereInput = {
   ip_address?: Prisma.StringNullableFilter<"analytics_events"> | string | null
   user_agent?: Prisma.StringNullableFilter<"analytics_events"> | string | null
   referrer?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  device_type?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  browser_name?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  os_name?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  country?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  region?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  city?: Prisma.StringNullableFilter<"analytics_events"> | string | null
+  duration_ms?: Prisma.IntNullableFilter<"analytics_events"> | number | null
+  progress_pct?: Prisma.FloatNullableFilter<"analytics_events"> | number | null
   created_at?: Prisma.DateTimeNullableFilter<"analytics_events"> | Date | string | null
 }
 
@@ -497,6 +763,14 @@ export type analytics_eventsCreateManySummariesInput = {
   ip_address?: string | null
   user_agent?: string | null
   referrer?: string | null
+  device_type?: string | null
+  browser_name?: string | null
+  os_name?: string | null
+  country?: string | null
+  region?: string | null
+  city?: string | null
+  duration_ms?: number | null
+  progress_pct?: number | null
   created_at?: Date | string | null
 }
 
@@ -507,6 +781,14 @@ export type analytics_eventsUpdateWithoutSummariesInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -517,6 +799,14 @@ export type analytics_eventsUncheckedUpdateWithoutSummariesInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -527,6 +817,14 @@ export type analytics_eventsUncheckedUpdateManyWithoutSummariesInput = {
   ip_address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_agent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referrer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  device_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration_ms?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  progress_pct?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -540,6 +838,14 @@ export type analytics_eventsSelect<ExtArgs extends runtime.Types.Extensions.Inte
   ip_address?: boolean
   user_agent?: boolean
   referrer?: boolean
+  device_type?: boolean
+  browser_name?: boolean
+  os_name?: boolean
+  country?: boolean
+  region?: boolean
+  city?: boolean
+  duration_ms?: boolean
+  progress_pct?: boolean
   created_at?: boolean
   summaries?: boolean | Prisma.summariesDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["analytics_events"]>
@@ -552,6 +858,14 @@ export type analytics_eventsSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   ip_address?: boolean
   user_agent?: boolean
   referrer?: boolean
+  device_type?: boolean
+  browser_name?: boolean
+  os_name?: boolean
+  country?: boolean
+  region?: boolean
+  city?: boolean
+  duration_ms?: boolean
+  progress_pct?: boolean
   created_at?: boolean
   summaries?: boolean | Prisma.summariesDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["analytics_events"]>
@@ -564,6 +878,14 @@ export type analytics_eventsSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   ip_address?: boolean
   user_agent?: boolean
   referrer?: boolean
+  device_type?: boolean
+  browser_name?: boolean
+  os_name?: boolean
+  country?: boolean
+  region?: boolean
+  city?: boolean
+  duration_ms?: boolean
+  progress_pct?: boolean
   created_at?: boolean
   summaries?: boolean | Prisma.summariesDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["analytics_events"]>
@@ -576,10 +898,18 @@ export type analytics_eventsSelectScalar = {
   ip_address?: boolean
   user_agent?: boolean
   referrer?: boolean
+  device_type?: boolean
+  browser_name?: boolean
+  os_name?: boolean
+  country?: boolean
+  region?: boolean
+  city?: boolean
+  duration_ms?: boolean
+  progress_pct?: boolean
   created_at?: boolean
 }
 
-export type analytics_eventsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "summary_id" | "event_type" | "metadata" | "ip_address" | "user_agent" | "referrer" | "created_at", ExtArgs["result"]["analytics_events"]>
+export type analytics_eventsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "summary_id" | "event_type" | "metadata" | "ip_address" | "user_agent" | "referrer" | "device_type" | "browser_name" | "os_name" | "country" | "region" | "city" | "duration_ms" | "progress_pct" | "created_at", ExtArgs["result"]["analytics_events"]>
 export type analytics_eventsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   summaries?: boolean | Prisma.summariesDefaultArgs<ExtArgs>
 }
@@ -603,6 +933,14 @@ export type $analytics_eventsPayload<ExtArgs extends runtime.Types.Extensions.In
     ip_address: string | null
     user_agent: string | null
     referrer: string | null
+    device_type: string | null
+    browser_name: string | null
+    os_name: string | null
+    country: string | null
+    region: string | null
+    city: string | null
+    duration_ms: number | null
+    progress_pct: number | null
     created_at: Date | null
   }, ExtArgs["result"]["analytics_events"]>
   composites: {}
@@ -1035,6 +1373,14 @@ export interface analytics_eventsFieldRefs {
   readonly ip_address: Prisma.FieldRef<"analytics_events", 'String'>
   readonly user_agent: Prisma.FieldRef<"analytics_events", 'String'>
   readonly referrer: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly device_type: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly browser_name: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly os_name: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly country: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly region: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly city: Prisma.FieldRef<"analytics_events", 'String'>
+  readonly duration_ms: Prisma.FieldRef<"analytics_events", 'Int'>
+  readonly progress_pct: Prisma.FieldRef<"analytics_events", 'Float'>
   readonly created_at: Prisma.FieldRef<"analytics_events", 'DateTime'>
 }
     
