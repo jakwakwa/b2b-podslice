@@ -1,26 +1,34 @@
-import { neon } from "@neondatabase/serverless"
+import { neon } from "@neondatabase/serverless";
 
 if (!process.env.NEON_DATABASE_URL) {
-  throw new Error("NEON_DATABASE_URL environment variable is not set. Please add it to your environment variables.")
+	throw new Error(
+		"NEON_DATABASE_URL environment variable is not set. Please add it to your environment variables."
+	);
 }
 
-console.log("[v0] Database initialization: URL is", process.env.NEON_DATABASE_URL ? "configured" : "NOT SET")
+console.log(
+	"[v0] Database initialization: URL is",
+	process.env.NEON_DATABASE_URL ? "configured" : "NOT SET"
+);
 
 export const sql = neon(process.env.NEON_DATABASE_URL, {
-  fullResults: false,
-})
+	fullResults: false,
+});
 
-let isInitialized = false
+let isInitialized = false;
 
 export async function initializeDatabase() {
-  if (isInitialized) return
+	if (isInitialized) return;
 
-  try {
-    console.log("[v0] Initializing database tables...")
-    console.log("[v0] Database URL:", process.env.NEON_DATABASE_URL ? "configured" : "NOT SET")
+	try {
+		console.log("[v0] Initializing database tables...");
+		console.log(
+			"[v0] Database URL:",
+			process.env.NEON_DATABASE_URL ? "configured" : "NOT SET"
+		);
 
-    // Create all tables with IF NOT EXISTS
-    await sql`
+		// Create all tables with IF NOT EXISTS
+		await sql`
       -- Organizations (Podcast Networks/Creators)
       CREATE TABLE IF NOT EXISTS organizations (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -31,9 +39,9 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Users with role-based access and authentication
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -47,12 +55,12 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    // Ensure optional columns exist (for idempotency / local dev)
-    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ`
+		// Ensure optional columns exist (for idempotency / local dev)
+		await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ`;
 
-    await sql`
+		await sql`
       -- Email verification tokens
       CREATE TABLE IF NOT EXISTS email_verification_tokens (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -61,9 +69,9 @@ export async function initializeDatabase() {
         expires_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Session tokens for authentication
       CREATE TABLE IF NOT EXISTS sessions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -72,9 +80,9 @@ export async function initializeDatabase() {
         expires_at TIMESTAMPTZ NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Password reset tokens
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -84,9 +92,9 @@ export async function initializeDatabase() {
         used_at TIMESTAMPTZ,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Podcasts
       CREATE TABLE IF NOT EXISTS podcasts (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -103,9 +111,9 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Episodes
       CREATE TABLE IF NOT EXISTS episodes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -123,9 +131,9 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- AI-generated summaries
       CREATE TABLE IF NOT EXISTS summaries (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -138,9 +146,9 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Licensing agreements
       CREATE TABLE IF NOT EXISTS licenses (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -155,9 +163,9 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Royalty tracking
       CREATE TABLE IF NOT EXISTS royalties (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -173,9 +181,9 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Royalty line items (detailed breakdown)
       CREATE TABLE IF NOT EXISTS royalty_line_items (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -186,9 +194,9 @@ export async function initializeDatabase() {
         amount DECIMAL(10, 2) DEFAULT 0.00,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Analytics events
       CREATE TABLE IF NOT EXISTS analytics_events (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -200,9 +208,9 @@ export async function initializeDatabase() {
         referrer TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    await sql`
+		await sql`
       -- Audio clips
       CREATE TABLE IF NOT EXISTS clips (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -215,152 +223,158 @@ export async function initializeDatabase() {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
-    `
+    `;
 
-    // Create indexes
-    await sql`CREATE INDEX IF NOT EXISTS idx_users_organization ON users(organization_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_verification_tokens_user ON email_verification_tokens(user_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_verification_tokens_token ON email_verification_tokens(token)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_podcasts_organization ON podcasts(organization_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_episodes_podcast ON episodes(podcast_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_episodes_status ON episodes(processing_status)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_summaries_episode ON summaries(episode_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_summaries_type ON summaries(summary_type)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_licenses_organization ON licenses(organization_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_royalties_organization ON royalties(organization_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_royalties_status ON royalties(payment_status)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_analytics_summary ON analytics_events(summary_id)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)`
-    await sql`CREATE INDEX IF NOT EXISTS idx_clips_episode ON clips(episode_id)`
+		// Create indexes
+		await sql`CREATE INDEX IF NOT EXISTS idx_users_organization ON users(organization_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_verification_tokens_user ON email_verification_tokens(user_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_verification_tokens_token ON email_verification_tokens(token)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_podcasts_organization ON podcasts(organization_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_episodes_podcast ON episodes(podcast_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_episodes_status ON episodes(processing_status)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_summaries_episode ON summaries(episode_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_summaries_type ON summaries(summary_type)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_licenses_organization ON licenses(organization_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_royalties_organization ON royalties(organization_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_royalties_status ON royalties(payment_status)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_analytics_summary ON analytics_events(summary_id)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)`;
+		await sql`CREATE INDEX IF NOT EXISTS idx_clips_episode ON clips(episode_id)`;
 
-    isInitialized = true
-    console.log("[v0] Database initialized successfully")
-  } catch (error) {
-    console.error("[v0] Database initialization error:", error)
-    throw error
-  }
+		isInitialized = true;
+		console.log("[v0] Database initialized successfully");
+	} catch (error) {
+		console.error("[v0] Database initialization error:", error);
+		throw error;
+	}
 }
 
 // Type definitions for database tables
 export type Organization = {
-  id: string
-  name: string
-  slug: string
-  logo_url: string | null
-  website: string | null
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	name: string;
+	slug: string;
+	logo_url: string | null;
+	website: string | null;
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type User = {
-  id: string
-  email: string
-  full_name: string
-  password_hash: string
-  avatar_url: string | null
-  role: "admin" | "creator" | "viewer"
-  organization_id: string | null
-  email_verified: boolean
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	email: string;
+	full_name: string;
+	password_hash: string;
+	avatar_url: string | null;
+	role: "admin" | "creator" | "viewer";
+	organization_id: string | null;
+	email_verified: boolean;
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type Podcast = {
-  id: string
-  organization_id: string
-  title: string
-  description: string | null
-  cover_image_url: string | null
-  rss_feed_url: string | null
-  website_url: string | null
-  author: string | null
-  category: string | null
-  language: string
-  is_active: boolean
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	organization_id: string;
+	title: string;
+	description: string | null;
+	cover_image_url: string | null;
+	rss_feed_url: string | null;
+	website_url: string | null;
+	author: string | null;
+	category: string | null;
+	language: string;
+	is_active: boolean;
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type Episode = {
-  id: string
-  podcast_id: string
-  title: string
-  description: string | null
-  audio_url: string
-  duration_seconds: number | null
-  file_size_bytes: number | null
-  episode_number: number | null
-  season_number: number | null
-  published_at: Date | null
-  transcript: string | null
-  processing_status: "pending" | "processing" | "completed" | "failed"
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	podcast_id: string;
+	title: string;
+	description: string | null;
+	audio_url: string;
+	duration_seconds: number | null;
+	file_size_bytes: number | null;
+	episode_number: number | null;
+	season_number: number | null;
+	published_at: Date | null;
+	transcript: string | null;
+	processing_status: "pending" | "processing" | "completed" | "failed";
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type Summary = {
-  id: string
-  episode_id: string
-  summary_type: "full" | "highlight" | "social_twitter" | "social_linkedin" | "social_instagram" | "show_notes"
-  content: string
-  metadata: Record<string, any>
-  view_count: number
-  share_count: number
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	episode_id: string;
+	summary_type:
+		| "full"
+		| "highlight"
+		| "social_twitter"
+		| "social_linkedin"
+		| "social_instagram"
+		| "show_notes";
+	content: string;
+	metadata: Record<string, unknown>;
+	view_count: number;
+	share_count: number;
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type License = {
-  id: string
-  organization_id: string
-  license_type: "b2b_only" | "b2b_b2c"
-  terms_version: string
-  signed_at: Date
-  signed_by_user_id: string | null
-  is_active: boolean
-  tdm_opt_out: boolean
-  custom_terms: Record<string, any>
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	organization_id: string;
+	license_type: "b2b_only" | "b2b_b2c";
+	terms_version: string;
+	signed_at: Date;
+	signed_by_user_id: string | null;
+	is_active: boolean;
+	tdm_opt_out: boolean;
+	custom_terms: Record<string, unknown>;
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type Royalty = {
-  id: string
-  organization_id: string
-  period_start: Date
-  period_end: Date
-  total_views: number
-  total_shares: number
-  calculated_amount: number
-  payment_status: "pending" | "processing" | "paid" | "failed"
-  paid_at: Date | null
-  stripe_payout_id: string | null
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	organization_id: string;
+	period_start: Date;
+	period_end: Date;
+	total_views: number;
+	total_shares: number;
+	calculated_amount: number;
+	payment_status: "pending" | "processing" | "paid" | "failed";
+	paid_at: Date | null;
+	stripe_payout_id: string | null;
+	created_at: Date;
+	updated_at: Date;
+};
 
 export type AnalyticsEvent = {
-  id: string
-  summary_id: string
-  event_type: "view" | "share" | "click" | "download"
-  metadata: Record<string, any>
-  ip_address: string | null
-  user_agent: string | null
-  referrer: string | null
-  created_at: Date
-}
+	id: string;
+	summary_id: string;
+	event_type: "view" | "share" | "click" | "download";
+	metadata: Record<string, unknown>;
+	ip_address: string | null;
+	user_agent: string | null;
+	referrer: string | null;
+	created_at: Date;
+};
 
 export type Clip = {
-  id: string
-  episode_id: string
-  title: string
-  start_time_seconds: number
-  end_time_seconds: number
-  audio_url: string | null
-  processing_status: "pending" | "processing" | "completed" | "failed"
-  created_at: Date
-  updated_at: Date
-}
+	id: string;
+	episode_id: string;
+	title: string;
+	start_time_seconds: number;
+	end_time_seconds: number;
+	audio_url: string | null;
+	processing_status: "pending" | "processing" | "completed" | "failed";
+	created_at: Date;
+	updated_at: Date;
+};

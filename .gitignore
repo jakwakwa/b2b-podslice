@@ -1,27 +1,53 @@
+
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+/db.json
 # dependencies
-/node_modules
-
+/node_modules/
+/google-cloud-sdk/
+/secrets/
+/gcs/
 # next.js
 /.next/
 /out/
-
+/dist/
 # production
-/build
-
+/build/
+.vercel/.env.development.local
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+# *env.example.txt
 
 # env files
 .env*
-
+env.example.txt
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.package-lock.json
+.yarn.lock
+.DS_Store
+.clerk/
+/.clerk/
+# /src/generated/prisma
+.vscode/v0-ai-curated-podcast-app.code-workspace
+.env*.local
+
+.flaskenv*
+!.env.project
+!.env.vault
+!.env.production
+!.env.staging
+# never commit raw creds
+*service*account*.json
+*gcs*.json
+*uploader*.json
+*reader*.json
+*-player-script.js
+.cursor/.mcp
