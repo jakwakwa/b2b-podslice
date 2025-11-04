@@ -1,0 +1,908 @@
+---
+alwaysApply: true
+---
+This is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where content has been formatted for parsing in markdown style, security check has been disabled.
+
+# File Summary
+
+## Purpose
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+## File Format
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  a. A header with the file path (## File: path/to/file)
+  b. The full contents of the file in a code block
+
+## Usage Guidelines
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+## Notes
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching these patterns are excluded: app/generated/**/*.ts, public/**/*.svg, public/**/*.png, public/**/*.jpg, .cursor
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Content has been formatted for parsing in markdown style
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+# Directory Structure
+```
+app/
+  actions/
+    auth.ts
+    episodes.ts
+    licensing.ts
+    podcasts.ts
+    royalties.ts
+    summaries.ts
+  api/
+    analytics/
+      track/
+        route.ts
+    episodes/
+      [id]/
+        generate-summaries/
+          route.ts
+    users/
+      route.ts
+  dashboard/
+    analytics/
+      page.tsx
+    episodes/
+      [id]/
+        page.tsx
+      new/
+        page.tsx
+      page.tsx
+    licensing/
+      page.tsx
+    podcasts/
+      [id]/
+        page.tsx
+      new/
+        page.tsx
+      page.tsx
+    royalties/
+      [id]/
+        page.tsx
+      page.tsx
+    settings/
+      page.tsx
+    summaries/
+      [id]/
+        page.tsx
+    page.tsx
+  forgot-password/
+    page.tsx
+  public/
+    summaries/
+      [id]/
+        page.tsx
+  reset-password/
+    page.tsx
+  sign-in/
+    page.tsx
+  sign-up/
+    page.tsx
+  verify-email/
+    page.tsx
+  globals.css
+  layout.tsx
+  page.tsx
+components/
+  ui/
+    alert.tsx
+    badge.tsx
+    button.tsx
+    card.tsx
+    checkbox.tsx
+    dropdown-menu.tsx
+    input.tsx
+    label.tsx
+    radio-group.tsx
+    select.tsx
+    textarea.tsx
+  analytics-chart.tsx
+  dashboard-header.tsx
+  dashboard-stats.tsx
+  engagement-metrics.tsx
+  episode-list.tsx
+  episode-upload-form.tsx
+  forgot-password-form.tsx
+  generate-summaries-button.tsx
+  license-form.tsx
+  podcast-create-form.tsx
+  podcast-grid.tsx
+  podcast-list.tsx
+  recent-episodes.tsx
+  reset-password-content.tsx
+  royalty-chart.tsx
+  sign-in-form.tsx
+  sign-up-form.tsx
+  summary-actions.tsx
+  summary-list.tsx
+  summary-with-attribution.tsx
+  theme-provider.tsx
+  top-content.tsx
+  verify-email-content.tsx
+lib/
+  ai.ts
+  analytics.ts
+  attribution.tsx
+  auth.ts
+  db.ts
+  email.tsx
+  prisma.ts
+  royalties.ts
+  utils.ts
+prisma/
+  schema.prisma
+scripts/
+  001-create-tables.sql
+  002-enable-rls.sql
+  003-seed-data.sql
+  004-calculate-royalties.sql
+  005-add-auth-tokens.sql
+  006-update-seed-data.sql
+  setup-database.ts
+  test-database.ts
+styles/
+  globals.css
+.gitignore
+biome.json
+components.json
+next.config.mjs
+package.json
+postcss.config.mjs
+prisma.config.ts
+README.md
+tsconfig.json
+```
+
+# Files
+
+## File: app/actions/auth.ts
+```typescript
+"use server"
+
+import { redirect } from "next/navigation"
+import prisma from "@/lib/prisma"
+import { setCurrentUser, signOut as authSignOut } from "@/lib/auth"
+import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/email"
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const passwordData = encoder.encode(password)
+
+  const keyMaterial = await crypto.subtle.importKey("raw", passwordData, "PBKDF2", false, ["deriveBits"])
+
+  const hash = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-512",
+    },
+    keyMaterial,
+    512,
+  )
+
+  const saltHex = Array.from(salt)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+  const hashHex = Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+
+  return `${saltHex}:${hashHex}`
+}
+
+async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  const [saltHex, originalHash] = hashedPassword.split(":")
+  const encoder = new TextEncoder()
+  const passwordData = encoder.encode(password)
+
+  const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16)))
+
+  const keyMaterial = await crypto.subtle.importKey("raw", passwordData, "PBKDF2", false, ["deriveBits"])
+
+  const hash = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-512",
+    },
+    keyMaterial,
+    512,
+  )
+
+  const hashHex = Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+
+  return hashHex === originalHash
+}
+
+async function generateToken(): Promise<string> {
+  const bytes = crypto.getRandomValues(new Uint8Array(32))
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+export async function signIn(email: string, password: string) {
+  try {
+    const user = await prisma.users.findUnique({
+      where: { email },
+    })
+
+    if (!user) {
+      return { error: "Invalid credentials" }
+    }
+
+    // Check if user has a password hash (for backward compatibility)
+    if (user.password_hash) {
+      const isValid = await verifyPassword(password, user.password_hash)
+      if (!isValid) {
+        return { error: "Invalid credentials" }
+      }
+    }
+
+    // Check if email is verified
+    if (!user.email_verified) {
+      return { error: "Please verify your email address before signing in" }
+    }
+
+    await setCurrentUser(user.id)
+  } catch (error) {
+    console.error("[v0] Sign in error:", error)
+    if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+      throw error // Re-throw redirect errors
+    }
+    return { error: "An error occurred during sign in. Please try again." }
+  }
+  
+  redirect("/dashboard")
+}
+
+export async function signUp(data: {
+  email: string
+  password: string
+  fullName: string
+  organizationName: string
+}) {
+  // Check if user already exists
+  const existingUser = await prisma.users.findUnique({
+    where: { email: data.email },
+  })
+
+  if (existingUser) {
+    return { error: "User already exists" }
+  }
+
+  // Hash password
+  const passwordHash = await hashPassword(data.password)
+
+  try {
+    // Create organization
+    const organization = await prisma.organizations.create({
+      data: {
+        name: data.organizationName,
+        slug: data.organizationName.toLowerCase().replace(/\s+/g, "-"),
+      },
+    })
+
+    // Create user as admin
+    const user = await prisma.users.create({
+      data: {
+        email: data.email,
+        full_name: data.fullName,
+        role: "admin",
+        organization_id: organization.id,
+        password_hash: passwordHash,
+        email_verified: false,
+      },
+    })
+
+    // Generate verification token
+    const token = await generateToken()
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+    await prisma.email_verification_tokens.create({
+      data: {
+        user_id: user.id,
+        token,
+        expires_at: expiresAt,
+      },
+    })
+
+    // Send verification email
+    await sendVerificationEmail(data.email, token)
+
+    return {
+      success: true,
+      message: "Account created! Please check your email to verify your account.",
+    }
+  } catch (error) {
+    console.error("[v0] Sign up error:", error)
+    return { error: "Failed to create account. Please try again." }
+  }
+}
+
+export async function verifyEmail(token: string) {
+  const verificationToken = await prisma.email_verification_tokens.findUnique({
+    where: { token },
+  })
+
+  if (!verificationToken || verificationToken.expires_at < new Date()) {
+    return { error: "Invalid or expired verification token" }
+  }
+
+  try {
+    // Update user as verified
+    await prisma.users.update({
+      where: { id: verificationToken.user_id },
+      data: {
+        email_verified: true,
+        email_verified_at: new Date(),
+      },
+    })
+
+    // Delete used token
+    await prisma.email_verification_tokens.delete({
+      where: { id: verificationToken.id },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Email verification error:", error)
+    return { error: "Failed to verify email. Please try again." }
+  }
+}
+
+export async function requestPasswordReset(email: string) {
+  const user = await prisma.users.findUnique({
+    where: { email },
+  })
+
+  // Always return success to prevent email enumeration
+  if (!user) {
+    return { success: true, message: "If an account exists, a reset link has been sent." }
+  }
+
+  try {
+    // Generate reset token
+    const token = await generateToken()
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+
+    await prisma.password_reset_tokens.create({
+      data: {
+        user_id: user.id,
+        token,
+        expires_at: expiresAt,
+      },
+    })
+
+    // Send reset email
+    await sendPasswordResetEmail(email, token)
+
+    return {
+      success: true,
+      message: "If an account exists, a reset link has been sent.",
+    }
+  } catch (error) {
+    console.error("[v0] Password reset request error:", error)
+    return {
+      success: true,
+      message: "If an account exists, a reset link has been sent.",
+    }
+  }
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const resetToken = await prisma.password_reset_tokens.findUnique({
+    where: { token },
+  })
+
+  if (!resetToken || resetToken.expires_at < new Date() || resetToken.used_at) {
+    return { error: "Invalid or expired reset token" }
+  }
+
+  try {
+    // Hash new password
+    const passwordHash = await hashPassword(newPassword)
+
+    // Update user password
+    await prisma.users.update({
+      where: { id: resetToken.user_id },
+      data: { password_hash: passwordHash },
+    })
+
+    // Mark token as used
+    await prisma.password_reset_tokens.update({
+      where: { id: resetToken.id },
+      data: { used_at: new Date() },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Password reset error:", error)
+    return { error: "Failed to reset password. Please try again." }
+  }
+}
+
+export async function resendVerificationEmail(email: string) {
+  const user = await prisma.users.findUnique({
+    where: { email },
+  })
+
+  // Always return a generic success to avoid email enumeration
+  if (!user) {
+    return { success: true, message: "If an account exists, a verification email has been sent." }
+  }
+
+  if (user.email_verified) {
+    return { success: true, message: "If an account exists, a verification email has been sent." }
+  }
+
+  try {
+    // Simple rate limit: avoid resending if a token was created within last 5 minutes
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+    const recentToken = await prisma.email_verification_tokens.findFirst({
+      where: {
+        user_id: user.id,
+        created_at: {
+          gt: fiveMinutesAgo,
+        },
+      },
+    })
+
+    if (recentToken) {
+      return { success: true, message: "If an account exists, a verification email has been sent." }
+    }
+
+    // Delete old tokens
+    await prisma.email_verification_tokens.deleteMany({
+      where: { user_id: user.id },
+    })
+
+    // Generate new token
+    const token = await generateToken()
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+    await prisma.email_verification_tokens.create({
+      data: {
+        user_id: user.id,
+        token,
+        expires_at: expiresAt,
+      },
+    })
+
+    // Send verification email
+    await sendVerificationEmail(email, token)
+
+    return { success: true, message: "If an account exists, a verification email has been sent." }
+  } catch (error) {
+    console.error("[v0] Resend verification email error:", error)
+    return { success: true, message: "If an account exists, a verification email has been sent." }
+  }
+}
+
+export async function signOut() {
+  await authSignOut()
+  redirect("/")
+}
+```
+
+## File: app/actions/episodes.ts
+```typescript
+"use server"
+
+import { redirect } from "next/navigation"
+import { put } from "@vercel/blob"
+import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth"
+
+export async function uploadEpisode(formData: FormData) {
+  const user = await requireAuth()
+
+  const podcastId = formData.get("podcast_id") as string
+  const title = formData.get("title") as string
+  const description = formData.get("description") as string
+  const episodeNumber = formData.get("episode_number") as string
+  const seasonNumber = formData.get("season_number") as string
+  const audioFile = formData.get("audio_file") as File
+
+  if (!audioFile || audioFile.size === 0) {
+    return { error: "Please select an audio file" }
+  }
+
+  // Verify podcast belongs to user's organization
+  const podcast = await prisma.podcasts.findFirst({
+    where: {
+      id: podcastId,
+      organization_id: user.organization_id,
+    },
+  })
+
+  if (!podcast) {
+    return { error: "Podcast not found" }
+  }
+
+  try {
+    // Upload audio file to Vercel Blob
+    const blob = await put(`episodes/${podcastId}/${Date.now()}-${audioFile.name}`, audioFile, {
+      access: "public",
+    })
+
+    // Create episode record using Prisma
+    const episode = await prisma.episodes.create({
+      data: {
+        podcast_id: podcastId,
+        title,
+        description: description || null,
+        audio_url: blob.url,
+        file_size_bytes: BigInt(audioFile.size),
+        episode_number: episodeNumber ? Number.parseInt(episodeNumber) : null,
+        season_number: seasonNumber ? Number.parseInt(seasonNumber) : null,
+        processing_status: "completed",
+      },
+    })
+
+    redirect(`/dashboard/episodes/${episode.id}`)
+  } catch (error) {
+    console.error("[v0] Episode upload error:", error)
+    return { error: "Failed to upload episode" }
+  }
+}
+
+export async function deleteEpisode(episodeId: string) {
+  const user = await requireAuth()
+
+  // Verify episode belongs to user's organization
+  const episode = await prisma.episodes.findFirst({
+    where: {
+      id: episodeId,
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+  })
+
+  if (!episode) {
+    return { error: "Episode not found" }
+  }
+
+  await prisma.episodes.delete({
+    where: {
+      id: episodeId,
+    },
+  })
+
+  return { success: true }
+}
+```
+
+## File: app/actions/licensing.ts
+```typescript
+"use server"
+
+import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth"
+
+export async function signLicense(data: {
+  organizationId: string
+  userId: string
+  licenseType: "b2b_only" | "b2b_b2c"
+  tdmOptOut: boolean
+}) {
+  const user = await requireAuth()
+
+  // Verify user belongs to organization
+  if (user.organization_id !== data.organizationId) {
+    return { error: "Unauthorized" }
+  }
+
+  // Only admins can sign licenses
+  if (user.role !== "admin") {
+    return { error: "Only administrators can sign license agreements" }
+  }
+
+  try {
+    // Deactivate any existing active licenses
+    await prisma.licenses.updateMany({
+      where: {
+        organization_id: data.organizationId,
+        is_active: true,
+      },
+      data: {
+        is_active: false,
+      },
+    })
+
+    // Create new license
+    await prisma.licenses.create({
+      data: {
+        organization_id: data.organizationId,
+        license_type: data.licenseType,
+        terms_version: "v1.0",
+        signed_by_user_id: data.userId,
+        tdm_opt_out: data.tdmOptOut,
+        is_active: true,
+      },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] License signing error:", error)
+    return { error: "Failed to sign license agreement" }
+  }
+}
+```
+
+## File: app/actions/podcasts.ts
+```typescript
+"use server"
+
+import { redirect } from "next/navigation"
+import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth"
+
+export async function createPodcast(formData: FormData) {
+  const user = await requireAuth()
+
+  const title = formData.get("title") as string
+  const description = formData.get("description") as string
+  const author = formData.get("author") as string
+  const category = formData.get("category") as string
+  const websiteUrl = formData.get("website_url") as string
+
+  if (!title || title.trim().length === 0) {
+    return { error: "Podcast title is required" }
+  }
+
+  try {
+    // Create podcast record using Prisma
+    const podcast = await prisma.podcasts.create({
+      data: {
+        organization_id: user.organization_id,
+        title,
+        description: description || null,
+        author: author || null,
+        category: category || null,
+        website_url: websiteUrl || null,
+        is_active: true,
+      },
+    })
+
+    redirect(`/dashboard/podcasts/${podcast.id}`)
+  } catch (error) {
+    console.error("Failed to create podcast:", error)
+    return { error: "Failed to create podcast. Please try again." }
+  }
+}
+```
+
+## File: app/actions/royalties.ts
+```typescript
+"use server"
+
+import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth"
+import { calculateRoyalty, getPayoutSchedule } from "@/lib/royalties"
+
+export async function calculateMonthlyRoyalties(organizationId: string, year: number, month: number) {
+  const user = await requireAuth()
+
+  if (user.organization_id !== organizationId || user.role !== "admin") {
+    return { error: "Unauthorized" }
+  }
+
+  const { start, end } = getPayoutSchedule(new Date(year, month - 1, 1))
+
+  try {
+    // Get all summaries and their engagement for the period
+    const summaries = await prisma.summaries.findMany({
+      where: {
+        episodes: {
+          podcasts: {
+            organization_id: organizationId,
+          },
+        },
+        created_at: {
+          gte: start,
+          lte: end,
+        },
+      },
+      select: {
+        id: true,
+        view_count: true,
+        share_count: true,
+      },
+    })
+
+    const totalViews = summaries.reduce((sum, s) => sum + (s.view_count || 0), 0)
+    const totalShares = summaries.reduce((sum, s) => sum + (s.share_count || 0), 0)
+    const calculatedAmount = calculateRoyalty(totalViews, totalShares)
+
+    // Check if royalty record already exists
+    const existing = await prisma.royalties.findFirst({
+      where: {
+        organization_id: organizationId,
+        period_start: start,
+        period_end: end,
+      },
+    })
+
+    if (existing) {
+      // Update existing record
+      await prisma.royalties.update({
+        where: { id: existing.id },
+        data: {
+          total_views: totalViews,
+          total_shares: totalShares,
+          calculated_amount: calculatedAmount,
+          updated_at: new Date(),
+        },
+      })
+    } else {
+      // Create new royalty record
+      const royalty = await prisma.royalties.create({
+        data: {
+          organization_id: organizationId,
+          period_start: start,
+          period_end: end,
+          total_views: totalViews,
+          total_shares: totalShares,
+          calculated_amount: calculatedAmount,
+          payment_status: "pending",
+        },
+      })
+
+      // Create line items for each summary
+      for (const summary of summaries) {
+        const amount = calculateRoyalty(summary.view_count || 0, summary.share_count || 0)
+        await prisma.royalty_line_items.create({
+          data: {
+            royalty_id: royalty.id,
+            summary_id: summary.id,
+            views: summary.view_count || 0,
+            shares: summary.share_count || 0,
+            amount: amount,
+          },
+        })
+      }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Calculate royalties error:", error)
+    return { error: "Failed to calculate royalties" }
+  }
+}
+
+export async function processPayment(royaltyId: string) {
+  const user = await requireAuth()
+
+  if (user.role !== "admin") {
+    return { error: "Unauthorized" }
+  }
+
+  try {
+    // Verify royalty belongs to user's organization
+    const royalty = await prisma.royalties.findFirst({
+      where: {
+        id: royaltyId,
+        organization_id: user.organization_id,
+      },
+    })
+
+    if (!royalty) {
+      return { error: "Royalty not found" }
+    }
+
+    if (royalty.payment_status === "paid") {
+      return { error: "Payment already processed" }
+    }
+
+    // In a real implementation, this would integrate with Stripe
+    // For demo purposes, we'll simulate the payment
+    await prisma.royalties.update({
+      where: { id: royaltyId },
+      data: { payment_status: "processing" },
+    })
+
+    // Simulate Stripe payout
+    const stripePayoutId = `po_${Date.now()}`
+
+    await prisma.royalties.update({
+      where: { id: royaltyId },
+      data: {
+        payment_status: "paid",
+        paid_at: new Date(),
+        stripe_payout_id: stripePayoutId,
+      },
+    })
+
+    return { success: true, payoutId: stripePayoutId }
+  } catch (error) {
+    console.error("[v0] Process payment error:", error)
+
+    await prisma.royalties.update({
+      where: { id: royaltyId },
+      data: { payment_status: "failed" },
+    })
+
+    return { error: "Failed to process payment" }
+  }
+}
+```
+
+## File: app/actions/summaries.ts
+```typescript
+"use server"
+
+import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth"
+import {
+  generateEpisodeSummary,
+  generateHighlights,
+  generateSocialPost,
+  generateShowNotes,
+  generateTranscript,
+} from "@/lib/ai"
+
+export async function generateAllSummaries(episodeId: string) {
+  const user = await requireAuth()
+
+  // Verify episode belongs to user's organization
+  const episode = await prisma.episodes.findFirst({
+    where: {
+      id: episodeId,
+      podcasts: {
+        organization_id: user.organization_id,
+      },
+    },
+    include: {
+      podcasts: {
+        select: { organization_id: true },
+      },
+    },
+  })
+
+  if (!episode) {
+    return { error: "Episode not found" }
+  }
+
+  try {
+    // Update status to processing
+    await prisma.episodes.update({
+      where: { id: episodeId },
+      data: { processing_status: "processing" },
+    })
+
+    // Generate or get transcript
+    let transcript = episode.transcript
+    if (!transcript) {
+      transcript = await generateTranscript(episode.audio_url)
+      await prisma.episodes.update({
+        where: { id: episodeId },
+        data: { transcript },
+      })
+    }

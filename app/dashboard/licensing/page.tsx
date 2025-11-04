@@ -13,7 +13,7 @@ export default async function LicensingPage() {
         redirect("/sign-in");
     }
 
-    const licenses = await prisma.licenses.findMany({
+    const licensesQuery = {
         where: { organization_id: user.organization_id },
         include: {
             users: {
@@ -21,15 +21,22 @@ export default async function LicensingPage() {
             },
         },
         orderBy: { created_at: "desc" },
-    });
+    };
+
+    // @ts-expect-error - Prisma client union type issue with accelerate extension
+    const licenses = await prisma.licenses.findMany(licensesQuery);
+
+    type LicenseWithUser = (typeof licenses)[number];
 
     // Map to add signed_by_name
-    const mappedLicenses = licenses.map(l => ({
+    const mappedLicenses = licenses.map((l: LicenseWithUser) => ({
         ...l,
         signed_by_name: l.users?.full_name,
     }));
 
-    const activeLicense = mappedLicenses.find(l => l.is_active);
+    type MappedLicense = (typeof mappedLicenses)[number];
+
+    const activeLicense = mappedLicenses.find((l: MappedLicense) => l.is_active);
 
     return (
         <div className="min-h-screen bg-background">
@@ -126,8 +133,8 @@ export default async function LicensingPage() {
                                 <h3 className="mb-4 text-lg font-semibold">License History</h3>
                                 <div className="space-y-3">
                                     {licenses
-                                        .filter(l => !l.is_active)
-                                        .map(license => (
+                                        .filter((l: LicenseWithUser) => !l.is_active)
+                                        .map((license: LicenseWithUser) => (
                                             <Card key={license.id} className="p-4">
                                                 <div className="flex items-center justify-between">
                                                     <div>
