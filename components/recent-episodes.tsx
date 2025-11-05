@@ -38,7 +38,7 @@ export function RecentEpisodes({ episodes }: { episodes: Episode[] }) {
                                 className="h-12 w-12 rounded object-cover"
                             />
                         ) : (
-                            <div className="flex h-12 w-12 items-center justify-center rounded bg-muted">
+                            <div className="flex h-12 w-12 items-center justify-center rounded bg-[var(--beduk-4)]">
                                 <span className="text-lg font-bold text-muted-foreground">
                                     {episode.podcast_title[0]}
                                 </span>

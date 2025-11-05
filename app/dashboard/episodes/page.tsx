@@ -76,7 +76,7 @@ export default async function EpisodesPage() {
 
                 {mappedEpisodes.length === 0 ? (
                     <Card className="p-12 text-center">
-                        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-muted">
+                        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[var(--beduk-4)]">
                             <svg
                                 className="h-12 w-12 text-muted-foreground"
                                 fill="none"
@@ -102,7 +102,7 @@ export default async function EpisodesPage() {
                     <div className="space-y-4">
                         {mappedEpisodes.map(episode => (
                             <Link key={episode.id} href={`/dashboard/episodes/${episode.id}`}>
-                                <Card className="p-4 transition-colors hover:bg-muted/50">
+                                <Card className="p-4 transition-colors hover:bg-[var(--beduk-4)]/50">
                                     <div className="flex items-start gap-4">
                                         {episode.podcast_cover ? (
                                             <img
@@ -111,7 +111,7 @@ export default async function EpisodesPage() {
                                                 className="h-16 w-16 rounded object-cover"
                                             />
                                         ) : (
-                                            <div className="flex h-16 w-16 items-center justify-center rounded bg-muted">
+                                            <div className="flex h-16 w-16 items-center justify-center rounded bg-[var(--beduk-4)]">
                                                 <span className="text-2xl font-bold text-muted-foreground">
                                                     {episode.podcast_title[0]}
                                                 </span>

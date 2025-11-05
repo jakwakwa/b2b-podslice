@@ -5,6 +5,10 @@ import { put } from "@vercel/blob"
 import prisma from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth"
 
+// DEPRECATED: This function has been replaced by the direct upload flow
+// using finalizeEpisodeUpload to avoid Server Action body size limits.
+// Use the new flow with direct Vercel Blob uploads instead.
+/*
 export async function uploadEpisode(formData: FormData) {
   const user = await requireAuth()
 
@@ -57,6 +61,7 @@ export async function uploadEpisode(formData: FormData) {
     return { error: "Failed to upload episode" }
   }
 }
+*/
 
 export async function deleteEpisode(episodeId: string) {
   const user = await requireAuth()
@@ -82,4 +87,37 @@ export async function deleteEpisode(episodeId: string) {
   })
 
   return { success: true }
+}
+
+export async function finalizeEpisodeUpload(data: {
+  podcastId: string
+  title: string
+  description?: string
+  episodeNumber: number | null
+  seasonNumber: number | null
+  audioUrl: string
+  fileSize: number
+  contentType?: string
+}) {
+  const user = await requireAuth()
+  const podcast = await prisma.podcasts.findFirst({
+    where: { id: data.podcastId, organization_id: user.organization_id },
+    select: { id: true },
+  })
+  if (!podcast) throw new Error("Unauthorized")
+
+  const episode = await prisma.episodes.create({
+    data: {
+      podcast_id: data.podcastId,
+      title: data.title,
+      description: data.description || null,
+      audio_url: data.audioUrl,
+      file_size_bytes: BigInt(data.fileSize),
+      episode_number: data.episodeNumber,
+      season_number: data.seasonNumber,
+      processing_status: "completed",
+    },
+  })
+
+  redirect(`/dashboard/episodes/${episode.id}`)
 }
