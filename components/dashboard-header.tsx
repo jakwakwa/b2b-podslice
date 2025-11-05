@@ -15,7 +15,7 @@ type User = {
     email: string;
     full_name: string;
     role: string;
-    organization_name: string;
+    organization_name: string | null;
 };
 
 export function DashboardHeader({ user }: { user: User }) {

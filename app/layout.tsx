@@ -37,7 +37,7 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <body className={`${_InterSans.variable} ${_InterMono.variable} font-sans antialiased`}>
+            <body className={`${_InterSans.className} ${_InterMono.className} font-sans antialiased`}>
                 <Providers>{children}</Providers>
             </body>
         </html>

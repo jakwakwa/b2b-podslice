@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard-header";
@@ -6,11 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-
 export default async function EpisodesPage() {
     const user = await getCurrentUser();
 
-    if (!user) {
+    if (!(user?.organization_id)) {
         redirect("/sign-in");
     }
 
@@ -20,27 +20,8 @@ export default async function EpisodesPage() {
                 organization_id: user.organization_id,
             },
         },
-        include: {
-            podcasts: {
-                select: {
-                    title: true,
-                    cover_image_url: true,
-                },
-            },
-            summaries: {
-                select: { id: true },
-            },
-        },
         orderBy: { created_at: "desc" },
     });
-
-    // Map to add podcast_title, podcast_cover, and summary_count
-    const mappedEpisodes = episodes.map(ep => ({
-        ...ep,
-        podcast_title: ep.podcasts.title,
-        podcast_cover: ep.podcasts.cover_image_url,
-        summary_count: ep.summaries.length,
-    }));
 
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
@@ -74,9 +55,9 @@ export default async function EpisodesPage() {
                     </Link>
                 </div>
 
-                {mappedEpisodes.length === 0 ? (
+                {episodes.length === 0 ? (
                     <Card className="p-12 text-center">
-                        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[var(--beduk-4)]">
+                        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-(--beduk-4)">
                             <svg
                                 className="h-12 w-12 text-muted-foreground"
                                 fill="none"
@@ -100,20 +81,22 @@ export default async function EpisodesPage() {
                     </Card>
                 ) : (
                     <div className="space-y-4">
-                        {mappedEpisodes.map(episode => (
+                        {episodes.map(episode => (
                             <Link key={episode.id} href={`/dashboard/episodes/${episode.id}`}>
-                                <Card className="p-4 transition-colors hover:bg-[var(--beduk-4)]/50">
+                                <Card className="p-4 transition-colors hover:bg-(--beduk-4)/50">
                                     <div className="flex items-start gap-4">
                                         {episode.podcast_cover ? (
-                                            <img
+                                            <Image
                                                 src={episode.podcast_cover || "/placeholder.svg"}
-                                                alt={episode.podcast_title}
+                                                alt={episode.podcast_title || "Episode Cover"}
                                                 className="h-16 w-16 rounded object-cover"
+                                                width={64}
+                                                height={64}
                                             />
                                         ) : (
-                                            <div className="flex h-16 w-16 items-center justify-center rounded bg-[var(--beduk-4)]">
+                                            <div className="flex h-16 w-16 items-center justify-center rounded bg-(--beduk-4)">
                                                 <span className="text-2xl font-bold text-muted-foreground">
-                                                    {episode.podcast_title[0]}
+                                                    {episode.podcast_title ? episode.podcast_title : "N/A"}
                                                 </span>
                                             </div>
                                         )}
@@ -145,7 +128,9 @@ export default async function EpisodesPage() {
                                                     {episode.summary_count === 1 ? "summary" : "summaries"}
                                                 </span>
                                                 <span className="text-sm text-muted-foreground">
-                                                    {new Date(episode.created_at).toLocaleDateString()}
+                                                    {episode.created_at
+                                                        ? new Date(episode.created_at).toLocaleDateString()
+                                                        : "N/A"}
                                                 </span>
                                             </div>
                                         </div>

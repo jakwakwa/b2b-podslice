@@ -1,27 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { generateAllSummaries } from "@/app/actions/summaries"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
-export function GenerateSummariesButton({ episodeId }: { episodeId: string }) {
-  const [loading, setLoading] = useState(false)
+export function GenerateSummariesButton() {
+    const [loading, setLoading] = useState(false);
 
-  async function handleGenerate() {
-    setLoading(true)
-    const result = await generateAllSummaries(episodeId)
-
-    if (result.error) {
-      alert(result.error)
-      setLoading(false)
-    } else {
-      window.location.reload()
+    async function handleGenerate() {
+        setLoading(true);
+        // TODO: Implement the generate all summaries function
+        setLoading(false);
     }
-  }
 
-  return (
-    <Button onClick={handleGenerate} disabled={loading} className="w-full">
-      {loading ? "Generating..." : "Generate Summaries"}
-    </Button>
-  )
+    return (
+        <Button onClick={handleGenerate} disabled={loading} className="w-full">
+            {loading ? "Generating..." : "Generate Summaries"}
+        </Button>
+    );
 }
