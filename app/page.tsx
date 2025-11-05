@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export default function HomePage() {
     return (
@@ -14,14 +14,7 @@ export default function HomePage() {
                         </div>
                         <span className="text-xl font-bold">Podslice</span>
                     </div>
-                    <nav className="flex items-center gap-4">
-                        <Link href="/sign-in">
-                            <Button variant="ghost">Sign In</Button>
-                        </Link>
-                        <Link href="/sign-up">
-                            <Button>Get Started</Button>
-                        </Link>
-                    </nav>
+                    <nav className="flex items-center gap-4">coming soon</nav>
                 </div>
             </header>
 
@@ -30,18 +23,15 @@ export default function HomePage() {
                 <h1 className="text-balance text-5xl font-bold tracking-tight lg:text-6xl">
                     AI-Powered Content for
                     <br />
-                    <span className="bg-linear-to-r from-primary-foreground-muted to-sidebar-primary-foreground bg-clip-text text-transparent">Podcast Creators</span>
+                    <span className="bg-linear-to-r from-primary-foreground-muted to-sidebar-primary-foreground bg-clip-text text-transparent">
+                        Podcast Creators
+                    </span>
                 </h1>
                 <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground leading-relaxed">
-                    Transform your podcast episodes into summaries, clips, and social content. Built on ethical AI with
-                    transparent attribution and fair royalties.
+                    Transform your podcast episodes into summaries, clips, and social content. Built
+                    on ethical AI with transparent attribution and fair royalties.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-4">
-                    <Link href="/sign-up">
-                        <Button size="lg" className="text-lg">
-                            Start Free Trial
-                        </Button>
-                    </Link>
                     <Link href="#features">
                         <Button size="lg" variant="outline" className="text-lg bg-transparent">
                             Learn More
@@ -52,11 +42,17 @@ export default function HomePage() {
 
             {/* Features Section */}
             <section id="features" className="container mx-auto px-4 py-24">
-                <h2 className="text-center text-3xl font-bold tracking-tight">Everything You Need to Amplify Your Podcast</h2>
+                <h2 className="text-center text-3xl font-bold tracking-tight">
+                    Everything You Need to Amplify Your Podcast
+                </h2>
                 <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <Card className="p-6">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -67,13 +63,18 @@ export default function HomePage() {
                         </div>
                         <h3 className="text-xl font-semibold">AI Summaries</h3>
                         <p className="mt-2 text-muted-foreground leading-relaxed">
-                            Generate comprehensive episode summaries, key highlights, and show notes automatically.
+                            Generate comprehensive episode summaries, key highlights, and show notes
+                            automatically.
                         </p>
                     </Card>
 
                     <Card className="p-6">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -90,7 +91,11 @@ export default function HomePage() {
 
                     <Card className="p-6">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -101,13 +106,18 @@ export default function HomePage() {
                         </div>
                         <h3 className="text-xl font-semibold">Social Content</h3>
                         <p className="mt-2 text-muted-foreground leading-relaxed">
-                            Create platform-optimized posts for Twitter, LinkedIn, and Instagram instantly.
+                            Create platform-optimized posts for Twitter, LinkedIn, and Instagram
+                            instantly.
                         </p>
                     </Card>
 
                     <Card className="p-6">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -118,13 +128,18 @@ export default function HomePage() {
                         </div>
                         <h3 className="text-xl font-semibold">Ethical Attribution</h3>
                         <p className="mt-2 text-muted-foreground leading-relaxed">
-                            Every piece of content includes proper attribution and links back to your original episode.
+                            Every piece of content includes proper attribution and links back to your
+                            original episode.
                         </p>
                     </Card>
 
                     <Card className="p-6">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -141,7 +156,11 @@ export default function HomePage() {
 
                     <Card className="p-6">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-foreground ">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className="h-6 w-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -161,9 +180,12 @@ export default function HomePage() {
             {/* CTA Section */}
             <section className="container mx-auto px-4 py-24">
                 <Card className="bg-primary text-foreground -foreground p-12 text-center">
-                    <h2 className="text-3xl font-bold tracking-tight">Ready to Transform Your Podcast Content?</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">
+                        Ready to Transform Your Podcast Content?
+                    </h2>
                     <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg leading-relaxed opacity-90">
-                        Join podcast creators who trust Podslice for ethical, AI-powered content generation.
+                        Join podcast creators who trust Podslice for ethical, AI-powered content
+                        generation.
                     </p>
                     <div className="mt-8">
                         <Link href="/sign-up">
@@ -174,13 +196,6 @@ export default function HomePage() {
                     </div>
                 </Card>
             </section>
-
-            {/* Footer */}
-            <footer className="border-t bg-muted/50 py-12">
-                <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-                    <p>&copy; 2025 Podslice. Built with ethical AI practices.</p>
-                </div>
-            </footer>
         </div>
-    )
+    );
 }
