@@ -1,17 +1,29 @@
 "use client";
 import { type FC, useEffect, useState } from "react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { PodcastAnalysisResult } from "@/lib/db.types";
+import { formatErrorForDisplay } from "@/lib/error-utils";
 import {
     analyzePodcastContent,
     editImage,
     generateImage,
     generateSocialMediaPosts,
+    isImageGenerationEnabled,
 } from "@/lib/gemini-analyzer-social-service";
 import { fileToBase64 } from "@/utils/fileUtils";
+import { Textarea } from "../ui/textarea";
 import { Loader } from "./common/Loader";
 import { SocialMediaPreview } from "./SocialMediaPreview";
 
@@ -35,11 +47,49 @@ export const PodcastAnalyzer: FC = () => {
     const [isEditingImage, setIsEditingImage] = useState(false);
     const [imageEditError, setImageEditError] = useState<string | null>(null);
 
+    // State for error dialog
+    const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+    const [errorDialogData, setErrorDialogData] = useState<{
+        title: string;
+        message: string;
+        action: string;
+        icon: string;
+    } | null>(null);
+
+    // State for model selection
+    const [useLiteModel, setUseLiteModel] = useState(false);
+
     useEffect(() => {
         if (result?.chapters) {
             setEditedChapters(result.chapters);
         }
     }, [result?.chapters]);
+
+    // Reset to Pro model on component unmount (navigation away)
+    useEffect(() => {
+        return () => {
+            setUseLiteModel(false);
+        };
+    }, []);
+
+    const showErrorDialog = (error: unknown) => {
+        const formattedError = formatErrorForDisplay(error);
+        setErrorDialogData(formattedError);
+        setErrorDialogOpen(true);
+    };
+
+    const handleReset = () => {
+        setTranscript("");
+        setResult(null);
+        setError(null);
+        setSocialMediaError(null);
+        setEditedChapters([]);
+        setSocialMediaTone("");
+        setProgress(null);
+        setErrorDialogOpen(false);
+        setErrorDialogData(null);
+        setUseLiteModel(false); // Reset to Pro model
+    };
 
     const handleAnalyze = async () => {
         if (!transcript.trim()) {
@@ -53,7 +103,7 @@ export const PodcastAnalyzer: FC = () => {
         setProgress("Preparing for analysis...");
         try {
             // Step 1: Get summary and chapters
-            const baseResult = await analyzePodcastContent(transcript, setProgress);
+            const baseResult = await analyzePodcastContent(transcript, setProgress, useLiteModel);
 
             const validationErrors: string[] = [];
             if (!baseResult?.summary?.trim()) {
@@ -82,7 +132,9 @@ export const PodcastAnalyzer: FC = () => {
                     setProgress("Generating social media posts...");
                     const textPosts = await generateSocialMediaPosts(
                         initialResult.summary,
-                        initialResult.chapters
+                        initialResult.chapters,
+                        undefined,
+                        useLiteModel
                     );
 
                     // Set text posts first for responsiveness
@@ -95,7 +147,13 @@ export const PodcastAnalyzer: FC = () => {
                     );
 
                     // Step 3: Asynchronously generate images for each post
-                    setProgress("Generating images for social media posts...");
+                    // (will simulate with placeholders if image generation is disabled)
+                    const imageGenEnabled = isImageGenerationEnabled();
+                    setProgress(
+                        imageGenEnabled
+                            ? "Generating images for social media posts..."
+                            : "Simulating images for social media posts..."
+                    );
                     textPosts.forEach(async (post, index) => {
                         try {
                             const imageUrl = await generateImage(
@@ -119,16 +177,19 @@ export const PodcastAnalyzer: FC = () => {
                     const combinedError =
                         `${accumulatedError} Failed to generate social media posts: ${socialError}`.trim();
                     setError(combinedError);
+                    showErrorDialog(err);
                 }
             }
         } catch (err) {
             const errorMessage =
                 err instanceof Error ? err.message : "An unknown error occurred during analysis.";
             setError(`Analysis failed: ${errorMessage}`);
+            showErrorDialog(err);
             console.error(err);
         } finally {
             setIsLoading(false);
             setProgress(null);
+            // Don't reset useLiteModel here - let user decide via dialog or reset button
         }
     };
 
@@ -157,7 +218,8 @@ export const PodcastAnalyzer: FC = () => {
             const newTextPosts = await generateSocialMediaPosts(
                 result.summary,
                 editedChapters,
-                socialMediaTone
+                socialMediaTone,
+                useLiteModel
             );
 
             if (!newTextPosts || newTextPosts.length === 0) {
@@ -176,6 +238,7 @@ export const PodcastAnalyzer: FC = () => {
             );
 
             // Step 3: Asynchronously generate images
+            // (will simulate with placeholders if image generation is disabled)
             newTextPosts.forEach(async (post, index) => {
                 try {
                     const prompt = `A professional, visually appealing graphic for a social media post about a podcast. The tone is "${socialMediaTone}". The post says: "${post.content}"`;
@@ -196,6 +259,7 @@ export const PodcastAnalyzer: FC = () => {
             const errorMessage =
                 err instanceof Error ? err.message : "An unknown error occurred.";
             setSocialMediaError(errorMessage);
+            showErrorDialog(err);
             console.error(err);
         } finally {
             setIsRegeneratingSocialMedia(false);
@@ -261,6 +325,7 @@ export const PodcastAnalyzer: FC = () => {
             const errorMessage =
                 err instanceof Error ? err.message : "An unknown error occurred.";
             setImageEditError(`Edit failed: ${errorMessage}`);
+            showErrorDialog(err);
             console.error(err);
         } finally {
             setIsEditingImage(false);
@@ -271,29 +336,63 @@ export const PodcastAnalyzer: FC = () => {
     const shouldShowSocialMedia =
         result?.socialMediaPosts && result.socialMediaPosts.length > 0;
 
+    const imageGenEnabled = isImageGenerationEnabled();
+
     return (
         <div className="space-y-6">
             <Card>
-                <h2 className="text-xl font-bold text-white mb-4">Podcast Content Repurposer</h2>
-                <p className="text-gray-400 mb-4">
-                    Paste your podcast transcript below. Gemini Pro will generate a summary,
-                    identify chapters, and create social media posts to promote your episode.
-                </p>
-                <textarea
-                    value={transcript}
-                    onChange={e => setTranscript(e.target.value)}
-                    placeholder="Paste your full podcast transcript here..."
-                    className="w-full h-64 p-3 bg-gray-900/50 border border-gray-700 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-                    disabled={isLoading}
-                    aria-label="Podcast transcript input"
-                />
-                <Button
-                    onClick={handleAnalyze}
-                    isLoading={isLoading}
-                    disabled={isLoading || !transcript}
-                    className="mt-4 w-full sm:w-auto">
-                    Analyze Transcript
-                </Button>
+                <CardContent>
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <h2 className="text-xl font-bold text-white">Podcast Content Repurposer</h2>
+                        <div className="flex items-center gap-2">
+                            {useLiteModel && (
+                                <div className="px-3 py-1 bg-blue-900/20 border border-blue-700/50 rounded">
+                                    <p className="text-blue-400 text-xs font-medium">
+                                        ⚡ Fast Model Active
+                                    </p>
+                                </div>
+                            )}
+                            {!imageGenEnabled && (
+                                <div className="px-3 py-1 bg-yellow-900/20 border border-yellow-700/50 rounded">
+                                    <p className="text-yellow-400 text-xs font-medium">
+                                        Simulated Image Generation
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {!(result || isLoading) && (
+                        <>
+                            <p className="text-gray-400 mb-4">
+                                Paste your podcast transcript below. Our AI will generate a summary,
+                                identify chapters, and create social media posts to promote your episode.
+                            </p>
+                            <Textarea
+                                value={transcript}
+                                onChange={e => setTranscript(e.target.value)}
+                                placeholder="Paste your full podcast transcript here..."
+                                className="w-full h-64 p-3 bg-gray-900/50 border border-gray-700 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                                aria-label="Podcast transcript input"
+                            />
+                            <Button
+                                onClick={handleAnalyze}
+                                disabled={!transcript}
+                                className="mt-4 w-full sm:w-auto">
+                                Analyze Transcript
+                            </Button>
+                        </>
+                    )}
+                    {result && (
+                        <div className="flex justify-end">
+                            <Button
+                                onClick={handleReset}
+                                variant="outline"
+                                className="w-full sm:w-auto">
+                                Reset & Try Again
+                            </Button>
+                        </div>
+                    )}
+                </CardContent>
             </Card>
 
             {isLoading && (
@@ -307,9 +406,11 @@ export const PodcastAnalyzer: FC = () => {
 
             {error && (
                 <Card>
-                    <p className="text-red-400 whitespace-pre-wrap" role="alert">
-                        {error}
-                    </p>
+                    <CardContent>
+                        <p className="text-red-400 whitespace-pre-wrap" role="alert">
+                            {error}
+                        </p>
+                    </CardContent>
                 </Card>
             )}
 
@@ -317,163 +418,231 @@ export const PodcastAnalyzer: FC = () => {
                 <div className="space-y-6">
                     {result.summary && (
                         <Card>
-                            <h3 className="text-lg font-semibold text-indigo-400 mb-2">Summary</h3>
-                            <p className="text-gray-300 whitespace-pre-wrap">{result.summary}</p>
+                            <CardContent>
+                                <h3 className="text-lg font-semibold text-indigo-400 mb-2">Summary</h3>
+                                <p className="text-gray-300 whitespace-pre-wrap">{result.summary}</p>
+                            </CardContent>
                         </Card>
                     )}
 
                     {shouldShowChapters && (
                         <Card>
-                            <h3 className="text-lg font-semibold text-indigo-400 mb-2">Chapters</h3>
-                            <div className="space-y-3">
-                                {editedChapters.map((chapter, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex flex-col sm:flex-row items-start sm:items-center text-gray-300 gap-2">
-                                        <input
-                                            type="text"
-                                            value={chapter.timestamp}
-                                            onChange={e =>
-                                                handleChapterChange(index, "timestamp", e.target.value)
-                                            }
-                                            className="font-mono bg-gray-700 px-2 py-1 rounded-md text-sm flex-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-                                            aria-label={`Chapter ${index + 1} timestamp`}
-                                        />
-                                        <input
-                                            type="text"
-                                            value={chapter.title}
-                                            onChange={e => handleChapterChange(index, "title", e.target.value)}
-                                            className="flex-1 bg-gray-900/50 border border-gray-700 rounded-md p-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-                                            aria-label={`Chapter ${index + 1} title`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-6 border-t border-gray-700 pt-6">
-                                <label
-                                    htmlFor="socialMediaTone"
-                                    className="block text-sm font-medium text-gray-300 mb-2">
-                                    Regenerate with a specific tone or audience
-                                </label>
-                                <input
-                                    type="text"
-                                    id="socialMediaTone"
-                                    value={socialMediaTone}
-                                    onChange={e => setSocialMediaTone(e.target.value)}
-                                    placeholder="e.g., Casual and witty, for tech entrepreneurs..."
-                                    className="w-full bg-gray-900/50 border border-gray-700 rounded-md p-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-                                    aria-label="Social media post tone and audience"
-                                />
-                                <Button
-                                    onClick={handleRegenerateSocialMedia}
-                                    isLoading={isRegeneratingSocialMedia}
-                                    disabled={
-                                        isRegeneratingSocialMedia ||
-                                        !result.summary ||
-                                        editedChapters.length === 0
-                                    }
-                                    className="mt-4 w-full sm:w-auto"
-                                    variant="secondary">
-                                    {isRegeneratingSocialMedia
-                                        ? "Regenerating..."
-                                        : "Regenerate Social Media Posts"}
-                                </Button>
-                            </div>
-                            {socialMediaError && (
-                                <p className="text-red-400 text-sm mt-2" role="alert">
-                                    Regeneration failed: {socialMediaError}
-                                </p>
-                            )}
+                            <CardContent>
+                                <h3 className="text-lg font-semibold text-indigo-400 mb-2">Chapters</h3>
+                                <div className="space-y-3">
+                                    {editedChapters.map((chapter, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex flex-col sm:flex-row items-start sm:items-center text-gray-300 gap-2">
+                                            <input
+                                                type="text"
+                                                value={chapter.timestamp}
+                                                onChange={e =>
+                                                    handleChapterChange(index, "timestamp", e.target.value)
+                                                }
+                                                className="font-mono bg-gray-700 px-2 py-1 rounded-md text-sm flex-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                                aria-label={`Chapter ${index + 1} timestamp`}
+                                            />
+                                            <input
+                                                type="text"
+                                                value={chapter.title}
+                                                onChange={e =>
+                                                    handleChapterChange(index, "title", e.target.value)
+                                                }
+                                                className="flex-1 bg-gray-900/50 border border-gray-700 rounded-md p-1 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                                aria-label={`Chapter ${index + 1} title`}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-6 border-t border-gray-700 pt-6">
+                                    <label
+                                        htmlFor="socialMediaTone"
+                                        className="block text-sm font-medium text-gray-300 mb-2">
+                                        Regenerate with a specific tone or audience
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="socialMediaTone"
+                                        value={socialMediaTone}
+                                        onChange={e => setSocialMediaTone(e.target.value)}
+                                        placeholder="e.g., Casual and witty, for tech entrepreneurs..."
+                                        className="w-full bg-gray-900/50 border border-gray-700 rounded-md p-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                        aria-label="Social media post tone and audience"
+                                    />
+                                    <Button
+                                        onClick={handleRegenerateSocialMedia}
+                                        isLoading={isRegeneratingSocialMedia}
+                                        disabled={
+                                            isRegeneratingSocialMedia ||
+                                            !result.summary ||
+                                            editedChapters.length === 0
+                                        }
+                                        className="mt-4 w-full sm:w-auto"
+                                        variant="secondary">
+                                        {isRegeneratingSocialMedia
+                                            ? "Regenerating..."
+                                            : "Regenerate Social Media Posts"}
+                                    </Button>
+                                </div>
+                                {socialMediaError && (
+                                    <p className="text-red-400 text-sm mt-2" role="alert">
+                                        Regeneration failed: {socialMediaError}
+                                    </p>
+                                )}
+                            </CardContent>
                         </Card>
                     )}
 
                     {shouldShowSocialMedia && (
                         <Card>
-                            <h3 className="text-lg font-semibold text-indigo-400 mb-4">
-                                Social Media Previews
-                            </h3>
-                            <div className="space-y-8">
-                                {result.socialMediaPosts.map((post, index) => (
-                                    <div key={index}>
-                                        <SocialMediaPreview
-                                            platform={post.platform}
-                                            content={post.content}
-                                            imageUrl={post.imageUrl}
-                                        />
-                                        {post.imageUrl && (
-                                            <div className="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700">
-                                                {editingPostIndex === index ? (
-                                                    <div className="space-y-4">
-                                                        <div>
-                                                            <Label className="block text-sm font-medium text-gray-300 mb-1">
-                                                                Image Edit Prompt
-                                                            </Label>
-                                                            <Input
-                                                                type="text"
-                                                                value={editPrompt}
-                                                                onChange={e => setEditPrompt(e.target.value)}
-                                                                placeholder="e.g., Make the background blurry"
-                                                                className="w-full bg-gray-900/50 border border-gray-600 rounded-md p-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-                                                            />
+                            <CardContent>
+                                <h3 className="text-lg font-semibold text-indigo-400 mb-4">
+                                    Social Media Previews
+                                </h3>
+                                <div className="space-y-8">
+                                    {result.socialMediaPosts.map((post, index) => (
+                                        <div key={index}>
+                                            <SocialMediaPreview
+                                                platform={post.platform}
+                                                content={post.content}
+                                                imageUrl={post.imageUrl}
+                                            />
+                                            {post.imageUrl && imageGenEnabled && (
+                                                <div className="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700">
+                                                    {editingPostIndex === index ? (
+                                                        <div className="space-y-4">
+                                                            <div>
+                                                                <Label className="block text-sm font-medium text-gray-300 mb-1">
+                                                                    Image Edit Prompt
+                                                                </Label>
+                                                                <Input
+                                                                    type="text"
+                                                                    value={editPrompt}
+                                                                    onChange={e => setEditPrompt(e.target.value)}
+                                                                    placeholder="e.g., Make the background blurry"
+                                                                    className="w-full bg-gray-900/50 border border-gray-600 rounded-md p-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <Label className="block text-sm font-medium text-gray-300 mb-1">
+                                                                    Style/Branding Image (Optional)
+                                                                </Label>
+                                                                <Input
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    onChange={handleGuideImageChange}
+                                                                />
+                                                            </div>
+                                                            <div className="flex gap-2 pt-2">
+                                                                <Button
+                                                                    onClick={() =>
+                                                                        handleImageEdit(index, editPrompt, editGuideImage)
+                                                                    }
+                                                                    isLoading={isEditingImage}
+                                                                    disabled={isEditingImage || !editPrompt}
+                                                                    variant="secondary">
+                                                                    Apply Edits
+                                                                </Button>
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        setEditingPostIndex(null);
+                                                                        setEditGuideImage(null);
+                                                                    }}
+                                                                    variant="secondary"
+                                                                    disabled={isEditingImage}>
+                                                                    Cancel
+                                                                </Button>
+                                                            </div>
+                                                            {imageEditError && (
+                                                                <p className="text-red-400 text-sm mt-2" role="alert">
+                                                                    {imageEditError}
+                                                                </p>
+                                                            )}
                                                         </div>
-                                                        <div>
-                                                            <Label className="block text-sm font-medium text-gray-300 mb-1">
-                                                                Style/Branding Image (Optional)
-                                                            </Label>
-                                                            <Input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                onChange={handleGuideImageChange}
-                                                            />
-                                                        </div>
-                                                        <div className="flex gap-2 pt-2">
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleImageEdit(index, editPrompt, editGuideImage)
-                                                                }
-                                                                isLoading={isEditingImage}
-                                                                disabled={isEditingImage || !editPrompt}
-                                                                variant="secondary">
-                                                                Apply Edits
-                                                            </Button>
-                                                            <Button
-                                                                onClick={() => {
-                                                                    setEditingPostIndex(null);
-                                                                    setEditGuideImage(null);
-                                                                }}
-                                                                variant="secondary"
-                                                                disabled={isEditingImage}>
-                                                                Cancel
-                                                            </Button>
-                                                        </div>
-                                                        {imageEditError && (
-                                                            <p className="text-red-400 text-sm mt-2" role="alert">
-                                                                {imageEditError}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <Button
-                                                        onClick={() => {
-                                                            setEditingPostIndex(index);
-                                                            setEditPrompt("");
-                                                            setEditGuideImage(null);
-                                                            setImageEditError(null);
-                                                        }}
-                                                        variant="secondary"
-                                                        disabled={isEditingImage || editingPostIndex !== null}>
-                                                        Edit Image
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                                                    ) : (
+                                                        <Button
+                                                            onClick={() => {
+                                                                setEditingPostIndex(index);
+                                                                setEditPrompt("");
+                                                                setEditGuideImage(null);
+                                                                setImageEditError(null);
+                                                            }}
+                                                            variant="secondary"
+                                                            disabled={isEditingImage || editingPostIndex !== null}>
+                                                            Edit Image
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
                         </Card>
                     )}
                 </div>
             )}
+
+            {/* Error Alert Dialog */}
+            <AlertDialog open={errorDialogOpen} onOpenChange={setErrorDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <span className="text-2xl">{errorDialogData?.icon}</span>
+                            {errorDialogData?.title}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {errorDialogData?.message}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md border border-border">
+                            <strong>What to do:</strong> {errorDialogData?.action}
+                        </div>
+                        {!useLiteModel && (
+                            <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-md">
+                                <div className="text-sm text-blue-400">
+                                    💡 <strong>Tip:</strong> Try using the faster model, which handles high demand better and may succeed when the standard model is overloaded.
+                                </div>
+                            </div>
+                        )}
+                        {useLiteModel && (
+                            <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-md">
+                                <div className="text-sm text-amber-400">
+                                    ℹ️ You're currently using the fast model. Click "Reset & Try Again" to return to the standard model.
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                        {!useLiteModel && (
+                            <Button
+                                onClick={() => {
+                                    setUseLiteModel(true);
+                                    setErrorDialogOpen(false);
+                                    // Retry the last operation with lite model
+                                    setTimeout(() => {
+                                        if (result) {
+                                            // If there's a result, they were regenerating social media
+                                            handleRegenerateSocialMedia();
+                                        } else {
+                                            // Otherwise, they were doing initial analysis
+                                            handleAnalyze();
+                                        }
+                                    }, 100);
+                                }}
+                                variant="outline"
+                                className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10">
+                                Try with Fast Model ⚡
+                            </Button>
+                        )}
+                        <AlertDialogAction onClick={() => setErrorDialogOpen(false)}>
+                            Got it
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };

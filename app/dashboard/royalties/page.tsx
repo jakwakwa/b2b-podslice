@@ -60,8 +60,8 @@ export default async function RoyaltiesPage() {
     });
 
     const currentPeriod = {
-        total_views: summaryData._sum.view_count || 0,
-        total_shares: summaryData._sum.share_count || 0,
+        total_views: summaryData._sum?.view_count || 0,
+        total_shares: summaryData._sum?.share_count || 0,
     };
 
     const totalEarnings = royalties

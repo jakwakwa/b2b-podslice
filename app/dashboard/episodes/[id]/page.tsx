@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GenerateSummariesButton } from "@/components/generate-summaries-button";
+import { PodcastAnalyzer } from "@/components/gemini-analyzer-components/PodcastAnalyzer";
 import { SummaryList } from "@/components/summary-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -140,7 +141,14 @@ export default async function EpisodeDetailPage({
                     )}
                 </Card>
 
-                <div>
+                {/* AI Content Repurposer Section */}
+                <div className="mb-8">
+                    <h2 className="mb-4 text-2xl font-semibold">AI Content Repurposer</h2>
+                    <PodcastAnalyzer />
+                </div>
+
+                {/* Legacy Generated Summaries - Hidden while using PodcastAnalyzer */}
+                <div className="hidden">
                     <h2 className="mb-4 text-2xl font-semibold">Generated Summaries</h2>
                     <SummaryList summaries={summaries} episodeId={id} />
                 </div>

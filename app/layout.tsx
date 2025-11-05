@@ -11,7 +11,7 @@ const _InterMono = Inter({
     variable: "--font-inter-mono",
 });
 export const metadata: Metadata = {
-    title: "Podslice - AI-Powered Content for Podcast Creators",
+    title: "PODSLICE.Ai Studio - AI-Powered Content for Podcast Creators",
     description:
         "Transform your podcast episodes into summaries, clips, and social content with ethical AI",
     generator: "v0.app",
