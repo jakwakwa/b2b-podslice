@@ -52,7 +52,7 @@ export function EpisodeList({
         <div className="space-y-4">
             {episodes.map(episode => (
                 <Link key={episode.id} href={`/dashboard/episodes/${episode.id}`}>
-                    <Card className="p-4 transition-colors hover:bg-muted/50">
+                    <Card className="p-4 transition-colors hover:bg-[var(--beduk-4)]/50">
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
                                 <h3 className="font-semibold">{episode.title}</h3>

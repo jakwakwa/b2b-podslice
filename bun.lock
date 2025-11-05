@@ -45,7 +45,7 @@
         "@tabler/icons-react": "^3.34.1",
         "@tailwindcss/postcss": "^4.1.12",
         "@vercel/analytics": "^1.5.0",
-        "@vercel/blob": "latest",
+        "@vercel/blob": "^2.0.0",
         "ai": "^5.0.62",
         "autoprefixer": "^10.4.20",
         "class-variance-authority": "^0.7.1",

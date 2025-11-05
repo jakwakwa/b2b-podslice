@@ -82,7 +82,7 @@ export default async function SummaryDetailPage({
                             <div className="flex items-center gap-3">
                                 <Badge
                                     variant="secondary"
-                                    className={typeColors[summary.summary_type] || "bg-muted"}>
+                                    className={typeColors[summary.summary_type] || "bg-[var(--beduk-4)]"}>
                                     {typeLabels[summary.summary_type] || summary.summary_type}
                                 </Badge>
                                 <span className="text-sm text-muted-foreground">
