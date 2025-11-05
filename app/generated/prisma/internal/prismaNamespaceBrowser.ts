@@ -161,7 +161,10 @@ export const EpisodesScalarFieldEnum = {
   transcript: 'transcript',
   processing_status: 'processing_status',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  podcast_cover: 'podcast_cover',
+  podcast_title: 'podcast_title',
+  summary_count: 'summary_count'
 } as const
 
 export type EpisodesScalarFieldEnum = (typeof EpisodesScalarFieldEnum)[keyof typeof EpisodesScalarFieldEnum]

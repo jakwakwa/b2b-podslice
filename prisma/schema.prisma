@@ -99,6 +99,9 @@ model episodes {
   processing_status String?     @default("pending")
   created_at        DateTime?   @default(now()) @db.Timestamptz(6)
   updated_at        DateTime?   @default(now()) @db.Timestamptz(6)
+  podcast_cover     String?
+  podcast_title     String?
+  summary_count     Int?       @default(0)
   clips             clips[]
   podcasts          podcasts    @relation(fields: [podcast_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   summaries         summaries[]
@@ -143,6 +146,7 @@ model organizations {
   podcasts   podcasts[]
   royalties  royalties[]
   users      users[]
+  
 }
 
 model password_reset_tokens {
@@ -269,3 +273,4 @@ model waiting_list {
   name       String?
   created_at DateTime? @default(now()) @db.Timestamptz(6)
 }
+

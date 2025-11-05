@@ -8,9 +8,9 @@ async function verifyPodcastAccess(podcastId: string, organizationId: string) {
 	// that TypeScript struggles to infer correctly
 	// Use type assertion to work around Prisma Accelerate type inference issues
 	const podcast = await (
-		prisma.podcasts.findUnique as (args: {
+		prisma.podcasts.findUnique as unknown as (args: {
 			where: { id: string };
-		}) => Promise<{ organization_id: string } | null>
+		}) => Promise<{ organization_id: string | null } | null>
 	)({
 		where: { id: podcastId },
 	});
@@ -84,7 +84,10 @@ export async function POST(request: NextRequest) {
 				const podcastId = clientPayload;
 				if (!podcastId) throw new Error("Missing podcastId");
 
-				const hasAccess = await verifyPodcastAccess(podcastId, user.organization_id);
+				const hasAccess = await verifyPodcastAccess(
+					podcastId,
+					user.organization_id ?? ("" as string)
+				);
 				if (!hasAccess) throw new Error("Unauthorized");
 
 				return {

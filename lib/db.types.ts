@@ -1,3 +1,18 @@
+import type {
+	analytics_eventsModel,
+	clipsModel,
+	daily_analyticsModel,
+	episodesModel,
+	licensesModel,
+	password_reset_tokensModel,
+	podcastsModel,
+	royalty_line_itemsModel,
+	sessionsModel,
+	summariesModel,
+	usersModel,
+	waiting_listModel,
+} from "@/app/generated/prisma/models";
+
 export type Organization = {
 	id: string;
 	name: string;
@@ -33,3 +48,43 @@ export type IWaitingList = {
 	name?: string | "anonymous";
 	created_at: Date;
 };
+
+export interface Episode extends episodesModel {
+	summary_count: number;
+}
+
+export type Podcast = podcastsModel;
+
+export type Summary = summariesModel;
+
+export type Clip = clipsModel;
+
+export type DailyAnalytics = daily_analyticsModel;
+
+export type AnalyticsEvent = analytics_eventsModel;
+
+export type WaitingList = waiting_listModel;
+
+export type PasswordResetToken = password_reset_tokensModel;
+
+export type Session = sessionsModel;
+
+export type User = usersModel;
+
+export type License = licensesModel;
+
+export type RoyaltyLineItem = royalty_line_itemsModel;
+
+export enum Tab {
+	PodcastAnalyzer = "Podcast Analyzer",
+	LiveTranscriber = "Live Transcriber",
+}
+
+export interface PodcastAnalysisResult {
+	summary: string;
+	chapters: { timestamp: string; title: string }[];
+	socialMediaPosts: { platform: string; content: string; imageUrl?: string }[];
+}
+
+// Fix: Add AspectRatio type for video generation.
+export type AspectRatio = "16:9" | "9:16";

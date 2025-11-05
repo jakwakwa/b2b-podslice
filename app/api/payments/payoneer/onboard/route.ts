@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { createPayee } from "@/lib/payoneer";
+import prisma from "@/lib/prisma";
 
 const onboardingSchema = z.object({
 	legalName: z.string().min(2, "Legal name required"),
@@ -23,8 +23,6 @@ const onboardingSchema = z.object({
 	businessRegistrationNumber: z.string().optional(),
 });
 
-type OnboardingRequest = z.infer<typeof onboardingSchema>;
-
 export async function POST(request: NextRequest) {
 	try {
 		const user = await requireAuth();
@@ -41,10 +39,7 @@ export async function POST(request: NextRequest) {
 		});
 
 		if (!org) {
-			return NextResponse.json(
-				{ error: "Organization not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ error: "Organization not found" }, { status: 404 });
 		}
 
 		if (org.payoneer_payee_id) {
@@ -105,7 +100,7 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json(
 				{
 					error: "Validation failed",
-					details: error.errors,
+					details: error.message,
 				},
 				{ status: 400 }
 			);
@@ -120,9 +115,6 @@ export async function POST(request: NextRequest) {
 		}
 
 		console.error("[Payoneer Onboard]", error);
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 }
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }
