@@ -291,7 +291,7 @@ export default function HomePage() {
 
             {/* CTA Section */}
             <section className="container mx-auto px-4 py-24">
-                <Card className="bg-primary text-foreground -foreground p-12 text-center">
+                <Card className="bg-dunk text-center">
                     <h2 className="text-3xl font-bold tracking-tight">
                         Ready to Transform Your Podcast Content?
                     </h2>

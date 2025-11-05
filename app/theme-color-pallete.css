@@ -65,19 +65,19 @@
 .dark-theme {
 
 
-    --kwak-10: oklch(0.991 0.007 200);
-    --kwak-9: oklch(0.97 0.05 250);
+    --kwak-10: oklch(0.99 0.007 200);
+    --kwak-9: oklch(0.99 0.05 250);
     --kwak-8: oklch(0.93 0.07 240);
     --kwak-7: oklch(0.89 0.08 230);
     --kwak-6: oklch(0.77 0.11 230);
-    --kwak-5: oklch(0.60 0.12 230);
+    --kwak-5: oklch(0.6 0.42 195);
     --kwak-4: oklch(0.42 0.12 230);
     --kwak-3: oklch(0.30 0.11 230);
     --kwak-2: oklch(0.26 0.07 230);
     --kwak-1: oklch(0.19 0.06 230);
 
-    --beduk-10: oklch(0.96 0.03 300);
-    --beduk-9: oklch(0.92 0.05 300);
+    --beduk-10: oklch(0.99 0.03 300);
+    --beduk-9: oklch(0.98 0.05 300);
     --beduk-8: oklch(0.88 0.07 300);
     --beduk-7: oklch(0.76 0.16 300);
     --beduk-6: oklch(0.72 0.17 300);
@@ -134,7 +134,7 @@
     --swak-7: oklch(75% 0.07014 276.7);
     --swak-8: oklch(85.6% 0.0297 276.7);
     --swak-9: oklch(0.9317 0.019 276.18);
-    --swak-10: oklch(0.9510 0.013 276.18);
+    --swak-10: oklch(0.99 0.013 276.18);
 
 
     --swak-contrast: #ffffff;
