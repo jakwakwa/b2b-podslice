@@ -8,6 +8,15 @@ import {
 import type { AspectRatio, PodcastAnalysisResult } from "./db.types";
 
 /**
+ * Check if image generation is enabled via environment variable.
+ * Defaults to true if not set or if set to any value other than 'false'.
+ */
+export const isImageGenerationEnabled = (): boolean => {
+	const imagenEnabled = process.env.NEXT_PUBLIC_IMAGEN_ENABLED ?? "true";
+	return imagenEnabled.toLowerCase() !== "false";
+};
+
+/**
  * Extracts a JSON string from a text response that might include markdown code fences
  * or other conversational text.
  * @param text The raw text response from the model.
@@ -47,21 +56,31 @@ const extractJson = (text: string): string => {
 };
 
 const getAiClient = () => {
-	if (!process.env.API_KEY) {
-		throw new Error("API_KEY environment variable is not set");
+	if (!process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY) {
+		throw new Error(
+			"NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY environment variable is not set"
+		);
 	}
-	return new GoogleGenAI({ apiKey: process.env.API_KEY });
+	return new GoogleGenAI({
+		apiKey: process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY,
+	});
 };
 
 export const analyzePodcastContent = async (
 	transcript: string,
-	onProgress: (message: string) => void
+	onProgress: (message: string) => void,
+	useLiteModel?: boolean
 ): Promise<Pick<PodcastAnalysisResult, "summary" | "chapters">> => {
-	onProgress("Generating summary and chapters...");
+	const modelName = useLiteModel ? "gemini-2.5-flash-lite" : "gemini-2.5-pro";
+	onProgress(
+		`Generating summary and chapters${useLiteModel ? " with fast model" : ""}...`
+	);
 	const ai = getAiClient();
-	const response = await ai.models.generateContent({
-		model: "gemini-2.5-pro",
-		contents: `Analyze the following podcast transcript. Your main goal is to repurpose it into a summary and chapters.
+
+	try {
+		const response = await ai.models.generateContent({
+			model: modelName,
+			contents: `Analyze the following podcast transcript. Your main goal is to repurpose it into a summary and chapters.
 
 Provide your response in JSON format.
 
@@ -71,59 +90,69 @@ Here are the tasks:
 
 Transcript:
 ${transcript}`,
-		config: {
-			responseMimeType: "application/json",
-			responseSchema: {
-				type: Type.OBJECT,
-				properties: {
-					summary: {
-						type: Type.STRING,
-						description: "A concise summary of the podcast episode.",
-					},
-					chapters: {
-						type: Type.ARRAY,
-						description: "A list of chapters with timestamps and descriptive titles.",
-						items: {
-							type: Type.OBJECT,
-							properties: {
-								timestamp: {
-									type: Type.STRING,
-									description: 'The start time of the chapter, e.g., "00:00:00".',
+			config: {
+				responseMimeType: "application/json",
+				responseSchema: {
+					type: Type.OBJECT,
+					properties: {
+						summary: {
+							type: Type.STRING,
+							description: "A concise summary of the podcast episode.",
+						},
+						chapters: {
+							type: Type.ARRAY,
+							description: "A list of chapters with timestamps and descriptive titles.",
+							items: {
+								type: Type.OBJECT,
+								properties: {
+									timestamp: {
+										type: Type.STRING,
+										description: 'The start time of the chapter, e.g., "00:00:00".',
+									},
+									title: { type: Type.STRING, description: "The title of the chapter." },
 								},
-								title: { type: Type.STRING, description: "The title of the chapter." },
 							},
 						},
 					},
 				},
 			},
-		},
-	});
+		});
 
-	const rawText = response.text?.trim() ?? "";
-	const jsonString = extractJson(rawText);
-	const analysisResult = JSON.parse(jsonString) as Pick<
-		PodcastAnalysisResult,
-		"summary" | "chapters"
-	>;
+		const rawText = response.text?.trim() ?? "";
+		const jsonString = extractJson(rawText);
+		const analysisResult = JSON.parse(jsonString) as Pick<
+			PodcastAnalysisResult,
+			"summary" | "chapters"
+		>;
 
-	onProgress("Summary and chapters generated!");
-	return analysisResult;
+		onProgress("Summary and chapters generated!");
+		return analysisResult;
+	} catch (error: unknown) {
+		// Format error for better debugging
+		if (error && typeof error === "object" && "message" in error) {
+			throw error;
+		}
+		throw new Error(JSON.stringify(error));
+	}
 };
 
 export const generateSocialMediaPosts = async (
 	summary: string,
 	chapters: { timestamp: string; title: string }[],
-	tone?: string
+	tone?: string,
+	useLiteModel?: boolean
 ): Promise<{ platform: string; content: string }[]> => {
+	const modelName = useLiteModel ? "gemini-2.5-flash-lite" : "gemini-2.5-pro";
 	const ai = getAiClient();
 	const chaptersText = chapters.map(c => `${c.timestamp} - ${c.title}`).join("\n");
 	const toneInstruction = tone
 		? `\n\nPlease tailor the posts for the following audience/tone: "${tone}".`
 		: "";
 
-	const response = await ai.models.generateContent({
-		model: "gemini-2.5-pro",
-		contents: `Given the following podcast summary and chapter breakdown, generate three unique social media posts (for Twitter, LinkedIn, and Instagram) that promote the podcast episode.
+	try {
+		const response = await ai.models.generateContent({
+			model: modelName,
+			contents: `Given the following podcast summary and chapter breakdown, generate three unique social media posts (for Twitter, LinkedIn, and Instagram) that promote the podcast episode.
 
     Summary:
     ${summary}
@@ -132,30 +161,37 @@ export const generateSocialMediaPosts = async (
     ${chaptersText}
     ${toneInstruction}
     `,
-		config: {
-			responseMimeType: "application/json",
-			responseSchema: {
-				type: Type.ARRAY,
-				description: "A list of social media posts tailored for different platforms.",
-				items: {
-					type: Type.OBJECT,
-					properties: {
-						platform: {
-							type: Type.STRING,
-							description: 'The social media platform (e.g., "Twitter").',
+			config: {
+				responseMimeType: "application/json",
+				responseSchema: {
+					type: Type.ARRAY,
+					description: "A list of social media posts tailored for different platforms.",
+					items: {
+						type: Type.OBJECT,
+						properties: {
+							platform: {
+								type: Type.STRING,
+								description: 'The social media platform (e.g., "Twitter").',
+							},
+							content: { type: Type.STRING, description: "The content of the post." },
 						},
-						content: { type: Type.STRING, description: "The content of the post." },
 					},
 				},
 			},
-		},
-	});
+		});
 
-	const rawText = response.text?.trim() ?? "";
-	const jsonString = extractJson(rawText);
-	const posts = JSON.parse(jsonString) as { platform: string; content: string }[];
+		const rawText = response.text?.trim() ?? "";
+		const jsonString = extractJson(rawText);
+		const posts = JSON.parse(jsonString) as { platform: string; content: string }[];
 
-	return posts;
+		return posts;
+	} catch (error: unknown) {
+		// Format error for better debugging
+		if (error && typeof error === "object" && "message" in error) {
+			throw error;
+		}
+		throw new Error(JSON.stringify(error));
+	}
 };
 
 // Fix: Add analyzeVideoFrames function to analyze video content with Gemini Pro.
@@ -248,9 +284,11 @@ export const generateVideoFromImage = async (
 	onProgress("Video generated! Downloading...");
 
 	const downloadLink = operation.response.generatedVideos[0].video.uri;
-	const apiKey = process.env.API_KEY;
+	const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY;
 	if (!apiKey) {
-		throw new Error("API_KEY environment variable not set for downloading video.");
+		throw new Error(
+			"NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY environment variable not set for downloading video."
+		);
 	}
 	const response = await fetch(`${downloadLink}&key=${apiKey}`);
 
@@ -263,10 +301,48 @@ export const generateVideoFromImage = async (
 	return URL.createObjectURL(blob);
 };
 
+/**
+ * Generate a simulated placeholder image when image generation is disabled.
+ * Creates a simple SVG placeholder with a watermark.
+ */
+const generatePlaceholderImage = (): string => {
+	const svg = `
+		<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+			<rect width="512" height="512" fill="#1f2937"/>
+			<text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" 
+				  font-family="Arial, sans-serif" font-size="24" fill="#9ca3af" font-weight="bold">
+				🖼️ Image Simulation
+			</text>
+			<text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" 
+				  font-family="Arial, sans-serif" font-size="14" fill="#6b7280">
+				(Imagen disabled)
+			</text>
+			<!-- Watermark badge in bottom right corner -->
+			<g transform="translate(350, 460)">
+				<rect x="0" y="0" width="150" height="40" rx="4" fill="#fbbf24" opacity="0.95"/>
+				<text x="75" y="25" text-anchor="middle" dominant-baseline="middle"
+					  font-family="Arial, sans-serif" font-size="13" fill="#000" font-weight="bold">
+					⚠️ SIMULATED
+				</text>
+			</g>
+		</svg>
+	`.trim();
+
+	const base64 = Buffer.from(svg).toString("base64");
+	return `data:image/svg+xml;base64,${base64}`;
+};
+
 export const generateImage = async (prompt: string): Promise<string> => {
+	// If image generation is disabled, return a placeholder
+	if (!isImageGenerationEnabled()) {
+		// Simulate a short delay to mimic API call
+		await new Promise(resolve => setTimeout(resolve, 500));
+		return generatePlaceholderImage();
+	}
+
 	const ai = getAiClient();
 	const response = await ai.models.generateImages({
-		model: "imagen-4.0-generate-001",
+		model: "imagen-4.0-fast-generate-001",
 		prompt,
 		config: {
 			numberOfImages: 1,

@@ -73,7 +73,7 @@ export function LicenseForm({
                                 </Label>
                                 <p className="mt-1 text-sm text-muted-foreground">
                                     Your generated content remains private to your organization. No public
-                                    sharing on the Podslice platform.
+                                    sharing on the PODSLICE.Ai Studio platform.
                                 </p>
                             </div>
                         </div>
@@ -113,7 +113,7 @@ export function LicenseForm({
                     </div>
                 </div>
 
-                <div className="rounded-lg bg-[var(--beduk-4)] p-4">
+                <div className="rounded-lg bg-(--beduk-4) p-4">
                     <h4 className="font-medium">Key Terms</h4>
                     <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                         <li>• All generated content includes mandatory attribution</li>
@@ -131,7 +131,7 @@ export function LicenseForm({
                         onCheckedChange={checked => setAgreed(checked as boolean)}
                     />
                     <Label htmlFor="agree" className="cursor-pointer text-sm leading-relaxed">
-                        I agree to the Podslice Terms of Service and understand that all generated
+                        I agree to the PODSLICE.Ai Studio Terms of Service and understand that all generated
                         content will include attribution to my original podcast episodes.
                     </Label>
                 </div>

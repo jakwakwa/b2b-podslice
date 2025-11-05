@@ -7,7 +7,7 @@ export async function sendVerificationEmail(email: string, token: string) {
     const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/verify-email?token=${token}`
 
     const apiKey = process.env.RESEND_API_KEY
-    const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.ai>"
+    const from = process.env.RESEND_FROM || "PODSLICE.Ai Studio <noreply@podslice.ai>"
 
     // Redirect test emails to a real address to prevent bounces
     const testEmailRedirect = process.env.TEST_EMAIL
@@ -51,7 +51,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${token}`
 
     const apiKey = process.env.RESEND_API_KEY
-    const from = process.env.RESEND_FROM || "Podslice <noreply@podslice.ai>"
+    const from = process.env.RESEND_FROM || "PODSLICE.Ai Studio <noreply@podslice.ai>"
 
     // Redirect test emails to a real address to prevent bounces
     const testEmailRedirect = process.env.TEST_EMAIL

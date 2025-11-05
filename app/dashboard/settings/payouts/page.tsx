@@ -65,7 +65,7 @@ export default async function PayoutSettingsPage() {
                         </Badge>
                     </div>
                     {isOnboarded && (
-                        <div className="mt-4 text-xs font-mono text-muted-foreground bg-[var(--beduk-4)] p-2 rounded">
+                        <div className="mt-4 text-xs font-mono text-muted-foreground bg-(--beduk-4) p-2 rounded">
                             Payee ID: {org.payoneer_payee_id}
                         </div>
                     )}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { generateImage } from "@/lib/gemini-analyzer-social-service";
+import { generateImage, isImageGenerationEnabled } from "@/lib/gemini-analyzer-social-service";
 import { Loader } from "./common/Loader";
 
 export const ImageGenerator: React.FC = () => {
@@ -22,6 +22,7 @@ export const ImageGenerator: React.FC = () => {
         setError(null);
         setImageUrl(null);
         try {
+            // generateImage will automatically simulate if image generation is disabled
             const url = await generateImage(prompt);
             setImageUrl(url);
         } catch (err) {
@@ -32,12 +33,21 @@ export const ImageGenerator: React.FC = () => {
         }
     };
 
+    const imageGenEnabled = isImageGenerationEnabled();
+
     return (
         <div className="space-y-6">
             <Card>
                 <h2 className="text-xl font-bold text-white mb-4">
                     Image Generation with Imagen 4
                 </h2>
+                {!imageGenEnabled && (
+                    <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-md">
+                        <p className="text-yellow-400 text-sm">
+                            ℹ️ Image generation is disabled. Placeholder images will be shown. Set NEXT_PUBLIC_IMAGEN_ENABLED=true to enable real image generation.
+                        </p>
+                    </div>
+                )}
                 <p className="text-gray-400 mb-4">
                     Describe the image you want to create. Be as specific or creative as you like.
                 </p>
@@ -56,7 +66,7 @@ export const ImageGenerator: React.FC = () => {
                         isLoading={isLoading}
                         disabled={isLoading || !prompt}
                         className="w-full sm:w-auto">
-                        Generate
+                        {imageGenEnabled ? "Generate" : "Generate (Simulated)"}
                     </Button>
                 </div>
             </Card>

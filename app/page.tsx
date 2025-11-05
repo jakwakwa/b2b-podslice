@@ -86,7 +86,7 @@ export default function HomePage() {
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-foreground -foreground font-bold">
                             P
                         </div>
-                        <span className="text-xl font-bold">Podslice</span>
+                        <span className="text-xl font-bold">PODSLICE.Ai Studio</span>
                     </div>
                     <nav className="flex items-center gap-4">
                         <Link href="/sign-in">
@@ -300,7 +300,7 @@ export default function HomePage() {
                         Ready to Transform Your Podcast Content?
                     </h2>
                     <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg leading-relaxed opacity-90">
-                        Comiong soon! a podcast creators who trust Podslice for ethical, AI-powered content
+                        Comiong soon! a podcast creators who trust PODSLICE.Ai Studio for ethical, AI-powered content
                         generation.
                     </p>
 
