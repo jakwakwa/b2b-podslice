@@ -88,7 +88,11 @@ export default function HomePage() {
                         </div>
                         <span className="text-xl font-bold">Podslice</span>
                     </div>
-                    <nav className="flex items-center gap-4">coming soon</nav>
+                    <nav className="flex items-center gap-4">
+                        <Link href="/sign-in">
+                            Sign In
+                        </Link>
+                    </nav>
                 </div>
             </header>
 
@@ -296,16 +300,10 @@ export default function HomePage() {
                         Ready to Transform Your Podcast Content?
                     </h2>
                     <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg leading-relaxed opacity-90">
-                        Join podcast creators who trust Podslice for ethical, AI-powered content
+                        Comiong soon! a podcast creators who trust Podslice for ethical, AI-powered content
                         generation.
                     </p>
-                    <div className="mt-8">
-                        <Link href="/sign-up">
-                            <Button size="lg" variant="secondary" className="text-lg">
-                                Start Your Free Trial
-                            </Button>
-                        </Link>
-                    </div>
+
                 </Card>
             </section>
         </div>
