@@ -6,6 +6,8 @@
 @import "tw-animate-css";
 /* @import "@clerk/themes/shadcn.css"; */
 @import "./theme-color-pallete.css";
+@import "@radix-ui/themes/styles.css";
+
 
 @layer base {
     * {
