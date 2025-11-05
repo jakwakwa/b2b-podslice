@@ -113,3 +113,8 @@ export type summaries = Prisma.summariesModel
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  */
 export type users = Prisma.usersModel
+/**
+ * Model waiting_list
+ * 
+ */
+export type waiting_list = Prisma.waiting_listModel

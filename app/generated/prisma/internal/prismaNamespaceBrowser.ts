@@ -61,7 +61,8 @@ export const ModelName = {
   royalty_line_items: 'royalty_line_items',
   sessions: 'sessions',
   summaries: 'summaries',
-  users: 'users'
+  users: 'users',
+  waiting_list: 'waiting_list'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -303,6 +304,16 @@ export const UsersScalarFieldEnum = {
 } as const
 
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
+
+
+export const Waiting_listScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  created_at: 'created_at'
+} as const
+
+export type Waiting_listScalarFieldEnum = (typeof Waiting_listScalarFieldEnum)[keyof typeof Waiting_listScalarFieldEnum]
 
 
 export const SortOrder = {

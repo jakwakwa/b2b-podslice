@@ -27,3 +27,9 @@ export type Royalty = {
 	updated_at: Date;
 };
 
+export type IWaitingList = {
+	id: string;
+	email: string;
+	name?: string | "anonymous";
+	created_at: Date;
+};

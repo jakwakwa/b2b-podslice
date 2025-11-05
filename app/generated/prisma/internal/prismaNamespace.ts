@@ -402,7 +402,8 @@ export const ModelName = {
   royalty_line_items: 'royalty_line_items',
   sessions: 'sessions',
   summaries: 'summaries',
-  users: 'users'
+  users: 'users',
+  waiting_list: 'waiting_list'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "analytics_events" | "daily_analytics" | "clips" | "email_verification_tokens" | "episodes" | "licenses" | "organizations" | "password_reset_tokens" | "podcasts" | "royalties" | "royalty_line_items" | "sessions" | "summaries" | "users"
+    modelProps: "analytics_events" | "daily_analytics" | "clips" | "email_verification_tokens" | "episodes" | "licenses" | "organizations" | "password_reset_tokens" | "podcasts" | "royalties" | "royalty_line_items" | "sessions" | "summaries" | "users" | "waiting_list"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1458,6 +1459,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    waiting_list: {
+      payload: Prisma.$waiting_listPayload<ExtArgs>
+      fields: Prisma.waiting_listFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.waiting_listFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.waiting_listFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>
+        }
+        findFirst: {
+          args: Prisma.waiting_listFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.waiting_listFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>
+        }
+        findMany: {
+          args: Prisma.waiting_listFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>[]
+        }
+        create: {
+          args: Prisma.waiting_listCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>
+        }
+        createMany: {
+          args: Prisma.waiting_listCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.waiting_listCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>[]
+        }
+        delete: {
+          args: Prisma.waiting_listDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>
+        }
+        update: {
+          args: Prisma.waiting_listUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>
+        }
+        deleteMany: {
+          args: Prisma.waiting_listDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.waiting_listUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.waiting_listUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>[]
+        }
+        upsert: {
+          args: Prisma.waiting_listUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$waiting_listPayload>
+        }
+        aggregate: {
+          args: Prisma.Waiting_listAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWaiting_list>
+        }
+        groupBy: {
+          args: Prisma.waiting_listGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Waiting_listGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.waiting_listCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Waiting_listCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1722,6 +1797,16 @@ export const UsersScalarFieldEnum = {
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
 
 
+export const Waiting_listScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  created_at: 'created_at'
+} as const
+
+export type Waiting_listScalarFieldEnum = (typeof Waiting_listScalarFieldEnum)[keyof typeof Waiting_listScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1974,6 +2059,7 @@ export type GlobalOmitConfig = {
   sessions?: Prisma.sessionsOmit
   summaries?: Prisma.summariesOmit
   users?: Prisma.usersOmit
+  waiting_list?: Prisma.waiting_listOmit
 }
 
 /* Types for Logging */

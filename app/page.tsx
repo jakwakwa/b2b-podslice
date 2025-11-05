@@ -1,8 +1,82 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { joinWaitingList } from "@/app/actions/waiting-list";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function HomePage() {
+    const [emailInput, setEmailInput] = useState("");
+    const [nameInput, setNameInput] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+        e.preventDefault();
+
+        if (e.target.name === "email") {
+            setEmailInput(e.target.value);
+        } else if (e.target.name === "name") {
+            setNameInput(e.target.value);
+        }
+    }
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // Basic client-side validation
+        if (!emailInput.trim()) {
+            toast.error("Email is required", {
+                description: "Please enter your email address to join the waiting list.",
+            });
+            return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput)) {
+            toast.error("Invalid email address", {
+                description: "Please enter a valid email address.",
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await joinWaitingList({
+                email: emailInput.trim(),
+                ...(nameInput.trim() && { name: nameInput.trim() }),
+            });
+
+            if (response.error) {
+                toast.error("Failed to join waiting list", {
+                    description: response.error,
+                });
+            } else {
+                toast.success("Successfully joined!", {
+                    description: response.message || "You've been added to the waiting list.",
+                });
+                // Reset form inputs
+                setEmailInput("");
+                setNameInput("");
+            }
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again later.";
+            toast.error("Something went wrong", {
+                description: errorMessage,
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-linear-to-b from-background to-background">
             {/* Header */}
@@ -31,12 +105,50 @@ export default function HomePage() {
                     Transform your podcast episodes into summaries, clips, and social content. Built
                     on ethical AI with transparent attribution and fair royalties.
                 </p>
-                <div className="mt-10 flex items-center justify-center gap-4">
-                    <Link href="#features">
-                        <Button size="lg" variant="outline" className="text-lg bg-transparent">
-                            Learn More
-                        </Button>
-                    </Link>
+                <div className="mt-10 flex flex-col items-center justify-center gap-6">
+                    <div className="flex items-center gap-4">
+                        <Link href="#features">
+                            <Button size="lg" variant="outline" className="text-lg bg-transparent">
+                                Learn More
+                            </Button>
+                        </Link>
+                    </div>
+                    <Card className="w-full max-w-md p-6">
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    placeholder="Enter your email"
+                                    value={emailInput}
+                                    onChange={handleOnChange}
+                                    disabled={isSubmitting}
+                                    required
+                                />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="name">Name (optional)</Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    name="name"
+                                    placeholder="Enter your name"
+                                    value={nameInput}
+                                    onChange={handleOnChange}
+                                    disabled={isSubmitting}
+                                />
+                            </div>
+                            <Button
+                                type="submit"
+                                size="lg"
+                                className="w-full text-lg"
+                                disabled={isSubmitting}>
+                                {isSubmitting ? "Joining..." : "Join Waiting List"}
+                            </Button>
+                        </form>
+                    </Card>
                 </div>
             </section>
 
