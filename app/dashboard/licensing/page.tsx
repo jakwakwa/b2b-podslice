@@ -39,7 +39,7 @@ export default async function LicensingPage() {
     const activeLicense = mappedLicenses.find((l: MappedLicense) => l.is_active);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader
                 user={{
                     ...user,
@@ -74,7 +74,7 @@ export default async function LicensingPage() {
                                             </h3>
                                             <Badge
                                                 variant="secondary"
-                                                className="bg-green-500/10 text-teal-500">
+                                                className="bg-success/10 text-teal-500">
                                                 Active
                                             </Badge>
                                         </div>

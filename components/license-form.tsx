@@ -62,7 +62,7 @@ export function LicenseForm({
     return (
         <Card className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4">
+                <div className="mt-2 gap-3 flex flex-col">
                     <Label>License Type</Label>
                     <RadioGroup value={licenseType} onValueChange={setLicenseType}>
                         <div className="flex items-start space-x-3 rounded-lg border p-4">
@@ -93,7 +93,7 @@ export function LicenseForm({
                     </RadioGroup>
                 </div>
 
-                <div className="space-y-4">
+                <div className="mt-2 gap-3 flex flex-col">
                     <Label>Additional Options</Label>
                     <div className="flex items-start space-x-3 rounded-lg border p-4">
                         <Checkbox

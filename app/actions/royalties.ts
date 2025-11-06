@@ -110,6 +110,9 @@ export async function processPayment(royaltyId: string) {
 
 	try {
 		// Verify royalty belongs to user's organization
+		if (!user.organization_id) {
+			return { error: "Organization not found" };
+		}
 		const royalty = await prisma.royalties.findFirst({
 			where: {
 				id: royaltyId,
@@ -147,13 +150,14 @@ export async function processPayment(royaltyId: string) {
 
 		return { success: true, payoutId: payoneerTransactionId };
 	} catch (error) {
-		console.error("[v0] Process payment error:", error);
-
+		console.error(
+			"[v0] Process payment error:",
+			`${error instanceof Error ? error.message : "Unknown error"}`
+		);
 		await prisma.royalties.update({
 			where: { id: royaltyId },
 			data: { payment_status: "failed" },
 		});
-
-		return { error: "Failed to process payment" };
+		return { error: `${error instanceof Error ? error.message : "Unknown error"}` };
 	}
 }

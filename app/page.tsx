@@ -78,9 +78,9 @@ export default function HomePage() {
     };
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-background to-background">
+        <div className="min-h-screen">
             {/* Header */}
-            <header className="border-b bg-background backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+            <header className="border-b  backdrop-blur-2xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <div className="flex items-center gap-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-foreground -foreground font-bold">
@@ -118,7 +118,7 @@ export default function HomePage() {
                         </Link>
                     </div>
                     <Card className="w-full max-w-md p-6">
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                             <div className="flex flex-col gap-2">
                                 <Label htmlFor="email">Email</Label>
                                 <Input

@@ -27,7 +27,7 @@ export const VideoGenerator: React.FC = () => {
     const [prompt, setPrompt] = useState("");
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setloading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [progress, setProgress] = useState<string | null>(null);
 
@@ -50,7 +50,7 @@ export const VideoGenerator: React.FC = () => {
             setError("Please upload an image and provide a prompt.");
             return;
         }
-        setIsLoading(true);
+        setloading(true);
         setError(null);
         setVideoUrl(null);
         setProgress("Preparing assets...");
@@ -73,7 +73,7 @@ export const VideoGenerator: React.FC = () => {
             }
             console.error(err);
         } finally {
-            setIsLoading(false);
+            setloading(false);
             setProgress(null);
         }
     };
@@ -122,7 +122,7 @@ export const VideoGenerator: React.FC = () => {
                     Upload a starting image, describe the scene, and let Veo generate a short video.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
+                    <div className="mt-2 gap-3 flex flex-col">
                         <div>
                             <Label
                                 htmlFor="image-upload"
@@ -135,7 +135,7 @@ export const VideoGenerator: React.FC = () => {
                                 accept="image/*"
                                 onChange={handleFileChange}
                                 className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 w-full text-gray-400"
-                                disabled={isLoading}
+                                disabled={loading}
                             />
                         </div>
                         {imagePreview && (
@@ -150,7 +150,7 @@ export const VideoGenerator: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    <div className="space-y-4">
+                    <div className="mt-2 gap-3 flex flex-col">
                         <div>
                             <Label
                                 htmlFor="video-description"
@@ -163,7 +163,7 @@ export const VideoGenerator: React.FC = () => {
                                 onChange={e => setPrompt(e.target.value)}
                                 placeholder="e.g., The camera slowly zooms out to reveal a bustling futuristic city"
                                 className="w-full h-24 p-3 bg-gray-900/50 border border-gray-700 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-                                disabled={isLoading}
+                                disabled={loading}
                             />
                         </div>
                         <div>
@@ -175,7 +175,7 @@ export const VideoGenerator: React.FC = () => {
                             <Select
                                 value={aspectRatio}
                                 onValueChange={value => setAspectRatio(value as AspectRatio)}
-                                disabled={isLoading}>
+                                disabled={loading}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select aspect ratio" />
                                 </SelectTrigger>
@@ -189,14 +189,14 @@ export const VideoGenerator: React.FC = () => {
                 </div>
                 <Button
                     onClick={handleGenerate}
-                    isLoading={isLoading}
-                    disabled={isLoading || !imageFile || !prompt}
+                    loading={loading}
+                    disabled={loading || !imageFile || !prompt}
                     className="mt-6 w-full sm:w-auto">
                     Generate Video
                 </Button>
             </Card>
 
-            {isLoading && (
+            {loading && (
                 <Card className="text-center">
                     <div className="flex flex-col items-center p-4">
                         <Loader size="h-10 w-10" />

@@ -30,8 +30,7 @@ export const cardVariants = cva("", {
 	variants: {
 		variant: {
 			default: "bg-card backdrop-filter-sm rounded-xl border text-card-foreground px-4",
-			glass:
-				"md:bg-background/80 md:backdrop-blur-[4px] border text-card-foreground px-4",
+			glass: "md:backdrop-blur-[4px] border text-card-foreground px-4",
 			dunk: "bg-dunk border-2 border-bundle-card-border w-full transition-shadow duration-200 gap-3 bundle-card-hover xl:min-w-[70vw]  xl:overflow-hidden rounded-4xl ease-in-out text-shadow-sm shadow-[0_4px_4px_1px_#0506062c] relative",
 			transparent: "main-card",
 			bundle:
@@ -127,7 +126,7 @@ export const selectVariants = cva("", {
 		},
 		content: {
 			default:
-				"relative z-1000 max-h-96 min-w-32 overflow-hidden rounded-md border bg-background/20  text-foreground shadow-md animate-in fade-in-0 zoom-in-95",
+				"relative z-1000 max-h-96 min-w-32 overflow-hidden rounded-md border bg-background  text-foreground shadow-md animate-in fade-in-0 zoom-in-95",
 		},
 	},
 	defaultVariants: {

@@ -30,7 +30,7 @@ import { SocialMediaPreview } from "./SocialMediaPreview";
 export const PodcastAnalyzer: FC = () => {
     const [transcript, setTranscript] = useState("");
     const [result, setResult] = useState<PodcastAnalysisResult | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setloading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [editedChapters, setEditedChapters] = useState<
         { timestamp: string; title: string }[]
@@ -96,7 +96,7 @@ export const PodcastAnalyzer: FC = () => {
             setError("Please enter a podcast transcript.");
             return;
         }
-        setIsLoading(true);
+        setloading(true);
         setError(null);
         setResult(null);
         setSocialMediaError(null);
@@ -187,7 +187,7 @@ export const PodcastAnalyzer: FC = () => {
             showErrorDialog(err);
             console.error(err);
         } finally {
-            setIsLoading(false);
+            setloading(false);
             setProgress(null);
             // Don't reset useLiteModel here - let user decide via dialog or reset button
         }
@@ -361,7 +361,7 @@ export const PodcastAnalyzer: FC = () => {
                             )}
                         </div>
                     </div>
-                    {!(result || isLoading) && (
+                    {!(result || loading) && (
                         <>
                             <p className="text-gray-400 mb-4">
                                 Paste your podcast transcript below. Our AI will generate a summary,
@@ -395,7 +395,7 @@ export const PodcastAnalyzer: FC = () => {
                 </CardContent>
             </Card>
 
-            {isLoading && (
+            {loading && (
                 <div className="flex justify-center items-center p-8">
                     <Loader size="h-10 w-10" />
                     <p className="ml-4 text-lg text-gray-300">
@@ -414,7 +414,7 @@ export const PodcastAnalyzer: FC = () => {
                 </Card>
             )}
 
-            {result && !isLoading && (
+            {result && !loading && (
                 <div className="space-y-6">
                     {result.summary && (
                         <Card>
@@ -472,7 +472,7 @@ export const PodcastAnalyzer: FC = () => {
                                     />
                                     <Button
                                         onClick={handleRegenerateSocialMedia}
-                                        isLoading={isRegeneratingSocialMedia}
+                                        disabled={false}
                                         disabled={
                                             isRegeneratingSocialMedia ||
                                             !result.summary ||
@@ -480,9 +480,7 @@ export const PodcastAnalyzer: FC = () => {
                                         }
                                         className="mt-4 w-full sm:w-auto"
                                         variant="secondary">
-                                        {isRegeneratingSocialMedia
-                                            ? "Regenerating..."
-                                            : "Regenerate Social Media Posts"}
+                                        Regenerate Social Media Posts
                                     </Button>
                                 </div>
                                 {socialMediaError && (
@@ -511,7 +509,7 @@ export const PodcastAnalyzer: FC = () => {
                                             {post.imageUrl && imageGenEnabled && (
                                                 <div className="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700">
                                                     {editingPostIndex === index ? (
-                                                        <div className="space-y-4">
+                                                        <div className="mt-2 gap-3 flex flex-col">
                                                             <div>
                                                                 <Label className="block text-sm font-medium text-gray-300 mb-1">
                                                                     Image Edit Prompt
@@ -539,7 +537,7 @@ export const PodcastAnalyzer: FC = () => {
                                                                     onClick={() =>
                                                                         handleImageEdit(index, editPrompt, editGuideImage)
                                                                     }
-                                                                    isLoading={isEditingImage}
+
                                                                     disabled={isEditingImage || !editPrompt}
                                                                     variant="secondary">
                                                                     Apply Edits

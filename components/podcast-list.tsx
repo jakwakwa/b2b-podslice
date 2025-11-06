@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,20 +24,22 @@ export function PodcastList({ podcasts }: { podcasts: Podcast[] }) {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-8">
             {podcasts.map(podcast => (
                 <Link key={podcast.id} href={`/dashboard/podcasts/${podcast.id}`}>
                     <Card className="p-4 transition-colors hover:bg-[var(--beduk-4)]/50">
                         <div className="flex items-center gap-4">
                             {podcast.cover_image_url ? (
-                                <img
+                                <Image
                                     src={podcast.cover_image_url || "/placeholder.svg"}
                                     alt={podcast.title}
-                                    className="h-16 w-16 rounded-lg object-cover"
+                                    width={64}
+                                    height={64}
+                                    className="rounded-lg object-cover"
                                 />
                             ) : (
                                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-[var(--beduk-4)]">
-                                    <span className="text-2xl font-bold text-muted-foreground">
+                                    <span className="text-basefont-bold text-muted-foreground">
                                         {podcast.title[0]}
                                     </span>
                                 </div>

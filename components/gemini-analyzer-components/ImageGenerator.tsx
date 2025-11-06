@@ -10,7 +10,7 @@ import { Loader } from "./common/Loader";
 export const ImageGenerator: React.FC = () => {
     const [prompt, setPrompt] = useState("");
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setloading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleGenerate = async () => {
@@ -18,7 +18,7 @@ export const ImageGenerator: React.FC = () => {
             setError("Please enter a prompt to generate an image.");
             return;
         }
-        setIsLoading(true);
+        setloading(true);
         setError(null);
         setImageUrl(null);
         try {
@@ -29,7 +29,7 @@ export const ImageGenerator: React.FC = () => {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
             console.error(err);
         } finally {
-            setIsLoading(false);
+            setloading(false);
         }
     };
 
@@ -59,19 +59,19 @@ export const ImageGenerator: React.FC = () => {
                         value={prompt}
                         onChange={e => setPrompt(e.target.value)}
                         placeholder="e.g., A cinematic shot of a raccoon astronaut on Mars"
-                        disabled={isLoading}
+                        disabled={loading}
                     />
                     <Button
                         onClick={handleGenerate}
-                        isLoading={isLoading}
-                        disabled={isLoading || !prompt}
+                        loading={loading}
+                        disabled={loading || !prompt}
                         className="w-full sm:w-auto">
                         {imageGenEnabled ? "Generate" : "Generate (Simulated)"}
                     </Button>
                 </div>
             </Card>
 
-            {isLoading && (
+            {loading && (
                 <div className="flex justify-center items-center p-8">
                     <Loader size="h-10 w-10" />
                     <p className="ml-4 text-lg text-gray-300">Generating your image...</p>

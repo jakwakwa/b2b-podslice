@@ -31,7 +31,7 @@ export function TopContent({ summaries }: { summaries: Summary[] }) {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="mt-2 gap-3 flex flex-col">
             {summaries.map((summary, index) => (
                 <Link key={summary.id} href={`/dashboard/summaries/${summary.id}`}>
                     <Card className="p-4 transition-colors hover:bg-[var(--beduk-4)]/50">

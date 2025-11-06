@@ -207,7 +207,7 @@ export default async function AnalyticsPage({
             : "0.00";
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader user={user} />
 
             <main className="container mx-auto px-4 py-8">
@@ -259,7 +259,7 @@ export default async function AnalyticsPage({
                     </Card>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-2 gap-3 flex flex-col">
                     <Card className="p-6">
                         <h2 className="mb-6 text-xl font-semibold">Engagement Over Time</h2>
                         <AnalyticsChart data={dailyAnalytics} />
