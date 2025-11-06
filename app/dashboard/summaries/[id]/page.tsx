@@ -61,11 +61,11 @@ export default async function SummaryDetailPage({
         social_twitter: "bg-sky-500/10 text-sky-500",
         social_linkedin: "bg-indigo-500/10 text-indigo-500",
         social_instagram: "bg-pink-500/10 text-pink-500",
-        show_notes: "bg-green-500/10 text-teal-500",
+        show_notes: "bg-success/10 text-teal-500",
     };
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader user={user} />
 
             <main className="container mx-auto px-4 py-8">

@@ -57,7 +57,7 @@ export default async function RoyaltyDetailPage({
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        paid: "bg-green-500/10 text-teal-500",
+        paid: "bg-success/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 
@@ -71,7 +71,7 @@ export default async function RoyaltyDetailPage({
     };
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader
                 user={{
                     ...user,
@@ -158,7 +158,7 @@ export default async function RoyaltyDetailPage({
 
                 <div>
                     <h2 className="mb-4 text-2xl font-semibold">Breakdown by Content</h2>
-                    <div className="space-y-4">
+                    <div className="mt-2 gap-3 flex flex-col">
                         {mappedLineItems.map(item => (
                             <Card key={item.id} className="p-4">
                                 <div className="flex items-start justify-between">

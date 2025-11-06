@@ -14,7 +14,7 @@ export const VideoAnalyzer: React.FC = () => {
         "Summarize what is happening in this video."
     );
     const [result, setResult] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setloading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [progress, setProgress] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -95,7 +95,7 @@ export const VideoAnalyzer: React.FC = () => {
             setError("Please select a video file and enter a prompt.");
             return;
         }
-        setIsLoading(true);
+        setloading(true);
         setError(null);
         setResult(null);
         setProgress("Preparing video...");
@@ -108,7 +108,7 @@ export const VideoAnalyzer: React.FC = () => {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
             console.error(err);
         } finally {
-            setIsLoading(false);
+            setloading(false);
             setProgress(null);
         }
     };
@@ -123,26 +123,26 @@ export const VideoAnalyzer: React.FC = () => {
                     Upload a video and provide a prompt. The tool will extract frames and use Gemini
                     Pro to analyze the visual content.
                 </p>
-                <div className="space-y-4">
+                <div className="mt-2 gap-3 flex flex-col">
                     <input
                         type="file"
                         accept="video/*"
                         onChange={handleFileChange}
                         className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 w-full text-gray-400"
-                        disabled={isLoading}
+                        disabled={loading}
                     />
                     <textarea
                         value={prompt}
                         onChange={e => setPrompt(e.target.value)}
                         placeholder="e.g., Describe the main objects and their interactions."
                         className="w-full h-24 p-3 bg-gray-900/50 border border-gray-700 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-                        disabled={isLoading}
+                        disabled={loading}
                     />
                 </div>
                 <Button
                     onClick={handleAnalyze}
-                    isLoading={isLoading}
-                    disabled={isLoading || !videoFile}
+                    loading={loading}
+                    disabled={loading || !videoFile}
                     className="mt-4 w-full sm:w-auto">
                     Analyze Video
                 </Button>
@@ -150,7 +150,7 @@ export const VideoAnalyzer: React.FC = () => {
                 <canvas ref={canvasRef} className="hidden" />
             </Card>
 
-            {isLoading && (
+            {loading && (
                 <div className="flex justify-center items-center p-8">
                     <Loader size="h-10 w-10" />
                     <p className="ml-4 text-lg text-gray-300">{progress || "Processing..."}</p>

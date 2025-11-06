@@ -35,7 +35,7 @@ export function EngagementMetrics({
         <div className="space-y-6">
             <Card className="p-6">
                 <h3 className="mb-4 font-semibold">Content Type Performance</h3>
-                <div className="space-y-4">
+                <div className="mt-2 gap-3 flex flex-col">
                     {contentTypes.map((type) => {
                         const percentage = (type.total_views / maxViews) * 100
 
@@ -60,7 +60,7 @@ export function EngagementMetrics({
 
             <Card className="p-6">
                 <h3 className="mb-4 font-semibold">Traffic Sources</h3>
-                <div className="space-y-4">
+                <div className="mt-2 gap-3 flex flex-col">
                     {trafficSources.map((source) => {
                         const percentage = (source.count / maxTraffic) * 100
 
@@ -71,7 +71,7 @@ export function EngagementMetrics({
                                     <span className="text-muted-foreground">{source.count.toLocaleString()}</span>
                                 </div>
                                 <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--beduk-4)]">
-                                    <div className="h-full bg-green-500 transition-all" style={{ width: `${percentage}%` }} />
+                                    <div className="h-full bg-success transition-all" style={{ width: `${percentage}%` }} />
                                 </div>
                             </div>
                         )

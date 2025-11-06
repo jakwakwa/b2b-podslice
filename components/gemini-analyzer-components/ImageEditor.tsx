@@ -14,7 +14,7 @@ export const ImageEditor: React.FC = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [prompt, setPrompt] = useState("");
     const [editedImageUrl, setEditedImageUrl] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setloading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +36,7 @@ export const ImageEditor: React.FC = () => {
             setError("Please upload an image and provide an editing instruction.");
             return;
         }
-        setIsLoading(true);
+        setloading(true);
         setError(null);
         setEditedImageUrl(null);
         try {
@@ -55,7 +55,7 @@ export const ImageEditor: React.FC = () => {
             );
             console.error(err);
         } finally {
-            setIsLoading(false);
+            setloading(false);
         }
     };
 
@@ -68,7 +68,7 @@ export const ImageEditor: React.FC = () => {
                 <p className="text-gray-400 mb-4">
                     Upload an image and describe the changes you want to make.
                 </p>
-                <div className="space-y-4">
+                <div className="mt-2 gap-3 flex flex-col">
                     <div>
                         <Label
                             htmlFor="image-upload"
@@ -80,7 +80,7 @@ export const ImageEditor: React.FC = () => {
                             accept="image/*"
                             onChange={handleFileChange}
                             className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 w-full text-gray-400"
-                            disabled={isLoading}
+                            disabled={loading}
                         />
                     </div>
                     {imagePreview && (
@@ -97,21 +97,21 @@ export const ImageEditor: React.FC = () => {
                                 onChange={e => setPrompt(e.target.value)}
                                 placeholder="e.g., Add a retro filter, remove the background"
                                 className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-                                disabled={isLoading || !imagePreview}
+                                disabled={loading || !imagePreview}
                             />
                         </div>
                     )}
                 </div>
                 <Button
                     onClick={handleEdit}
-                    isLoading={isLoading}
-                    disabled={isLoading || !imageFile || !prompt}
+                    loading={loading}
+                    disabled={loading || !imageFile || !prompt}
                     className="mt-6 w-full sm:w-auto">
                     Edit Image
                 </Button>
             </Card>
 
-            {isLoading && (
+            {loading && (
                 <div className="flex justify-center items-center p-8">
                     <Loader size="h-10 w-10" />
                     <p className="ml-4 text-lg text-gray-300">Applying your edits...</p>

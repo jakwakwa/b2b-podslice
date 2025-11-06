@@ -47,11 +47,11 @@ export function SummaryList({
         social_twitter: "bg-sky-500/10 text-sky-500",
         social_linkedin: "bg-indigo-500/10 text-indigo-500",
         social_instagram: "bg-pink-500/10 text-pink-500",
-        show_notes: "bg-green-500/10 text-teal-500",
+        show_notes: "bg-success/10 text-teal-500",
     };
 
     return (
-        <div className="space-y-4">
+        <div className="mt-2 gap-3 flex flex-col">
             {summaries.map(summary => (
                 <Card key={summary.id} className="p-6">
                     <div className="flex items-start justify-between">

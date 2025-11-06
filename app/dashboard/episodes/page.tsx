@@ -26,7 +26,7 @@ export default async function EpisodesPage() {
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        completed: "bg-green-500/10 text-teal-500",
+        completed: "bg-success/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 
@@ -41,7 +41,7 @@ export default async function EpisodesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader user={user} />
 
             <main className="container mx-auto px-4 py-8">
@@ -80,7 +80,7 @@ export default async function EpisodesPage() {
                         </Link>
                     </Card>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="flex flex-col gap-2">
                         {episodes.map(episode => (
                             <Link key={episode.id} href={`/dashboard/episodes/${episode.id}`}>
                                 <Card className="p-4 transition-colors hover:bg-(--beduk-4)/50">
@@ -94,9 +94,9 @@ export default async function EpisodesPage() {
                                                 height={64}
                                             />
                                         ) : (
-                                            <div className="flex h-16 w-16 items-center justify-center rounded bg-(--beduk-4)">
-                                                <span className="text-2xl font-bold text-muted-foreground">
-                                                    {episode.podcast_title ? episode.podcast_title : "N/A"}
+                                            <div className="flex h-16 w-16 items-center justify-center rounded bg-gray-200">
+                                                <span className="text-sm font-black text-muted-foreground">
+                                                    {episode.podcast_title ? episode.podcast_title.slice(0, 2) : "N/A"}
                                                 </span>
                                             </div>
                                         )}

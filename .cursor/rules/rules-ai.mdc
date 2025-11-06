@@ -12,7 +12,7 @@ alwaysApply: true
     - Write concise, technical TypeScript code 
     - Use functional and declarative programming patterns; avoid classes.
     - Favor iteration and modularization over code duplication.
-    - Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+    - Use descriptive variable names with auxiliary verbs (e.g., `loading`, `hasError`).
     - Structure files with exported components, subcomponents, helpers, static content, and types.
     - Use lowercase with dashes for directory names (e.g., `components/auth-wizard`).
 
@@ -66,7 +66,7 @@ alwaysApply: true
     - Write concise, technical TypeScript code with accurate examples.
     - Use functional and declarative programming patterns; avoid classes.
     - Favor iteration and modularization over code duplication.
-    - Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+    - Use descriptive variable names with auxiliary verbs (e.g., `loading`, `hasError`).
     - Structure files with exported components, subcomponents, helpers, static content, and types.
     - Use lowercase with dashes for directory names (e.g., `components/auth-wizard`).
 

@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const taxProfileSchema = z.object({
-    taxIdentifier: z.string().min(3, "Tax ID/registration number is required"),
-    taxJurisdiction: z.string().length(2, "Use 2-letter country code (e.g., ZA, US)"),
+    taxIdentifier: z.string().trim().min(3, "Tax ID/registration number is required"),
+    taxJurisdiction: z
+        .string()
+        .trim()
+        .toUpperCase()
+        .length(2, "Use 2-letter country code (e.g., ZA, US)"),
     entityType: z.enum(["INDIVIDUAL", "BUSINESS"], {
         errorMap: () => ({ message: "Please select entity type" }),
     }),
@@ -39,10 +43,18 @@ export function TaxProfileForm({ onSuccess, onError }: TaxProfileFormProps = {})
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        control,
+        formState: { errors, isSubmitted },
     } = useForm<TaxProfileFormData>({
         resolver: zodResolver(taxProfileSchema),
-        mode: "onBlur",
+        mode: "onSubmit",
+        reValidateMode: "onChange",
+        defaultValues: {
+            entityType: "",
+            taxIdentifier: "",
+            taxJurisdiction: "",
+            agreedToTaxTerms: false,
+        },
     });
 
     async function onSubmit(data: TaxProfileFormData) {
@@ -96,6 +108,27 @@ export function TaxProfileForm({ onSuccess, onError }: TaxProfileFormProps = {})
                     </Alert>
                 )}
 
+                {/* Validation Error Summary */}
+                {isSubmitted && Object.keys(errors).length > 0 && (
+                    <Alert className="border-red-200 bg-red-50">
+                        <AlertDescription className="text-red-800">
+                            <p className="font-semibold mb-2">Please fix the following errors:</p>
+                            <ul className="list-disc list-inside space-y-1">
+                                {Object.entries(errors).map(([field, error]) => {
+                                    const message = error?.message
+                                        ? String(error.message)
+                                        : `Error in ${field}`;
+                                    return (
+                                        <li key={field} className="text-sm">
+                                            {message}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
                     <p className="text-sm text-blue-900">
                         Please provide your tax information. This helps us comply with local tax
@@ -105,73 +138,103 @@ export function TaxProfileForm({ onSuccess, onError }: TaxProfileFormProps = {})
 
                 {/* Entity Type */}
                 <div className="space-y-2">
-                    <Label htmlFor="entityType">Entity Type *</Label>
+                    <Label htmlFor="entityType" className={errors.entityType ? "text-red-600" : ""}>
+                        Entity Type *
+                    </Label>
                     <select
                         id="entityType"
                         {...register("entityType")}
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        aria-invalid={errors.entityType ? "true" : "false"}
+                        className={`w-full rounded-md border px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-offset-2 ${errors.entityType
+                                ? "border-red-500 focus:ring-red-500"
+                                : "border-input  focus:ring-ring"
+                            }`}>
                         <option value="">Select entity type</option>
                         <option value="INDIVIDUAL">Individual</option>
                         <option value="BUSINESS">Business</option>
                     </select>
                     {errors.entityType && (
-                        <p className="text-sm text-red-500">{errors.entityType.message}</p>
+                        <p className="text-sm font-medium text-red-600">
+                            {errors.entityType.message}
+                        </p>
                     )}
                 </div>
 
                 {/* Tax Identifier */}
                 <div className="space-y-2">
-                    <Label htmlFor="taxIdentifier">Tax ID / Registration Number *</Label>
+                    <Label
+                        htmlFor="taxIdentifier"
+                        className={errors.taxIdentifier ? "text-red-600" : ""}>
+                        Tax ID / Registration Number *
+                    </Label>
                     <Input
                         id="taxIdentifier"
                         placeholder="e.g., 1234567890 or your tax ID"
                         {...register("taxIdentifier")}
-                        error={!!errors.taxIdentifier}
+                        aria-invalid={errors.taxIdentifier ? "true" : "false"}
                     />
                     <p className="text-xs text-muted-foreground">
                         Your ID number (SSN for individuals, business registration for entities)
                     </p>
                     {errors.taxIdentifier && (
-                        <p className="text-sm text-red-500">{errors.taxIdentifier.message}</p>
+                        <p className="text-sm font-medium text-red-600">
+                            {errors.taxIdentifier.message}
+                        </p>
                     )}
                 </div>
 
                 {/* Tax Jurisdiction */}
                 <div className="space-y-2">
-                    <Label htmlFor="taxJurisdiction">Tax Jurisdiction (Country Code) *</Label>
+                    <Label
+                        htmlFor="taxJurisdiction"
+                        className={errors.taxJurisdiction ? "text-red-600" : ""}>
+                        Tax Jurisdiction (Country Code) *
+                    </Label>
                     <Input
                         id="taxJurisdiction"
                         placeholder="ZA"
                         maxLength={2}
                         {...register("taxJurisdiction")}
-                        error={!!errors.taxJurisdiction}
+                        aria-invalid={errors.taxJurisdiction ? "true" : "false"}
                     />
                     <p className="text-xs text-muted-foreground">
                         2-letter ISO country code where you pay taxes
                     </p>
                     {errors.taxJurisdiction && (
-                        <p className="text-sm text-red-500">{errors.taxJurisdiction.message}</p>
+                        <p className="text-sm font-medium text-red-600">
+                            {errors.taxJurisdiction.message}
+                        </p>
                     )}
                 </div>
 
                 {/* Agreement Checkbox */}
                 <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                        <Checkbox
-                            id="agreedToTaxTerms"
-                            {...register("agreedToTaxTerms")}
-                            className="mt-1"
+                        <Controller
+                            name="agreedToTaxTerms"
+                            control={control}
+                            render={({ field }) => (
+                                <Checkbox
+                                    id="agreedToTaxTerms"
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="mt-1"
+                                    aria-invalid={errors.agreedToTaxTerms ? "true" : "false"}
+                                />
+                            )}
                         />
                         <Label
                             htmlFor="agreedToTaxTerms"
-                            className="text-sm font-normal cursor-pointer">
+                            className={`text-sm font-normal cursor-pointer ${errors.agreedToTaxTerms ? "text-red-600" : ""}`}>
                             I confirm that the tax information provided is accurate and complete. I
-                            understand that PODSLICE.Ai Studio may be required to report this information to
-                            tax authorities. *
+                            understand that PODSLICE.Ai Studio may be required to report this
+                            information to tax authorities. *
                         </Label>
                     </div>
                     {errors.agreedToTaxTerms && (
-                        <p className="text-sm text-red-500">{errors.agreedToTaxTerms.message}</p>
+                        <p className="text-sm font-medium text-red-600">
+                            {errors.agreedToTaxTerms.message}
+                        </p>
                     )}
                 </div>
 

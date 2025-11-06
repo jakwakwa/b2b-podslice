@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { GenerateSummariesButton } from "@/components/generate-summaries-button";
 import { PodcastAnalyzer } from "@/components/gemini-analyzer-components/PodcastAnalyzer";
+import { GenerateSummariesButton } from "@/components/generate-summaries-button";
 import { SummaryList } from "@/components/summary-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ export default async function EpisodeDetailPage({
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        completed: "bg-green-500/10 text-teal-500",
+        completed: "bg-success/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 
@@ -67,7 +67,7 @@ export default async function EpisodeDetailPage({
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader user={user} />
 
             <main className="container mx-auto px-4 py-8">

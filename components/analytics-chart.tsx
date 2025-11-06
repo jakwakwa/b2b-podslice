@@ -70,29 +70,28 @@ export function AnalyticsChart({ data }: { data: DailyData[] }) {
                         </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-white/15" />
-                    <XAxis dataKey="date" className="text-xs" tick={{ fill: "var(--color-violet-400)" }} />
+                    <XAxis dataKey="date" className="text-xs" tick={{ fill: "var(--violet-400)" }} />
                     <YAxis className="text-xs" tick={{ fill: "var(--color-cyan-500)" }} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend />
                     <Area
                         type="monotone"
                         dataKey="views"
-                        stroke="var(--chart-1)"
-                        fill="url(#colorViews)"
+                        stroke="rva(--chart-1)"
+                        fill="var(--chart-4)"
                         name="Views"
                     />
                     <Area
                         type="monotone"
                         dataKey="shares"
-                        stroke="var(--chart-4)"
-                        fill="url(#colorShares)"
+                        fill="var(--chart-2)"
                         name="Shares"
                     />
                     <Area
                         type="monotone"
                         dataKey="clicks"
                         stroke="var(--chart-3)"
-                        fill="url(#colorClicks)"
+                        fill="var(--chart-3)"
                         name="Clicks"
                     />
                     <Area
