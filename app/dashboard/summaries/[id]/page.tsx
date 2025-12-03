@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { UuidFilter } from "@/app/generated/prisma/models";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { SummaryActions } from "@/components/summary-actions";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +25,7 @@ export default async function SummaryDetailPage({
             id,
             episodes: {
                 podcasts: {
-                    organization_id: user.organization_id,
+                    organization_id: user.organization_id ?? ("" as UuidFilter<"podcasts">),
                 },
             },
         },
@@ -60,11 +61,11 @@ export default async function SummaryDetailPage({
         social_twitter: "bg-sky-500/10 text-sky-500",
         social_linkedin: "bg-indigo-500/10 text-indigo-500",
         social_instagram: "bg-pink-500/10 text-pink-500",
-        show_notes: "bg-green-500/10 text-teal-500",
+        show_notes: "bg-success/10 text-teal-500",
     };
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader user={user} />
 
             <main className="container mx-auto px-4 py-8">
@@ -82,11 +83,11 @@ export default async function SummaryDetailPage({
                             <div className="flex items-center gap-3">
                                 <Badge
                                     variant="secondary"
-                                    className={typeColors[summary.summary_type] || "bg-muted"}>
+                                    className={typeColors[summary.summary_type] || "bg-[(--beduk-4)]"}>
                                     {typeLabels[summary.summary_type] || summary.summary_type}
                                 </Badge>
                                 <span className="text-sm text-muted-foreground">
-                                    {new Date(summary.created_at).toLocaleDateString()}
+                                    {new Date(summary.created_at ?? "").toLocaleDateString()}
                                 </span>
                             </div>
                             <h1 className="mt-4 text-3xl font-bold">{summary.episodes.title}</h1>
@@ -108,7 +109,7 @@ export default async function SummaryDetailPage({
                         <div>
                             <span className="font-medium">{summary.share_count}</span> shares
                         </div>
-                        <div>Last updated: {new Date(summary.updated_at).toLocaleDateString()}</div>
+                        <div>Last updated: {new Date(summary.updated_at ?? "").toLocaleDateString()}</div>
                     </div>
                 </Card>
             </main>

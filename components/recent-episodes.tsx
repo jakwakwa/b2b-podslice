@@ -22,12 +22,12 @@ export function RecentEpisodes({ episodes }: { episodes: Episode[] }) {
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        completed: "bg-green-500/10 text-teal-500",
+        completed: "bg-success/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 
     return (
-        <div className="space-y-4">
+        <div className="mt-2 gap-3 flex flex-col">
             {episodes.map(episode => (
                 <Card key={episode.id} className="p-4">
                     <div className="flex items-start gap-4">
@@ -38,7 +38,7 @@ export function RecentEpisodes({ episodes }: { episodes: Episode[] }) {
                                 className="h-12 w-12 rounded object-cover"
                             />
                         ) : (
-                            <div className="flex h-12 w-12 items-center justify-center rounded bg-muted">
+                            <div className="flex h-12 w-12 items-center justify-center rounded bg-[var(--beduk-4)]">
                                 <span className="text-lg font-bold text-muted-foreground">
                                     {episode.podcast_title[0]}
                                 </span>

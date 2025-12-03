@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicEpisodeAudio } from "@/components/public-episode-audio";
-import { SummaryWithAttribution } from "@/components/summary-with-attribution";
 import { Badge } from "@/components/ui/badge";
 import prisma from "@/lib/prisma";
 
@@ -17,33 +16,15 @@ export default async function PublicSummaryPage({
         where: {
             id,
             episodes: {
-                podcasts: {
-                    licenses: {
-                        some: {
-                            is_active: true,
-                            license_type: "b2b_b2c",
-                        },
-                    },
-                },
+                podcasts: {},
             },
         },
+
         include: {
             episodes: {
                 select: {
                     title: true,
                     audio_url: true,
-                    podcasts: {
-                        select: {
-                            title: true,
-                            website_url: true,
-                            organizations: {
-                                select: {
-                                    name: true,
-                                    website: true,
-                                },
-                            },
-                        },
-                    },
                 },
             },
         },
@@ -78,8 +59,8 @@ export default async function PublicSummaryPage({
     };
 
     return (
-        <div className="min-h-screen bg-background">
-            <header className="border-b bg-background backdrop-blur-2xl">
+        <div className="min-h-screen ">
+            <header className="border-b  backdrop-blur-2xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link href="/" className="flex items-center gap-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
@@ -96,23 +77,11 @@ export default async function PublicSummaryPage({
                         <Badge variant="secondary" className="mb-4">
                             {typeLabels[summary.summary_type] || summary.summary_type}
                         </Badge>
-                        <h1 className="text-4xl font-bold">{summary.episodes.title}</h1>
+                        <h1 className="text-4xl font-bold">{typeLabels[summary.summary_type] || summary.summary_type}</h1>
                         <p className="mt-2 text-xl text-muted-foreground">
-                            {summary.episodes.podcasts.title}
+                            {summary.content}
                         </p>
                     </div>
-
-                    <SummaryWithAttribution
-                        content={summary.content}
-                        attribution={{
-                            podcastTitle: summary.episodes.podcasts.title,
-                            episodeTitle: summary.episodes.title,
-                            episodeUrl: summary.episodes.audio_url,
-                            creatorName: summary.episodes.podcasts.organizations.name,
-                            creatorWebsite: summary.episodes.podcasts.organizations.website,
-                            generatedAt: new Date(summary.created_at),
-                        }}
-                    />
 
                     <div className="mt-8 text-center">
                         <p className="text-sm text-muted-foreground">

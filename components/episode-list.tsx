@@ -34,7 +34,7 @@ export function EpisodeList({
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        completed: "bg-green-500/10 text-teal-500",
+        completed: "bg-success/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 
@@ -49,10 +49,10 @@ export function EpisodeList({
     }
 
     return (
-        <div className="space-y-4">
+        <div className="mt-4 flex flex-col gap-2">
             {episodes.map(episode => (
                 <Link key={episode.id} href={`/dashboard/episodes/${episode.id}`}>
-                    <Card className="p-4 transition-colors hover:bg-muted/50">
+                    <Card className="p-4 transition-colors">
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
                                 <h3 className="font-semibold">{episode.title}</h3>

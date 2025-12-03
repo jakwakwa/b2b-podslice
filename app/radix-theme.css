@@ -1,0 +1,13 @@
+/* ============================================= */
+/* RADIX UI CUSTOM COLOR THEME                  */
+/* ============================================= */
+
+/* Light Theme - Violet Accent + Gray Scale */
+@import "../styles/accent-scale-light.css";
+@import "../styles/gray-scale-light.css";
+@import "../styles/background-scale-light.css";
+
+/* Dark Theme - Teal Accent + Purple-tinted Gray Scale */
+@import "../styles/accent-scale-dark.css";
+@import "../styles/gray-scale-dark.css";
+@import "../styles/background-scale-dark.css";

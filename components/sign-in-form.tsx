@@ -52,7 +52,7 @@ export function SignInForm() {
 
     return (
         <Card className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="mt-2 gap-3 flex flex-col">
                 <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input

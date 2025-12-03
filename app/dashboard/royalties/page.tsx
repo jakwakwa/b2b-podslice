@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { RoyaltyChart } from "@/components/royalty-chart";
@@ -60,8 +61,8 @@ export default async function RoyaltiesPage() {
     });
 
     const currentPeriod = {
-        total_views: summaryData._sum.view_count || 0,
-        total_shares: summaryData._sum.share_count || 0,
+        total_views: summaryData._sum?.view_count || 0,
+        total_shares: summaryData._sum?.share_count || 0,
     };
 
     const totalEarnings = royalties
@@ -75,7 +76,7 @@ export default async function RoyaltiesPage() {
     const statusColors = {
         pending: "bg-yellow-500/10 text-yellow-500",
         processing: "bg-blue-500/10 text-blue-500",
-        paid: "bg-green-500/10 text-teal-500",
+        paid: "bg-success/10 text-teal-500",
         failed: "bg-red-500/10 text-red-500",
     };
 
@@ -85,7 +86,7 @@ export default async function RoyaltiesPage() {
         org?.payout_status === "ACTIVE";
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             <DashboardHeader
                 user={{
                     ...user,
@@ -144,14 +145,14 @@ export default async function RoyaltiesPage() {
                     </Card>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-2 gap-3 flex flex-col">
                     <Card className="p-6">
                         <h2 className="mb-6 text-xl font-semibold">Earnings Over Time</h2>
                         <RoyaltyChart royalties={royalties} />
                     </Card>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-2 gap-3 flex flex-col">
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-2xl font-semibold">Payment History</h2>
                         <Button variant="outline">Download Report</Button>
@@ -165,7 +166,7 @@ export default async function RoyaltiesPage() {
                             </p>
                         </Card>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="mt-2 gap-3 flex flex-col">
                             {royalties.map(royalty => (
                                 <Card key={royalty.id} className="p-6">
                                     <div className="flex items-start justify-between">

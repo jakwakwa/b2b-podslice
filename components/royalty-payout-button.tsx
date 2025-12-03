@@ -10,10 +10,10 @@ interface RoyaltyPayoutButtonProps {
 }
 
 export function RoyaltyPayoutButton({ royaltyId, onSuccess }: RoyaltyPayoutButtonProps) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setloading] = useState(false);
 
     async function handlePayout() {
-        setIsLoading(true);
+        setloading(true);
         try {
             const response = await fetch(`/api/royalties/${royaltyId}/payout`, {
                 method: "POST",
@@ -32,20 +32,18 @@ export function RoyaltyPayoutButton({ royaltyId, onSuccess }: RoyaltyPayoutButto
 
             onSuccess?.();
             // Optionally refresh the page
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             const message = error instanceof Error ? error.message : "Unknown error";
             toast.error("Payout failed", {
                 description: message,
             });
         } finally {
-            setIsLoading(false);
+            setloading(false);
         }
     }
 
-    return (
-        <Button size="sm" onClick={handlePayout} disabled={isLoading} className="w-full">
-            {isLoading ? "Processing..." : "Process Payout"}
-        </Button>
-    );
+    return <Button size="sm" onClick={handlePayout} disabled={loading} className="w-full">
+        {loading ? "Processing..." : "Process Payout"}
+    </Button>;
 }

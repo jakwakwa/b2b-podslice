@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -7,10 +7,8 @@ const taxProfileSchema = z.object({
 	taxIdentifier: z.string().min(3),
 	taxJurisdiction: z.string().length(2),
 	entityType: z.enum(["INDIVIDUAL", "BUSINESS"]),
-	agreedToTaxTerms: z.boolean().refine((val) => val === true),
+	agreedToTaxTerms: z.boolean().refine(val => val === true),
 });
-
-type TaxProfileRequest = z.infer<typeof taxProfileSchema>;
 
 export async function POST(request: NextRequest) {
 	try {
@@ -23,7 +21,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		const body = await request.json();
-		const validatedInput = taxProfileSchema.parse(body);
+		const _validatedInput = taxProfileSchema.parse(body);
 
 		// Update organization tax_form_status
 		const updated = await prisma.organizations.update({
@@ -48,7 +46,7 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json(
 				{
 					error: "Validation failed",
-					details: error.errors,
+					details: error.message,
 				},
 				{ status: 400 }
 			);
@@ -63,9 +61,6 @@ export async function POST(request: NextRequest) {
 		}
 
 		console.error("[Tax Profile]", error);
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 }
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

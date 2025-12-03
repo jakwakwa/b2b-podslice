@@ -16,7 +16,8 @@ const baseClient =
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   })
 
-const prisma = isAccelerateUrl ? baseClient.$extends(withAccelerate()) : baseClient
+// Type the client consistently to avoid union type issues
+const prisma = (isAccelerateUrl ? baseClient.$extends(withAccelerate()) : baseClient) as unknown as PrismaClient
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = baseClient
 
