@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 
 export function SignUpForm() {
     const [error, setError] = useState("");
@@ -121,5 +120,4 @@ export function SignUpForm() {
             </form>
         </Card>
     );
-    return <Card className="p-6">coming soon</Card>;
 }
